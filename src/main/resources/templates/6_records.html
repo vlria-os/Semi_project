@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="container">
+
+    <!--내역 조회-->
+    <div class="main">
+        <div class="main-title">
+            <span class="main-icon">[ICON]</span>
+            내역 조회
+        </div>
+
+        <!--엑셀 다운 버튼-->
+        <div class="main-excel">
+            <button>
+                <span class="excel-icon">[ICON]</span>
+                엑셀 다운로드
+            </button>
+        </div>
+        <div class="main-option">
+            <div>입출고 요청 승인내역</div>
+            <div>입출고 확인 내역</div>
+        </div>
+
+        <!--승인내역 버튼 클릭-->
+        <div class="main-filter1">
+            <div>
+                <button>전체</button>
+                <button>입고</button>
+                <button>출고</button>
+                <button>반품</button>
+            </div>
+            <div>
+                <button>전체</button>
+                <button>승인</button>
+                <button>반려</button>
+            </div>
+        </div>
+
+        <!--확인 내역 클릭-->
+        <div class="main-filter2">
+            <button>전체</button>
+            <button>입고</button>
+            <button>출고</button>
+            <button>폐기</button>
+        </div>
+
+        <!--승인내역 리스트-->
+        <div class="request-list">
+            <ul>
+                <li>우유</li>
+                <li>라면</li>
+                <li>치즈</li>
+            </ul>
+        </div>
+
+        <!--확인 내역 리스트-->
+        <div class="confirm-list">
+            <ul>
+                <li>우유</li>
+                <li>라면</li>
+                <li>치즈</li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>

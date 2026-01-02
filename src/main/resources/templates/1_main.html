@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="logo">창고 관리 시스템</div>
+  <div class="memo">[ICON]</div>
+  <div class="avatar"></div>
+  <div class="login">[로그인]</div>
+</div>
+<hr>
+
+<!-- Navigation -->
+<div class="nav">
+  <ul>
+    <li><button class="active">입출고 요청 승인</button></li>
+    <li><button>재고 확인</button></li>
+    <li><button>상품 관리</button></li>
+    <li><button>계정 관리</button></li>
+    <li><button>창고 관리</button></li>
+    <li><button>내역 조회</button></li>
+    <li><button>매출 통계</button></li>
+    <li><button>기타 설정</button></li>
+  </ul>
+</div>
+<hr>
+
+<!-- 메인 -->
+<div class="layout">
+  <div class="container">
+
+    <!-- 입출고 요청 승인 -->
+    <div class="main">
+      <div class="main-title">
+        <span class="main-icon">[ICON]</span>
+        <h2>입출고 요청 승인</h2>
+        <span class="notif-alert">(0)</span>
+      </div>
+    </div>
+
+    <!-- 입출고 필터 버튼 -->
+    <div class="filter">
+      <button class="active">◫전체</button>
+      <button>⇊입고</button>
+      <button>⇈출고</button>
+      <button>↻반품</button>
+    </div>
+    <div class="sub-filter">
+        <button class="active">요청대기</button>
+        <span class="notif-alert">(0)</span>
+        <button>완료</button>
+    </div>
+
+    <!-- 필터 버튼(요청대기) -->
+    <div class="filter-request">
+      <!-- 요청대기 없을때 -->
+      <!-- <div class="request-none"><p>요청이 없습니다</p></div> -->
+      <!-- 요청대기 목록 -->
+      <div class="request-item"><p>입고</p></div>
+      <div class="request-item"><p>출고</p></div>
+      <div class="request-item"><p>반품</p></div>
+    </div>
+
+    <!-- 필터 버튼(완료) -->
+    <div class="filter-complete">
+      <button>전체</button>
+      <button>승인</button>
+      <button>반려</button>
+    </div>
+  </div>
+
+  <!-- sidebar -->
+  <div class="sidebar">
+    <div class="expiration-notif">
+      <div class="side-title">
+        <span class="alert-icon">[ICON]</span>
+        유통기한 임박 상품
+      </div>
+      <ul>
+        <li>우유</li>
+        <li>요거트</li>
+        <li>치즈</li>
+      </ul>
+    </div>
+    <div class="storage-limit">
+      <div class="side-title">
+        <span class="storage-icon">[ICON]</span>
+        재고 한계 임박 창고
+      </div>
+      <ul>
+        <li>냉장창고 A</li>
+        <li>내동창고 B</li>
+        <li>실온창고 C</li>
+        <li>냉장창고 D</li>
+      </ul>
+    </div>
+  </div>
+</div>
+</body>
+</html>

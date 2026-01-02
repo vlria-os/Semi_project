@@ -1,0 +1,101 @@
+/* General Styling */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+}
+
+hr { border: 0; border-top: 1px solid #e0e0e0; margin: 0; }
+
+/* Header */
+.header {
+    background: #fff;
+    padding: 15px 40px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.logo { color: #2563eb; font-weight: bold; font-size: 20px; flex-grow: 1; }
+
+.avatar {
+    width: 32px; height: 32px; background: #ccc; border-radius: 50%;
+}
+
+/* Navigation */
+.nav { background: #fff; }
+.nav ul {
+    display: flex; list-style: none; padding: 0 40px; margin: 0; gap: 10px;
+}
+.nav button {
+    background: none; border: none; padding: 15px 10px;
+    cursor: pointer; font-weight: 500; color: #667;
+}
+.nav button.active { color: #2563eb; border-bottom: 3px solid #2563eb; }
+
+/* Layout Grid */
+.layout {
+    display: grid;
+    grid-template-columns: 1fr 300px; /* Split main and sidebar */
+    gap: 20px;
+    padding: 20px 40px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* Main Container */
+.container {
+    background: #fff;
+    border-radius: 8px;
+    padding: 25px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.main-title { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+.notif-alert { color: #ef4444; font-weight: bold; }
+
+/* Filters */
+.filter { display: flex; gap: 8px; margin-bottom: 20px; }
+.filter button {
+    padding: 8px 16px; border-radius: 6px; border: 1px solid #ddd;
+    background: #f8f9fa; cursor: pointer;
+}
+.filter button.active { background: #2563eb; color: #fff; border: none; }
+
+.sub-filter {
+    margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px;
+}
+.sub-filter button { background: none; border: none; font-weight: bold; cursor: pointer; }
+.sub-filter button.active { color: #2563eb; }
+
+/* List Items */
+.req-item {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+}
+.req-item:hover { background: #fcfcfc; }
+
+/* Sidebar */
+.sidebar { display: flex; flex-direction: column; gap: 20px; }
+
+.expiration-notif, .storage-limit {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.side-title {
+    font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;
+}
+
+.sidebar ul { list-style: none; padding: 0; margin: 0; }
+.sidebar li {
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 14px;
+}
+.sidebar li:last-child { border: none; }

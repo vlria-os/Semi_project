@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="container">
+
+    <!--상품 관리-->
+    <div class="main">
+        <div class="main-title">
+            <span class="main-icon">[ICON]</span>
+            상품 관리
+        </div>
+        <div class="main-option">
+            <div class="main-default">상품 조회</div>
+            <div class="main-insert">+상품 등록</div>
+        </div>
+    </div>
+
+    <!-- 검색 + 필터 -->
+    <div class="filter">
+        <input type="text" id="searchBar">
+        <button class="active">전체</button>
+        <button>냉장</button>
+        <button>냉동</button>
+        <button>상온</button>
+    </div>
+
+    <!-- 상품 리스트 -->
+    <div class="item-list">
+        <ul>
+            <li><a href=""><img src="">우유</a></li>
+            <li><a href=""><img src="">아이스크림</a></li>
+            <li><a href=""><img src="">라면</a></li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
