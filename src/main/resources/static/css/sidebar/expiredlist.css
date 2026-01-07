@@ -1,0 +1,184 @@
+/* Layout & Container */
+body {
+    background-color: #f8fafc;
+    margin: 0;
+    font-family: 'Pretendard', 'Segoe UI', sans-serif;
+}
+
+.container {
+    padding: 30px 50px;
+    max-width: 1300px;
+    margin: 0 auto;
+}
+
+.main {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.main-title {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #1e293b;
+}
+
+/* Tab Toggle */
+.view-toggle {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.view-btn {
+    padding: 12px 20px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+    color: #94a3b8;
+    transition: all 0.2s ease;
+}
+
+.view-btn.active {
+    color: #ef4444; /* Changed to red for expired theme */
+    border-bottom: 3px solid #ef4444;
+    margin-bottom: -2px;
+}
+
+.view-btn a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Filter Section */
+.filter-container {
+    background: #f1f5f9;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.filter {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+#keyword {
+    flex: 1;
+    padding: 10px 15px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    outline: none;
+}
+
+#keyword:focus {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.btn-group {
+    display: flex;
+    background: #e2e8f0;
+    padding: 4px;
+    border-radius: 8px;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #475569;
+}
+
+.filter-btn.active {
+    background: #ffffff;
+    color: #ef4444;
+    font-weight: 700;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+#warehouseFilter {
+    padding: 10px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: white;
+}
+
+/* Table Style */
+.expiredListTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.expiredListTable th {
+    background: #f8fafc;
+    padding: 15px;
+    text-align: left;
+    color: #64748b;
+    font-size: 14px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.expiredListTable td {
+    padding: 15px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 14px;
+    color: #334155;
+}
+
+.expiredListTable tr:hover {
+    background: #fff1f2; /* Light red tint on hover */
+}
+
+/* Highlight for Expired Days */
+.expired-text {
+    color: #ef4444;
+    font-weight: 700;
+}
+
+/* Pagination */
+.pagination_wrap {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination_wrap ul {
+    display: flex;
+    list-style: none;
+    gap: 8px;
+    padding: 0;
+}
+
+.pagination_wrap a {
+    text-decoration: none;
+    color: #475569;
+    padding: 8px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    transition: 0.2s;
+}
+
+.pagination_wrap a:hover {
+    background: #ef4444;
+    color: white;
+    border-color: #ef4444;
+}
+
+/* AJAX Loading State */
+#expiredListContainer {
+    transition: opacity 0.3s ease;
+}

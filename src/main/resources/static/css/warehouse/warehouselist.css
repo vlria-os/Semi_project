@@ -1,0 +1,163 @@
+/* General Page Styling */
+body {
+    background-color: #f8faff;
+    font-family: 'Inter', -apple-system, sans-serif;
+    color: #333;
+    margin: 0;
+    padding: 40px;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Header & Navigation */
+.main-title {
+    font-size: 20px;
+    font-weight: bold;
+    color: #1a1a1a;
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.main-option {
+    display: flex;
+    gap: 30px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 30px;
+}
+
+.main-option div {
+    padding-bottom: 10px;
+}
+
+.main-option div.active {
+    border-bottom: 2px solid #3b82f6;
+}
+
+.main-option a {
+    text-decoration: none;
+    color: #888;
+    font-weight: 500;
+}
+
+.main-option div.active a {
+    color: #3b82f6;
+}
+
+/* Filter Section */
+.filter {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+#keyword {
+    flex-grow: 1;
+    padding: 12px 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background-color: #fcfcfc;
+}
+
+.filter button {
+    background-color: #f1f5f9;
+    color: #64748b;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.filter button.active {
+    background-color: #1e293b;
+    color: white;
+    font-weight: bold;
+}
+
+/* Storage Card Grid */
+.storage-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.storage-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.storage-list a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.storage-list li {
+    background: white;
+    border: 1px solid #edf2f7;
+    border-radius: 16px;
+    padding: 24px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+
+.storage-list li:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+/* Card Content Styling */
+/* Warehouse Name */
+.storage-list li p:nth-child(1) {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+}
+
+/* Warehouse ID */
+.storage-list li p:nth-child(2) {
+    color: #64748b;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+/* Labels (위치, 용량) */
+.storage-list li p:nth-child(3),
+.storage-list li p:nth-child(5) {
+    font-size: 13px;
+    color: #94a3b8;
+    margin: 10px 0 2px 0;
+}
+
+/* Values (Actual data) */
+.storage-list li p:nth-child(4),
+.storage-list li p:nth-child(6) {
+    font-size: 15px;
+    font-weight: 500;
+    margin: 0;
+}
+
+/* Pagination */
+.pagination_wrap {
+    grid-column: 1 / -1;
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination_wrap ul {
+    display: flex;
+    gap: 10px;
+}
+
+.pagination_wrap a {
+    padding: 8px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: white;
+    font-size: 14px;
+}

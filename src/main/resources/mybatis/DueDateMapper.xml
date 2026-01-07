@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.DueDateMapper">
+    <sql id="dateSearch">
+        <where>
+            <if test="true">
+                and s.quantity > 0
+                and li.expiration_date >= trunc(sysdate)
+            </if>
+            <if test="keyword != null and keyword != ''">
+                and (
+                    upper(p.product_name) like upper ('%' || #{keyword} || '%')
+                    or upper(w.warehouse_name) like upper ('%' || #{keyword} || '%')
+                    or upper(p.product_type) like upper ('%' || #{keyword} || '%')
+                )
+            </if>
+            <if test="typeFilter != null and typeFilter != 'all' ">
+                and upper(p.product_type) = upper(#{typeFilter})
+            </if>
+            <if test="warehouseFilter != null and warehouseFilter != '' ">
+                and li.warehouse_id = #{warehouseFilter}
+            </if>
+        </where>
+    </sql>
+
+    <select id="getDueDateList" resultType="DueDateDto" parameterType="map">
+        select * from (
+        select a.*, rownum rnum from (
+        select
+        s.stock_id,
+        li.lot_in_id,
+        p.product_name,
+        p.product_type as product_type,
+        w.warehouse_name,
+        w.warehouse_id,
+        li.expiration_date,
+        s.quantity as quantity,
+        trunc(li.expiration_date) - trunc(sysdate) as days_left
+        from stock s
+        join lot_in li on s.lot_in_id = li.lot_in_id
+        join inbound_detail id on li.inbound_detail_id = id.inbound_detail_id
+        join product p on id.product_id = p.product_id
+        join warehouse w on li.warehouse_id = w.warehouse_id
+        <include refid="dateSearch"/>
+        order by li.expiration_date asc
+        ) a
+        )
+        <![CDATA[
+        where rnum >= #{startRow} and rnum <= #{endRow}
+        ]]>
+    </select>
+
+    <select id="getDateCount" parameterType="map" resultType="int">
+        select count(*)
+        from stock s
+        join lot_in li on s.lot_in_id = li.lot_in_id
+        join inbound_detail id on li.inbound_detail_id = id.inbound_detail_id
+        join product p on id.product_id = p.product_id
+        <include refid="dateSearch"/>
+    </select>
+</mapper>

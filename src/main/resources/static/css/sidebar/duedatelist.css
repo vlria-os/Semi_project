@@ -1,0 +1,183 @@
+/* Layout & Container */
+.main {
+    padding: 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.main-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #333;
+}
+
+/* View Toggle (Top Buttons) */
+.view-toggle {
+    display: flex;
+    gap: 0;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #e0e0e0;
+}
+
+.view-btn {
+    padding: 12px 24px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    color: #666;
+    transition: all 0.3s;
+}
+
+.view-btn a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.view-btn.active {
+    color: #2563eb;
+    border-bottom: 3px solid #2563eb;
+    margin-bottom: -2px; /* Overlap the border */
+}
+
+/* Filter Container */
+.filter-container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    margin-bottom: 20px;
+}
+
+.filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+}
+
+#keyword {
+    flex-grow: 1;
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+#keyword:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.1);
+}
+
+.btn-group {
+    display: flex;
+    background: #f1f5f9;
+    padding: 4px;
+    border-radius: 8px;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-radius: 6px;
+    font-size: 14px;
+    color: #64748b;
+    transition: 0.2s;
+}
+
+.filter-btn.active {
+    background: #fff;
+    color: #2563eb;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    font-weight: bold;
+}
+
+#warehouseFilter {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #fff;
+    cursor: pointer;
+}
+
+/* Data Table */
+.dueDateTable {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden; /* Rounds the corners */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.dueDateTable th {
+    background-color: #f8fafc;
+    color: #64748b;
+    font-weight: 600;
+    text-align: left;
+    padding: 15px;
+    border-bottom: 2px solid #edf2f7;
+}
+
+.dueDateTable td {
+    padding: 15px;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 14px;
+    color: #334155;
+}
+
+.dueDateTable tr:hover {
+    background-color: #f1f5f9;
+}
+
+/* D-Day Alert Styling */
+.alert {
+    background-color: #fee2e2;
+    color: #ef4444;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+/* Pagination */
+.pagination_wrap {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination_wrap ul {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    gap: 5px;
+}
+
+.pagination_wrap a {
+    display: block;
+    padding: 8px 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #333;
+    transition: 0.2s;
+}
+
+.pagination_wrap a:hover {
+    background-color: #2563eb;
+    color: #fff;
+    border-color: #2563eb;
+}
+
+/* AJAX Loading State */
+#dueDateContainer {
+    transition: opacity 0.3s ease;
+}

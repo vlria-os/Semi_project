@@ -20,13 +20,12 @@
 <div class="nav">
   <ul>
     <li><button class="active">입출고 요청 승인</button></li>
-    <li><button>재고 확인</button></li>
-    <li><button>상품 관리</button></li>
-    <li><button>계정 관리</button></li>
-    <li><button>창고 관리</button></li>
-    <li><button>내역 조회</button></li>
-    <li><button>매출 통계</button></li>
-    <li><button>기타 설정</button></li>
+    <li><a th:href="@{/}">재고 확인</a></li>
+    <li><a th:href="@{/}">상품 관리</a></li>
+    <li><a th:href="@{/}">계정 관리</a></li>
+    <li><a th:href="@{/}">내역 조회</a></li>
+    <li><a th:href="@{/}">매출 통계</a></li>
+    <li><a th:href="@{/}">기타 설정</a></li>
   </ul>
 </div>
 <hr>
@@ -77,28 +76,44 @@
 
   <!-- sidebar -->
   <div class="sidebar">
+    <!--유통기한 임박-->
     <div class="expiration-notif">
       <div class="side-title">
-        <span class="alert-icon">[ICON]</span>
-        유통기한 임박 상품
+        <span class="alert-icon">⚠️</span>
+        <a th:href="@{/sidebar/dueDate}">유통기한 임박 관리</a>
       </div>
-      <ul>
-        <li>우유</li>
-        <li>요거트</li>
-        <li>치즈</li>
-      </ul>
+      <!-- 유통기한 임박 목록(10게(CSS))-->
+      <div class="side-content">
+        <ul th:if="${not #lists.isEmpty(dueList)}">
+          <li th:each="item : ${dueList}">
+            <span th:text="${item.product_name}"></span>
+            <span style="color: #ef4444; font-weight: bold;" th:text="'D-' + ${item.days_left}"></span>
+          </li>
+        </ul>
+        <div class="no-data" th:if="${#lists.isEmpty(dueList)}">
+          <p>임학한 상품이 없습니다.</p>
+        </div>
+      </div>
     </div>
+
+    <!--재고 한계 임박-->
     <div class="storage-limit">
       <div class="side-title">
-        <span class="storage-icon">[ICON]</span>
-        재고 한계 임박 창고
+        <span class="storage-icon">🏗️</span>
+        <a th:href="@{/warehouse/list}">창고 관리</a>
       </div>
-      <ul>
-        <li>냉장창고 A</li>
-        <li>내동창고 B</li>
-        <li>실온창고 C</li>
-        <li>냉장창고 D</li>
-      </ul>
+      <!-- 재고 한계 임박 목록(10게(CSS))-->
+      <div class="side-content">
+        <ul th:if="${not #lists.isEmpty(limitList)}">
+          <li th:each="w : ${limitList}">
+            <span th:text="${w.warehouse_name}"></span>
+            <span th:text="${w.usage_rate} + '%'"></span>
+          </li>
+        </ul>
+        <div class="no-data" th:if="${#lists.isEmpty(limitList)}">
+          <p>창고 정보가 없습니다.</p>
+        </div>
+      </div>
     </div>
   </div>
 </div>
