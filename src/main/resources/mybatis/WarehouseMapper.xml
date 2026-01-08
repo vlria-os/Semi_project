@@ -46,6 +46,9 @@
     </select>
 
     <insert id="insertWarehouse" parameterType="WarehouseDto">
+        <selectKey keyProperty="warehouse_id" resultType="int" order="BEFORE">
+            select warehouse_seq.nextval from dual
+        </selectKey>
         insert into warehouse(
             warehouse_id,
             warehouse_name,
@@ -56,7 +59,7 @@
             created_at
         )
         values(
-            warehouse_id_seq.nextval,
+            #{warehouse_id},
             #{warehouse_name},
             #{warehouse_type},
             #{location},
