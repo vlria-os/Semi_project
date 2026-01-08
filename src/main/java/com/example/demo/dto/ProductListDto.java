@@ -14,5 +14,5 @@ public class ProductListDto {
     private String productType;
     private String categoryName;
     private String filePath;
-
+    private int num;
 }
