@@ -39,6 +39,7 @@
     <tr>
         <th>선택</th>
         <th>상품번호</th>
+        <th>이미지</th>
         <th>상품명</th>
         <th>단위</th>
         <th>가격</th>
@@ -54,6 +55,7 @@
             <input type="checkbox" class="chk" th:data-id="${l.product_id}">
         </td>
         <td th:text="${l.product_id}"></td>
+        <td><img th:src="@{'/image/' + ${l.save_name}}" style="width:100px;"></td>
         <td th:text="${l.product_name}"></td>
         <td th:text="${l.unit}"></td>
         <td th:text="${l.price}"></td>
@@ -103,6 +105,7 @@
             <input type="checkbox" class="chk" data-id="${p.product_id}" ${saved ? 'checked' : ''}>
         </td>
         <td>${p.product_id}</td>
+        <td><img th:src="@{'/image/' + ${p.save_name}}" style="width:100px;"></td>
         <td>${p.product_name}</td>
         <td>${p.unit}</td>
         <td>${p.price}</td>
