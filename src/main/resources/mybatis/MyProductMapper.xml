@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.ProductMapper">
+
+    <select id="selectProductList" resultType="ProductListDto">
+        SELECT
+        p.PRODUCT_ID,
+        p.PRODUCT_NAME,
+        p.PRICE,
+        p.UNIT,
+        c.CATEGORY_NAME,
+        i.FILE_PATH,
+        i.ORIGINAL_NAME,
+        p.PRODUCT_TYPE
+        FROM product p
+        JOIN CATEGORY c ON p.CATEGORY_ID = c.CATEGORY_ID
+        JOIN PRODUCT_IMAGE i ON p.IMAGE_ID = i.IMAGE_ID
+        ORDER BY p.PRODUCT_ID DESC
+     </select>
+
+</mapper>
