@@ -66,4 +66,11 @@
             #{status}
         )
     </insert>
+    <insert id="insert_image" parameterType="Product_imageDto">
+        insert into product_image values (
+            product_image_seq.nextval,
+            #{file_path},
+            #{save_name}
+        )
+    </insert>
 </mapper>

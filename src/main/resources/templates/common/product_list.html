@@ -38,6 +38,7 @@
   <thead>
     <tr>
       <th>상품번호</th>
+      <th>이미지</th>
       <th>상품명</th>
       <th>단위</th>
       <th>가격</th>
@@ -48,6 +49,7 @@
   <tbody id="productBody">
     <tr th:each="l:${list}">
       <td th:text="${l.product_id}"></td>
+      <td><img th:src="@{'/image/' + ${l.save_name}}" style="width:100px;"></td>
       <td th:text="${l.product_name}"></td>
       <td th:text="${l.unit}"></td>
       <td th:text="${l.price}"></td>
@@ -63,7 +65,7 @@
   <button type="submit" onclick="search()">검색</button>
 </div>
 
-<a th:href="@{common/product_insert}">상품등록</a>
+<a th:href="@{/common/product_insert}">상품등록</a>
 
 <script>
   function search(){

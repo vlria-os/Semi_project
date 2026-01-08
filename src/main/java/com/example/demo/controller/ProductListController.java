@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.ProductDto;
+import com.example.demo.dto.Product_imageDto;
 import com.example.demo.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -9,12 +10,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
 public class ProductListController {
+    private final String UPLOADPATH="c:/image_Semi/";
     private final ProductService productService;
 
     @GetMapping("/common/product_list")
@@ -36,7 +42,6 @@ public class ProductListController {
     @GetMapping("/common/product_search")
     @ResponseBody
     public List<ProductDto> productSearch(@RequestParam String keyword) {
-        System.out.println("키워드===>"+keyword);
         System.out.println(productService.productList(keyword));
         return productService.productList(keyword);
     }
@@ -49,7 +54,21 @@ public class ProductListController {
 
     @PostMapping("/common/product_insert")
     public String product_insert(ProductDto productDto){
-        int n=productService.insert(productDto);
+        MultipartFile file=productDto.getFile();
+
+        String orgFileName = file.getOriginalFilename();
+        String extName = orgFileName.substring(orgFileName.lastIndexOf("."));
+        String saveFileName = UUID.randomUUID() + extName;
+        try {
+            File f = new File(UPLOADPATH + saveFileName);
+            file.transferTo(f);
+        } catch (IOException ie) {
+            System.out.println(ie.getMessage());
+        }
+
+        Product_imageDto imageDto=new Product_imageDto(0,UPLOADPATH + saveFileName,saveFileName);
+
+        int n=productService.insert(productDto, imageDto);
         return "redirect:/common/product_list";
     }
 
