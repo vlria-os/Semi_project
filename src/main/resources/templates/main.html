@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>main.html</title>
+    <link rel="stylesheet" th:href="@{/css/board.css}">
+</head>
+<body>
+<div class="wrap">
+    <div class="header">
+        <div class="intoLogin">
+            <h2>warehouse</h2>
+            <div class="loginArea">
+            <p th:if="${session.roleMsg != null}" th:text="${session.roleMsg}"></p>
+            <ul>
+                <li th:if="${session.webuser_id != null}"><button onclick="logout()">logout</button></li>
+            </ul>
+            </div>
+        </div>
+    </div>
+    <div class="nav">
+        <ul>
+            <li th:if="${session.webuser_id != null && session.role_id == 2}"><a th:href="@{/main}">입출고 요청 내역</a></li>
+            <li th:if="${session.webuser_id != null && session.role_id == 1}"><a th:href="@{/main}">입출고 요청 승인</a></li>
+            <li th:if="${session.webuser_id != null && session.role_id == 1}"><a th:href="@{/webuser/list}">계정 관리</a></li>
+            <li th:if="${session.webuser_id != null && session.role_id == 1}"><a th:href="@{/approval/list}">승인 내역</a></li>
+            <li><a th:href="@{/webuser/chatRoomList(user_id=${session.webuser_id})}">채팅 목록</a></li>
+        </ul>
+    </div>
+    <div class="main">
+        <div th:if="${role_id == 1}">
+            <button onclick="gomain()">전체</button> <button onclick="goinbound()">입고</button> <button onclick="gooutbound()">출고</button>
+        </div>
+        <div th:if="${role_id == 2}">
+            <button onclick="gomain()">전체</button> <button onclick="goinbound2()">입고</button> <button onclick="gooutbound2()">출고</button>
+        </div>
+        <table th:if="${role_id == 1}" id="adminTable">
+            <tr th:each="l:${list}">
+                <td><p th:text="|${l.io_type}(${l.io_id}) 요청자: ${l.webuser_id}|"></p>
+                    <p th:text="|${l.request_date} ${l.approval_status}|"></p>
+                    <a th:if="${l.io_type=='in'}"
+                       th:href="@{/request/admin/inbound(inbound_id=${l.io_id})}">
+                        상세보기
+                    </a>
+
+                    <a th:if="${l.io_type=='out'}"
+                       th:href="@{/request/admin/outbound(outbound_id=${l.io_id})}">
+                        상세보기
+                    </a>
+
+                </td>
+            </tr>
+        </table>
+        <table th:if="${role_id == 2}" id="userTable">
+            <tr th:each="l:${list}">
+                <td><p th:text="|${l.io_type} ${l.approval_status}|"></p>
+                    <p th:text="|${l.request_date}|"></p>
+                    <a th:if="${l.io_type=='in'}"
+                       th:href="@{/request/user/inbound(inbound_id=${l.io_id})}">
+                        상세보기
+                    </a>
+
+                    <a th:if="${l.io_type=='out'}"
+                       th:href="@{/request/user/outbound(outbound_id=${l.io_id})}">
+                        상세보기
+                    </a>
+
+
+                </td>
+            </tr>
+        </table>
+        <div>
+            <ul id="pagingArea">
+                <li th:if="${pageInfo.startPageNum > 1}">
+                    <a th:href="@{/main(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
+                </li>
+                <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
+                    <a th:href="@{/main(pageNum=${num})}">[[${num}]]</a>
+                </li>
+                <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
+                    <a th:href="@{/main(pageNum=${pageInfo.endPageNum + 1})}">다음</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer"></div>
+</div>
+</body>
+<script th:inline="javascript">
+    function logout(){
+        fetch('/logout')
+            .then(resp=>resp.text())
+            .then(data=>{
+                alert(data);
+                location.href="/";
+            })
+    }
+
+    function gomain(){
+        location.href="/main";
+    }
+
+    function goinbound(pageNum = 1){
+        const table=document.getElementById("adminTable");
+        const paging=document.getElementById("pagingArea");
+
+        fetch(`/goinbound?pageNum=${pageNum}`)
+            .then(resp=>resp.json())
+            .then(data=>{
+
+                const list=data.list;
+                const pageInfo=data.pageInfo;
+
+                //테이블 초기화
+                table.innerHTML="";
+                paging.innerHTML="";
+
+                //목록 출력
+                list.forEach(l=>{
+                    table.innerHTML+=`
+                                    <tr>
+                                        <td>
+                                            <p>${l.inbound_id} 요청자:${l.webuser_id} ${l.approval_status}</p>
+                                            <p>${l.request_date}</p>
+                                            <a href="/request/admin/inbound?inbound_id=${l.inbound_id}">상세보기</a>
+                                        </td>
+                                    </tr>
+                                    `;
+                });
+
+                //이전 버튼
+                if (pageInfo.startPageNum > 1) {
+                    paging.innerHTML += `
+                    <li>
+                        <a href="javascript:goinbound(${pageInfo.startPageNum - 1})">이전</a>
+                    </li>
+                `;
+                }
+
+                //페이지 번호
+                for (let i = pageInfo.startPageNum; i <= pageInfo.endPageNum; i++) {
+                    paging.innerHTML += `
+                    <li>
+                        <a href="javascript:goinbound(${i})">${i}</a>
+                    </li>
+                `;
+                }
+
+                //다음 버튼
+                if (pageInfo.endPageNum < pageInfo.totalPageCount) {
+                    paging.innerHTML += `
+                    <li>
+                        <a href="javascript:goinbound(${pageInfo.endPageNum + 1})">다음</a>
+                    </li>
+                `;
+                }
+            })
+    }
+
+    function goinbound2(pageNum = 1){
+        const table=document.getElementById("userTable");
+        const paging=document.getElementById("pagingArea");
+
+        fetch(`/goinbound?pageNum=${pageNum}`)
+            .then(resp=>resp.json())
+            .then(data=>{
+
+                const list=data.list;
+                const pageInfo=data.pageInfo;
+
+                //테이블 초기화
+                table.innerHTML="";
+                paging.innerHTML="";
+
+                //목록 출력
+                list.forEach(l=>{
+                    table.innerHTML+=`
+                                    <tr>
+                                        <td>
+                                            <p>${l.inbound_id} 요청자:${l.webuser_id} ${l.approval_status}</p>
+                                            <p>${l.request_date}</p>
+                                            <a href="/request/user/inbound?inbound_id=${l.inbound_id}">상세보기</a>
+                                        </td>
+                                    </tr>
+                                    `;
+                });
+
+                //이전 버튼
+                if (pageInfo.startPageNum > 1) {
+                    paging.innerHTML += `
+                    <li>
+                        <a href="javascript:goinbound(${pageInfo.startPageNum - 1})">이전</a>
+                    </li>
+                `;
+                }
+
+                //페이지 번호
+                for (let i = pageInfo.startPageNum; i <= pageInfo.endPageNum; i++) {
+                    paging.innerHTML += `
+                    <li>
+                        <a href="javascript:goinbound(${i})">${i}</a>
+                    </li>
+                `;
+                }
+
+                //다음 버튼
+                if (pageInfo.endPageNum < pageInfo.totalPageCount) {
+                    paging.innerHTML += `
+                    <li>
+                        <a href="javascript:goinbound(${pageInfo.endPageNum + 1})">다음</a>
+                    </li>
+                `;
+                }
+            })
+    }
+
+    function gooutbound(pageNum = 1){
+        const table=document.getElementById("adminTable");
+        const paging=document.getElementById("pagingArea");
+
+        fetch(`/gooutbound?pageNum=${pageNum}`)
+            .then(resp=>resp.json())
+            .then(data=>{
+
+                const list=data.list;
+                const pageInfo=data.pageInfo;
+
+                //테이블 초기화
+                table.innerHTML="";
+                paging.innerHTML="";
+
+                //목록 출력
+                list.forEach(l=>{
+                    table.innerHTML+=`
+                                    <tr>
+                                        <td>
+                                            <p>${l.outbound_id} 요청자:${l.webuser_id} ${l.approval_status}</p>
+                                            <p>${l.request_date}</p>
+                                            <a href="/request/admin/outbound?outbound_id=${l.outbound_id}">상세보기</a>
+                                        </td>
+                                    </tr>
+                                    `;
+                });
+
+                //이전 버튼
+                if (pageInfo.startPageNum > 1) {
+                    paging.innerHTML += `
+                    <li>
+                        <a href="javascript:gooutbound(${pageInfo.startPageNum - 1})">이전</a>
+                    </li>
+                `;
+                }
+
+                //페이지 번호
+                for (let i = pageInfo.startPageNum; i <= pageInfo.endPageNum; i++) {
+                    paging.innerHTML += `
+                    <li>
+                        <a href="javascript:gooutbound(${i})">${i}</a>
+                    </li>
+                `;
+                }
+
+                //다음 버튼
+                if (pageInfo.endPageNum < pageInfo.totalPageCount) {
+                    paging.innerHTML += `
+                    <li>
+                        <a href="javascript:gooutbound(${pageInfo.endPageNum + 1})">다음</a>
+                    </li>
+                `;
+                }
+            })
+    }
+
+    function gooutbound2(pageNum = 1){
+        const table=document.getElementById("userTable");
+        const paging=document.getElementById("pagingArea");
+
+        fetch(`/gooutbound?pageNum=${pageNum}`)
+            .then(resp=>resp.json())
+            .then(data=>{
+
+                const list=data.list;
+                const pageInfo=data.pageInfo;
+
+                //테이블 초기화
+                table.innerHTML="";
+                paging.innerHTML="";
+
+                //목록 출력
+                list.forEach(l=>{
+                    table.innerHTML+=`
+                                    <tr>
+                                        <td>
+                                            <p>${l.outbound_id} 요청자:${l.webuser_id} ${l.approval_status}</p>
+                                            <p>${l.request_date}</p>
+                                            <a href="/request/user/outbound?outbound_id=${l.outbound_id}">상세보기</a>
+                                        </td>
+                                    </tr>
+                                    `;
+                });
+
+                //이전 버튼
+                if (pageInfo.startPageNum > 1) {
+                    paging.innerHTML += `
+                    <li>
+                        <a href="javascript:gooutbound(${pageInfo.startPageNum - 1})">이전</a>
+                    </li>
+                `;
+                }
+
+                //페이지 번호
+                for (let i = pageInfo.startPageNum; i <= pageInfo.endPageNum; i++) {
+                    paging.innerHTML += `
+                    <li>
+                        <a href="javascript:gooutbound(${i})">${i}</a>
+                    </li>
+                `;
+                }
+
+                //다음 버튼
+                if (pageInfo.endPageNum < pageInfo.totalPageCount) {
+                    paging.innerHTML += `
+                    <li>
+                        <a href="javascript:gooutbound(${pageInfo.endPageNum + 1})">다음</a>
+                    </li>
+                `;
+                }
+            })
+    }
+
+    let status = /*[[${status}]]*/ null;
+    let msg = /*[[${msg}]]*/ null;
+
+    if (status && msg) {
+        alert(msg);
+    }
+</script>
+</html>

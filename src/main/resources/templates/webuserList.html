@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>webuserList.html</title>
+    <link rel="stylesheet" th:href="@{/css/board.css}">
+</head>
+<body>
+<div class="wrap">
+    <div class="header">
+        <div class="intoLogin">
+            <h2>warehouse</h2>
+            <div class="loginArea">
+                <p th:if="${session.roleMsg != null}" th:text="${session.roleMsg}"></p>
+                <ul>
+                    <li th:if="${session.webuser_id != null}"><button type="button" onclick="logout()">logout</button></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="nav">
+        <ul>
+            <li th:if="${session.webuser_id != null && session.role_id == 2}"><a th:href="@{/main}">입출고 요청 내역</a></li>
+            <li th:if="${session.webuser_id != null && session.role_id == 1}"><a th:href="@{/main}">입출고 요청 승인</a></li>
+            <li th:if="${session.webuser_id != null && session.role_id == 1}"><a th:href="@{/webuser/list}">계정 관리</a></li>
+            <li th:if="${session.webuser_id != null && session.role_id == 1}"><a th:href="@{/approval/list}">승인 내역</a></li>
+        </ul>
+    </div>
+    <div class="main">
+        <div>
+            <button onclick="insertWebuser()">계정 추가</button>
+        </div>
+        <div>
+            <form th:action="@{/webuser/list}" method="get">
+            <select name="field">
+                <option value="webuser_name"
+                        th:selected="${field == 'webuser_name'}">이름</option>
+                <option value="webuser_id"
+                        th:selected="${field == 'webuser_id'}">사원 번호</option>
+                <option value="role_id"
+                        th:selected="${field == 'role_id'}">역할</option>
+            </select>
+            <input type="text" name="keyword" th:value="${keyword}"
+                   placeholder="검색어를 입력하세요.">
+            <input type="submit" value="검색">
+            </form>
+        </div>
+        <div>
+            <table id="webuserTable">
+                <tr>
+                    <th>사원 번호</th><th>이름</th><th>아이디</th>
+                    <th>역할</th><th>가입일</th><th>상태</th>
+                    <th>수정</th><th>삭제</th>
+                </tr>
+                <tr th:each="webuser:${list}">
+                    <td th:text="${webuser.webuser_id}"></td>
+                    <td th:text="${webuser.webuser_name}"></td>
+                    <td th:text="${webuser.id}"></td>
+                    <td th:switch="${webuser.role_id}">
+                        <span th:case="1">관리자</span>
+                        <span th:case="2">사무 직원</span>
+                        <span th:case="3">현장 직원</span>
+                    </td>
+                    <td th:text="${webuser.created_at}"></td>
+                    <td th:text="${webuser.is_active == 'y' ? '활성':'비활성'}"></td>
+                    <td><a th:href="@{/webuser/update(webuser_id=${webuser.webuser_id})}">수정</a></td>
+                    <td><a th:href="@{/webuser/delete(webuser_id=${webuser.webuser_id})}">삭제</a></td>
+                </tr>
+            </table>
+        </div>
+        <div>
+            <ul>
+                <li th:if="${pageInfo.startPageNum > 1}">
+                    <a th:href="@{/webuser/list(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
+                </li>
+                <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
+                    <a th:href="@{/webuser/list(pageNum=${num},field=${field},keyword=${keyword})}">[[${num}]]</a>
+                </li>
+                <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
+                    <a th:href="@{/webuser/list(pageNum=${pageInfo.endPageNum + 1})}">다음</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+<script th:inline="javascript">
+    function logout(){
+        fetch('/logout')
+            .then(resp=>resp.text())
+            .then(data=>{
+                alert(data);
+                location.href="/";
+            })
+    }
+
+    function insertWebuser(){
+        location.href="/webuser/insert";
+    }
+
+    let status = /*[[${status}]]*/ null;
+    let msg = /*[[${msg}]]*/ null;
+
+    if (status && msg) {
+        alert(msg);
+    }
+</script>
+</html>

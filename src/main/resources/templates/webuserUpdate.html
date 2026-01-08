@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>webuserUpdate.html</title>
+    <link rel="stylesheet" th:href="@{/css/board.css}">
+</head>
+<body>
+<h1>계정 정보 수정</h1>
+<form th:action="@{/webuser/update}" method="post">
+    <table>
+        <tr>
+            <th>사원 번호</th><td><input type="text"
+                                     name="webuser_id"
+            th:value="${dto.webuser_id}" readonly></td>
+        </tr>
+        <tr>
+            <th>ID</th><td><input type="text" name="id"
+            th:value="${dto.id}"></td>
+        </tr>
+        <tr>
+            <th>PASSWORD</th><td><input type="password"
+            name="password" th:value="${dto.password}"></td>
+        </tr>
+        <tr>
+            <th>이름</th><td><input type="text"
+            name="webuser_name" th:value="${dto.webuser_name}">
+        </td>
+        </tr>
+        <tr>
+            <th>역할</th>
+            <td>
+                <input type="radio" name="role_id"
+                       value="1">관리자
+                <input type="radio" name="role_id"
+                       value="2">사무 직원
+                <input type="radio" name="role_id"
+                       value="3">현장 직원
+            </td>
+        </tr>
+        <tr>
+            <th>상태</th>
+            <td>
+                <input type="radio" name="is_active"
+                       th:value="${dto.is_active}">활성
+                <input type="radio" name="is_active"
+                       th:value="${dto.is_active}">비활성
+            </td>
+        </tr>
+    </table>
+    <input type="submit" value="수정">
+</form>
+</body>
+</html>
