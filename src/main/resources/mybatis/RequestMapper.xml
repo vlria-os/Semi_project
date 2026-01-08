@@ -8,7 +8,7 @@
          =============================== -->
 
     <!-- 관리자용 입출고 요청 전체 내역 -->
-    <select id="adminBound" resultType="BoundDTO" parameterType="map">
+    <select id="adminBound" resultType="BoundDto" parameterType="map">
         select * from
         (select rownum rn,m.* from
         (select
@@ -58,7 +58,7 @@
     </select>
 
     <!-- 직원용 입출고 요청 전체 내역 -->
-    <select id="userBound" parameterType="map" resultType="BoundDTO">
+    <select id="userBound" parameterType="map" resultType="BoundDto">
         select * from
         (select rownum rn,m.* from
         (

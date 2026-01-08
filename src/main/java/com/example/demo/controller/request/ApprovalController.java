@@ -31,10 +31,10 @@ public class ApprovalController {
         if(dto != null){
             boolean result2=service.inboundDetailStatus(inbound_detail_id,approval_status,null);
             if(result2){
-                List<InboundDetailDto> list=service.inboundList(inbound_id);
+                List<Inbound_detailDto> list=service.inboundList(inbound_id);
                 int count=0;
                 int a=list.size();
-                for(InboundDetailDto d:list){
+                for(Inbound_detailDto d:list){
                     if("approved".equals(d.getApproval_status())){
                         count++;
                     }
@@ -56,10 +56,10 @@ public class ApprovalController {
             if(result){
                 boolean result2=service.inboundDetailStatus(inbound_detail_id,approval_status,null);
                 if(result2){
-                    List<InboundDetailDto> list=service.inboundList(inbound_id);
+                    List<Inbound_detailDto> list=service.inboundList(inbound_id);
                     int count=0;
                     int a=list.size();
-                    for(InboundDetailDto d:list){
+                    for(Inbound_detailDto d:list){
                         if("approved".equals(d.getApproval_status())){
                             count++;
                         }
@@ -96,10 +96,10 @@ public class ApprovalController {
         if(dto != null){
             boolean result2=service.outboundDetailStatus(outbound_detail_id,approval_status,null);
             if(result2){
-                List<OutboundDetailDto> list=service.outboundList(outbound_id);
+                List<Outbound_detailDto> list=service.outboundList(outbound_id);
                 int count=0;
                 int a=list.size();
-                for(OutboundDetailDto d:list){
+                for(Outbound_detailDto d:list){
                     if("approved".equals(d.getApproval_status())){
                         count++;
                     }
@@ -121,10 +121,10 @@ public class ApprovalController {
             if(result){
                 boolean result2=service.outboundDetailStatus(outbound_detail_id,approval_status,null);
                 if(result2){
-                    List<OutboundDetailDto> list=service.outboundList(outbound_id);
+                    List<Outbound_detailDto> list=service.outboundList(outbound_id);
                     int count=0;
                     int a=list.size();
-                    for(OutboundDetailDto d:list){
+                    for(Outbound_detailDto d:list){
                         if("approved".equals(d.getApproval_status())){
                             count++;
                         }
@@ -318,10 +318,10 @@ public class ApprovalController {
     public Object approvalDetailList(@RequestParam String bound_type,
                                      @RequestParam int bound_id){
         if("in".equals(bound_type)){
-            List<InboundDetailDto> list=service.inboundList(bound_id);
+            List<Inbound_detailDto> list=service.inboundList(bound_id);
             return list;
         }else {
-            List<OutboundDetailDto> list=service.outboundList(bound_id);
+            List<Outbound_detailDto> list=service.outboundList(bound_id);
             return list;
         }
     }
@@ -331,11 +331,11 @@ public class ApprovalController {
     public String showReason(@RequestParam String bound_type,
                              @RequestParam int detail_id){
         if("in".equals(bound_type)){
-            InboundDetailDto dto=service.selectDetailIn(detail_id);
+            Inbound_detailDto dto=service.selectDetailIn(detail_id);
             String reason=dto.getReason();
             return reason;
         }else {
-            OutboundDetailDto dto=service.selectDetailOut(detail_id);
+            Outbound_detailDto dto=service.selectDetailOut(detail_id);
             String reason=dto.getReason();
             return reason;
         }

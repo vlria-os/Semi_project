@@ -23,23 +23,24 @@ public class LoginController {
     @PostMapping("/login/ok")
     public String loginOk(LoginDto dto, HttpSession session, Model model){
         String id=dto.getId();
-        WebuserDto userDTO=service.selectWebuser(id);
-        if(userDTO == null){
+
+        WebuserDto userDto=service.selectWebuser(id);
+        if(userDto == null){
             model.addAttribute("error","존재하지 않는 아이디입니다.");
             return "login/form";
         }else {
-            if(!userDTO.getPassword().equals(dto.getPassword())){
+            if(!userDto.getPassword().equals(dto.getPassword())){
                 model.addAttribute("error","비밀번호가 틀렸습니다!");
                 return "login/form";
             }else{
-                if(userDTO.getRole_id() == 1){
-                    session.setAttribute("webuser_id",userDTO.getWebuser_id());
-                    session.setAttribute("role_id",userDTO.getRole_id());
+                if(userDto.getRole_id() == 1){
+                    session.setAttribute("webuser_id",userDto.getWebuser_id());
+                    session.setAttribute("role_id",userDto.getRole_id());
                     session.setAttribute("roleMsg","관리자 모드");
                     return "redirect:/main";
                 }else {
-                    session.setAttribute("webuser_id",userDTO.getWebuser_id());
-                    session.setAttribute("role_id",userDTO.getRole_id());
+                    session.setAttribute("webuser_id",userDto.getWebuser_id());
+                    session.setAttribute("role_id",userDto.getRole_id());
                     session.setAttribute("roleMsg","직원 모드");
                     return "redirect:/main";
                 }

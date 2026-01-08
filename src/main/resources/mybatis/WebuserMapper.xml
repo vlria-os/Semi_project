@@ -4,7 +4,7 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.demo.mapper.WebuserMapper">
     <select id="webuserList" parameterType="map"
-            resultType="WebuserDTO">
+            resultType="WebuserDto">
         select * from
         (select rownum rn, m.* from (select * from webuser <include refid="search"/> order by webuser_id) m )
         <![CDATA[ where rn >=#{startRow} and rn <=#{endRow} ]]>
@@ -19,21 +19,22 @@
             where ${field} like '%'||#{keyword}||'%'
         </if>
     </sql>
-    <select id="selectWebuser" parameterType="int" resultType="WebuserDTO">
+    <select id="selectWebuser" parameterType="int" resultType="WebuserDto">
         select * from webuser where webuser_id = #{value}
     </select>
-    <update id="updateWebuser" parameterType="WebuserDTO">
+    <update id="updateWebuser" parameterType="WebuserDto">
         update webuser set id=#{id},password=#{password},webuser_name=#{webuser_name},role_id=#{role_id},
         is_active=#{is_active} where webuser_id=#{webuser_id}
     </update>
-    <insert id="insertWebuser" parameterType="WebuserDTO">
+    <insert id="insertWebuser" parameterType="WebuserDto">
         insert into webuser values(webuser_seq.nextval,#{id},#{password},#{webuser_name},#{role_id},'y',sysdate)
     </insert>
     <delete id="deleteWebuser" parameterType="int">
         delete from webuser where webuser_id=#{value}
     </delete>
+
     <!-- 아이디 중복 검사용 아이디 조회 -->
-    <select id="idCheck" parameterType="string" resultType="WebuserDTO">
+    <select id="idCheck" parameterType="string" resultType="WebuserDto">
         select * from webuser where id=#{id}
     </select>
 </mapper>
