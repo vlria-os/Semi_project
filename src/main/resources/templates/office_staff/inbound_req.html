@@ -2,60 +2,183 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>office_staff/inbound_req.html</title>
+    <title>Title</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 6px;
+            text-align: center;
+        }
+
+        th {
+            background: #eee;
+        }
+
+        input, button {
+            padding: 4px;
+        }
+
+        a {
+            display: inline-block;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-<h2>입고 요청 테스트</h2>
+<table>
+    <thead>
+    <tr>
+        <th>선택</th>
+        <th>상품번호</th>
+        <th>상품명</th>
+        <th>단위</th>
+        <th>가격</th>
+        <th>분류</th>
+        <th>카테고리</th>
+        <th>창고</th>
+        <th>수량</th>
+    </tr>
+    </thead>
+    <tbody id="productBody">
+    <tr th:each="l:${list}">
+        <td>
+            <input type="checkbox" class="chk" th:data-id="${l.product_id}">
+        </td>
+        <td th:text="${l.product_id}"></td>
+        <td th:text="${l.product_name}"></td>
+        <td th:text="${l.unit}"></td>
+        <td th:text="${l.price}"></td>
+        <td th:text="${l.status}"></td>
+        <td th:text="${l.category}"></td>
+        <td>
+            <select class="warehouse" disabled>
+                <option value="">선택</option>
+                <option value="1">창고A</option>
+                <option value="2">창고B</option>
+                <option value="3">창고C</option>
+            </select>
+        </td>
+        <td>
+            <input type="number" class="qty" min="1" disabled style="width:60px;">
+        </td>
+    </tr>
+    </tbody>
+</table>
 
-<form action="/office_staff/inbound_req" method="post">
+<div>
+    <input type="text" id="keyword" name="keyword" placeholder="상품명 또는 카테고리명"
+           onkeydown="if(event.key === 'Enter'){ event.preventDefault(); search(); }">
+    <button type="submit" onclick="search()">검색</button>
+</div>
 
-    <h3>요청 1</h3>
-    <label>상품 ID</label>
-    <input type="number" name="inbound_reqDtos[0].product_id" value="1"><br>
+<button type="button" onclick="submitSelected()">입고요청</button>
 
-    <label>창고 ID</label>
-    <input type="number" name="inbound_reqDtos[0].warehouse_id" value="101"><br>
+<script>
+    const selectedMap = {};
 
-    <label>수량</label>
-    <input type="number" name="inbound_reqDtos[0].quantity" value="80"><br>
+    function search(){
+        const keyword=document.getElementById("keyword").value;
 
-    <label>요청자 ID</label>
-    <input type="number" name="inbound_reqDtos[0].webuser_id" value="5"><br>
+        fetch(`/common/product_search?keyword=${encodeURIComponent(keyword)}`)
+            .then(res=>res.json())
+            .then(list=>{
+                const tbody=document.getElementById('productBody');
+                tbody.innerHTML='';
 
-    <hr>
+                list.forEach(p => {
+                    const saved = selectedMap[p.product_id];
 
-<!--    <h3>요청 2</h3>-->
-<!--    <label>상품 ID</label>-->
-<!--    <input type="number" name="inbound_reqDtos[1].product_id" value="2"><br>-->
+                    tbody.innerHTML += `
+    <tr>
+        <td>
+            <input type="checkbox" class="chk" data-id="${p.product_id}" ${saved ? 'checked' : ''}>
+        </td>
+        <td>${p.product_id}</td>
+        <td>${p.product_name}</td>
+        <td>${p.unit}</td>
+        <td>${p.price}</td>
+        <td>${p.status}</td>
+        <td>${p.category}</td>
+        <td>
+            <select class="warehouse" ${saved ? '' : 'disabled'}>
+                <option value="">선택</option>
+                <option value="1" ${saved?.warehouse==='1'?'selected':''}>창고A</option>
+                <option value="2" ${saved?.warehouse==='2'?'selected':''}>창고B</option>
+                <option value="3" ${saved?.warehouse==='3'?'selected':''}>창고C</option>
+            </select>
+        </td>
+        <td>
+            <input type="number" class="qty" min="1" value="${saved?.qty ?? ''}" ${saved ? '' : 'disabled'} style="width:60px;">
+        </td>
+    </tr>
+    `;
+                });
 
-<!--    <label>창고 ID</label>-->
-<!--    <input type="number" name="inbound_reqDtos[1].warehouse_id" value="102"><br>-->
+            })
+    };
 
-<!--    <label>수량</label>-->
-<!--    <input type="number" name="inbound_reqDtos[1].quantity" value="100"><br>-->
+    document.addEventListener('change', e => {
+        const row = e.target.closest('tr');
+        if(!row) return;
 
-<!--    <label>요청자 ID</label>-->
-<!--    <input type="number" name="inbound_reqDtos[1].webuser_id" value="5"><br>-->
+        const checkbox = row.querySelector('.chk');
+        const id = checkbox.dataset.id;
+        const warehouse = row.querySelector('.warehouse');
+        const qty = row.querySelector('.qty');
 
-<!--    <hr>-->
+        if(e.target.classList.contains('chk')) {
+            warehouse.disabled = !checkbox.checked;
+            qty.disabled = !checkbox.checked;
 
-<!--    <h3>요청 3</h3>-->
-<!--    <label>상품 ID</label>-->
-<!--    <input type="number" name="inbound_reqDtos[2].product_id" value="3"><br>-->
+            if(checkbox.checked){
+                selectedMap[id] = { warehouse: warehouse.value, qty: qty.value };
+            } else {
+                delete selectedMap[id];
+            }
+        }
 
-<!--    <label>창고 ID</label>-->
-<!--    <input type="number" name="inbound_reqDtos[2].warehouse_id" value="103"><br>-->
+        // 창고 선택
+        if(e.target.classList.contains('warehouse') && selectedMap[id]){
+            selectedMap[id].warehouse = e.target.value;
+        }
 
-<!--    <label>수량</label>-->
-<!--    <input type="number" name="inbound_reqDtos[2].quantity" value="200"><br>-->
+        // 수량 입력
+        if(e.target.classList.contains('qty') && selectedMap[id]){
+            selectedMap[id].qty = e.target.value;
+        }
 
-<!--    <label>요청자 ID</label>-->
-<!--    <input type="number" name="inbound_reqDtos[2].webuser_id" value="5"><br>-->
+    });
 
-<!--    <hr>-->
+    function submitSelected() {
+        const data = Object.entries(selectedMap).map(([product_id, info]) => ({
+            product_id,
+            warehouse: info.warehouse_id,
+            qty: info.qty
+        }));
 
-    <button type="submit">입고 요청 보내기</button>
-
-</form>
+        fetch('/office_staff/inbound_req', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => res.json())
+            .then(result => {
+                alert('요청 완료');
+                console.log(result);
+            })
+            .catch(err => console.error(err));
+    }
+</script>
 </body>
 </html>
