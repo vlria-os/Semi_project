@@ -27,29 +27,120 @@
     </select>
     <insert id="sendMessage" parameterType="ChatMessageDTO">
         insert into chat_message
-        (message_id, room_id, sender_id, content, created_at)
+        (message_id, room_id, sender_id, content, created_at, read_count)
         values
-        (message_seq.nextval,#{room_id},#{sender_id},#{content},sysdate)
+        (message_seq.nextval,#{room_id},#{sender_id},#{content},sysdate, 1)
     </insert>
-    <update id="readMessages">
+    <!-- 메시지 읽음 처리 -->
+    <update id="markMessageAsRead" parameterType="map">
         update chat_message
-        set is_read = 1
-        where room_id = #{roomId}
-        and sender_id != #{readerId}
-        and is_read = 0
+        set read_count = 0
+        where room_id = #{room_id}
+        and sender_id != #{user_id}
+        and read_count = 1
     </update>
+    <!-- 메시지 읽힘 여부 조회 -->
+    <select id="selectReadCount" parameterType="int" resultType="ChatMessageDTO">
+        select *
+        from chat_message
+        where room_id = #{room_id}
+        order by message_id asc
+    </select>
+    <!-- 채팅 탭 눌렀을 때 보이는 채팅방 리스트 -->
+    <select id="chatRoomListSummary" parameterType="int" resultType="ChatRoomDTO">
+        SELECT
+        r.room_id,
+        r.room_name,
 
-    <select id="getLastUnreadMessageId" parameterType="map" resultType="int">
-        select message_id from chat_message
-        where room_id = #{roomId} and sender_id = #{senderId} and is_read = 0
-        order by message_id desc
-        fetch first 1 row only
+        lm.content AS last_message,
+        lm.created_at AS last_time,
+
+        NVL(uc.unread_count, 0) AS unread_count
+        FROM chat_room r
+        JOIN chat_room_user ru
+        ON r.room_id = ru.room_id
+
+        -- ✅ 방별 마지막 메시지
+        LEFT JOIN (
+        SELECT room_id, content, created_at
+        FROM (
+        SELECT
+        room_id,
+        content,
+        created_at,
+        ROW_NUMBER() OVER (
+        PARTITION BY room_id
+        ORDER BY message_id DESC
+        ) rn
+        FROM chat_message
+        )
+        WHERE rn = 1
+        ) lm
+        ON lm.room_id = r.room_id
+
+        -- ✅ 방별 안 읽은 메시지 수
+        LEFT JOIN (
+        SELECT
+        room_id,
+        COUNT(*) AS unread_count
+        FROM chat_message
+        WHERE sender_id != #{userId}
+        AND read_count = 1
+        GROUP BY room_id
+        ) uc
+        ON uc.room_id = r.room_id
+
+        WHERE ru.user_id = #{userId}
+        ORDER BY lm.created_at DESC NULLS LAST
+    </select>
+    <!-- 채팅 상대방 id 찾기 -->
+    <select id="getOpponentUserId" resultType="int">
+        SELECT user_id
+        FROM chat_room_user
+        WHERE room_id = #{roomId}
+        AND user_id != #{userId}
+    </select>
+    <select id="selectChatRoomSummary"
+            resultType="ChatListUpdateDTO">
+        SELECT
+        r.room_id      AS roomId,
+        r.room_name    AS roomName,
+        lm.content     AS lastMessage,
+        lm.created_at  AS lastTime,
+        NVL(uc.unread_count, 0) AS unreadCount
+        FROM chat_room r
+        JOIN chat_room_user ru
+        ON r.room_id = ru.room_id
+        AND ru.user_id = #{userId}
+
+        LEFT JOIN (
+        SELECT room_id, content, created_at
+        FROM (
+        SELECT
+        room_id,
+        content,
+        created_at,
+        ROW_NUMBER() OVER (
+        PARTITION BY room_id
+        ORDER BY message_id DESC
+        ) rn
+        FROM chat_message
+        )
+        WHERE rn = 1
+        ) lm
+        ON lm.room_id = r.room_id
+
+        LEFT JOIN (
+        SELECT room_id, COUNT(*) AS unread_count
+        FROM chat_message
+        WHERE sender_id != #{userId}
+        AND read_count = 1
+        GROUP BY room_id
+        ) uc
+        ON uc.room_id = r.room_id
+
+        WHERE r.room_id = #{roomId}
     </select>
 
-    <update id="markMessageRead" parameterType="int">
-        update chat_message
-        set is_read = 1
-        where message_id = #{messageId}
-    </update>
 
 </mapper>

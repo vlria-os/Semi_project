@@ -96,6 +96,11 @@
     <div th:each="msg:${messages}"
          th:attr="data-id=${msg.message_id}"
          th:class="${msg.sender_id == user_id} ? 'message me' : 'message other'">
+        <!-- 읽음 표시 -->
+        <span class="read"
+              th:if="${msg.sender_id ==user_id and msg.read_count == 1}">
+            1
+        </span>
         <div class="bubble" th:text="${msg.content}">
       </div>
     </div>
@@ -128,51 +133,48 @@
         chatBox.scrollTop = chatBox.scrollHeight;
     }
 
+    //내 메시지의 모든 '1' 제거
+    function removeAllReadMarks(){
+        document.querySelectorAll('.message.me .read')
+            .forEach(el => el.remove());
+    }
+
+    //내 마지막 메시지에만 '1' 표시
+    function markLastMyMessage(){
+        const myMessages = document.querySelectorAll('.message.me');
+        if(myMessages.length === 0) return;
+
+        const last = myMessages[myMessages.length - 1];
+
+        //이미 읽힌 메시지면 표시 안 함
+        if(last.dataset.readCount === "0") return;
+
+        //중복 방지
+        if(last.querySelector('.read')) return;
+
+        const span=document.createElement("span");
+        span.className="read";
+        span.innerText="1";
+
+        last.prepend(span);
+    }
+
     // 메시지 화면에 추가하는 함수
-    function addMessage(msg, sender_id, message_id, is_read=0) {
+    function addMessage(msgContent, sender_id, message_id, read_count = 1) {
         const div = document.createElement("div");
         div.className = sender_id == user_id ? "message me" : "message other";
-        div.dataset.id = message_id;
+        div.dataset.readCount = read_count;
 
-        let readSpan = "";
-        if(sender_id === user_id && is_read){
-            readSpan = `<span class="read">읽음</span>`;
-        }
-
-        //내가 보낸 메시지일 경우 readSpan이 앞에 오도록
-        if(sender_id === user_id){
-            div.innerHTML = `
-                ${readSpan}
-                <div class="bubble">
-                    ${msg}
-                </div>
-                `;
-        }else { //상대방이 보낸 메시지
-            div.innerHTML = `<div class="bubble">${msg}</div>`;
-        }
-
-
+        div.innerHTML=`<div class="bubble">${msgContent}</div>`;
         chatBox.appendChild(div);
-        scrollToBottom();
-    }
 
-    window.onload = function (){
-        scrollToBottom();
-    }
-
-    //읽음 표시를 갱신하는 함수
-    function updateReadStatus(lastReadMessageId){
-        //기존의 모든 읽음 표시 제거
-        document.querySelectorAll(".message.me .read").forEach(span => span.remove());
-        //특정 메시지에만 읽음 표시 추가
-        const messageElement = document.querySelector(`.message.me[data-id="${lastReadMessageId}"]`);
-        if(messageElement){
-            const readSpan = document.createElement("span");
-            readSpan.className = "read";
-            readSpan.innerText="읽음";
-            const bubble = messageElement.querySelector(".bubble");
-            messageElement.insertBefore(readSpan, bubble);
+        //내가 보낸 메시지면 마지막 것에만 1 표시
+        if(sender_id == user_id && read_count === 1){
+            removeAllReadMarks();
+            markLastMyMessage();
         }
+
+        scrollToBottom();
     }
 
     // STOMP 웹소켓 연결
@@ -190,10 +192,10 @@
 
             //presence 구독
             stompClient.subscribe('/topic/presence/' + room_id, function(message) {
-                const count = parseInt(message.body);
+                currentPresenceCount = parseInt(message.body);
                 const el = document.getElementById("presence");
 
-                if (count > 1) {
+                if (currentPresenceCount > 1) { //나를 제외한 다른 사람이 접속 중
                     el.innerText = "상대 접속 중";
                 } else {
                     el.innerText = "상대 오프라인";
@@ -204,31 +206,33 @@
             stompClient.subscribe('/topic/chat/' + room_id, function(message) {
                 const data = JSON.parse(message.body);
 
-                if(data.sender_id === user_id){ //내가 보낸 메시지가 새로 도착하면
-                    document.querySelectorAll(".message.me .read").forEach(span => span.remove());
-                }
+                addMessage(
+                    data.content,
+                    data.sender_id,
+                    data.message_id,
+                    data.read_count
+                );
 
-                addMessage(data.content, data.sender_id, data.message_id);
             });
-
-
-           //읽음 이벤트 구독
-           stompClient.subscribe('/user/queue/read-status/' + room_id, function(message) {
-               const lastReadId = parseInt(message.body);
-               console.log("읽음 상태 갱신 요청: ", lastReadId);
-               updateReadStatus(lastReadId);
-           });
 
                 //채팅방 입장 알림
                 stompClient.send("/app/chat/enter", {}, JSON.stringify({
                     roomId: room_id,
                     userId: user_id
                 }));
+
+                stompClient.subscribe('/topic/read/' + room_id, function (){
+                    removeAllReadMarks();
+                })
         });
 
     }
 
-    connect();
+    connect(); //웹소켓 연결 시작
+
+    window.onload = function (){
+        scrollToBottom();
+    }
 
     const input = document.getElementById("messageInput");
 
@@ -242,7 +246,6 @@
             content: content
         };
 
-        document.querySelectorAll(".message.me .read").forEach(span => span.remove());
         stompClient.send("/app/chat/message", {}, JSON.stringify(msg));
     }
 
@@ -267,14 +270,6 @@
             }));
         }
     });
-
-    //최초 로딩 시 메시지들의 is_read 값을 기반으로 읽음 표시
-    document.querySelectorAll(".message.me").forEach(messageEl => {
-        if(messageEl.querySelector(".read")){
-
-        }
-    });
-
 </script>
 </body>
 </html>

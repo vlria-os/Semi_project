@@ -29,7 +29,7 @@ public class ChatPresenceStore {
 
     // 특정 방에 유저가 있는지
     public boolean isUserInRoom(int roomId, int userId){
-        return roomUsers.containsKey(roomId) && roomUsers.get(roomId).contains(userId);
+        return roomUsers.getOrDefault(roomId, Collections.emptySet()).contains(userId);
     }
 
     // 방에 몇 명 접속 중인지

@@ -14,5 +14,5 @@ public class ChatMessageDTO {
     private int sender_id;
     private String content;
     private LocalDateTime created_at;
-    private Integer is_read;
+    private Integer read_count;
 }

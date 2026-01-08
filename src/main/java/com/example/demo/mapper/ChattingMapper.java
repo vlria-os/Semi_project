@@ -1,5 +1,6 @@
 package com.example.demo.mapper;
 
+import com.example.demo.dto.ChatListUpdateDTO;
 import com.example.demo.dto.ChatMessageDTO;
 import com.example.demo.dto.ChatRoomDTO;
 import org.apache.ibatis.annotations.Mapper;
@@ -16,9 +17,16 @@ public interface ChattingMapper {
     ChatRoomDTO getRoom(int room_id);
     List<ChatMessageDTO> getMessages(int room_id);
     int sendMessage(ChatMessageDTO dto);
-    int readMessages(@Param("roomId") int roomId,
-                     @Param("readerId") int readerId);
+    int markMessageAsRead(Map<String,Object> map);
+    ChatMessageDTO selectReadCount(int room_id);
+    List<ChatRoomDTO> chatRoomListSummary(int user_id);
 
-    Integer getLastUnreadMessageId(Map<String,Object> map);
-    void markMessageRead(@Param("messageId") int messageId);
+    ChatListUpdateDTO selectChatRoomSummary(
+            @Param("roomId") int roomId,
+            @Param("userId") int userId
+    );
+
+
+    int getOpponentUserId(@Param("roomId") int roomId,
+                          @Param("userId") int userId);
 }
