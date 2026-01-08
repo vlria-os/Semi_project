@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.ProductStockMapper">
+
+    <select id="selectlist" resultType="com.example.demo.dto.ListDto">
+        select * from STOCK
+    </select>
+    <select id="selectAll" resultType="com.example.demo.dto.ProductStockDto" parameterType="string">
+        SELECT
+        P.PRODUCT_NAME as product_name,
+        P.CATEGORY_ID as category_id,
+        P.PRICE as price,
+        P.UNIT as unit,
+        P.IMAGE_ID as image_id,
+        P.PRODUCT_TYPE as product_type,
+        S.STOCK_ID as stock_id,
+        S.LOT_IN_ID as lot_in_id,
+        S.QUANTITY as quantity
+        FROM PRODUCT P JOIN STOCK S
+        ON P.PRODUCT_ID=S.PRODUCT_ID
+        <where>
+            <if test="product_name !=null and product_name !=''">
+                and p.product_name like '%' || #{product_name} || '%'
+            </if>
+            <if test="category_name !=null and category_name !=''">
+                and c.category_name like '%' || #{category_name} || '%'
+            </if>
+
+            <if test="category_id !=null and category_id !=''">
+                and p.category_id = #{category_id}
+            </if>
+            <if test="product_type != null and product_type !=''">
+                and p.product_type = #{product_type}
+            </if>
+
+        </where>
+    </select>
+</mapper>
