@@ -1,37 +1,50 @@
 /* Layout & Container */
-.main {
-    padding: 20px;
-    max-width: 1100px;
+body {
+    background-color: #f8fafc;
+    margin: 0;
+    font-family: 'Pretendard', 'Segoe UI', sans-serif;
+}
+
+.container {
+    padding: 30px 50px;
+    max-width: 1300px;
     margin: 0 auto;
 }
 
+.main {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
 .main-title {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 20px;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 25px;
     display: flex;
     align-items: center;
     gap: 10px;
-    color: #333;
+    color: #1e293b;
 }
 
 /* View Toggle (Top Buttons) */
 .view-toggle {
     display: flex;
-    gap: 0;
+    gap: 15px;
     margin-bottom: 25px;
-    border-bottom: 2px solid #e0e0e0;
+    border-bottom: 2px solid #e2e8f0;
 }
 
 .view-btn {
-    padding: 12px 24px;
+    padding: 12px 20px;
     border: none;
     background: none;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 600;
-    color: #666;
-    transition: all 0.3s;
+    color: #94a3b8;
+    transition: all 0.2s ease;
 }
 
 .view-btn a {

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div class="container">
+
+  <!--창고 관리-->
+  <div class="storage">
+    <div class="main">
+      <div class="main-title">
+        <span class="main-icon">[ICON]</span>
+        매충 동계
+      </div>
+      <!--이동 버튼-->
+      <div class="view-toggle">
+        <button class="view-btn active" data-view=""><a th:href="@{/sidebar/dueDate}">품목별</a></button>
+        <button class="view-btn"><a th:href="@{/sidebar/expiredList}">기간별</a></button>
+        <button class="view-btn"><a th:href="@{/sidebar/expiredList}">폐기률</a></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="total-stats">
+    <div>총 매충액</div>
+    <div>총 판매량</div>
+    <div>평균 단가</div>
+  </div>
+  <!--통계 차트-->
+  <div class="stat-chart"></div>
+  <!--통계 게시판-->
+  <div class="item-list">
+    <ul>
+      <li></li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link rel="stylesheet" th:href="@{/css/expiredlist.css}">
+    <link rel="stylesheet" th:href="@{/css/sidebar/expiredlist.css}">
 </head>
 <body>
 <div class="container">
@@ -14,6 +14,7 @@
             <span class="main-icon">[ICON]</span>
             폐기 내역
         </div>
+        <!--이동 버튼-->
         <div class="view-toggle">
             <button class="view-btn" data-view=""><a th:href="@{/sidebar/dueDate}">유통기한 임박</a></button>
             <button class="view-btn active"><a th:href="@{/sidebar/expiredList}">폐기 내역</a></button>
