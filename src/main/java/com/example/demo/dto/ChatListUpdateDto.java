@@ -8,9 +8,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class OutboundDto {
-    private int outbound_id;
-    private int webuser_id;
-    private LocalDateTime request_date;
-    private String approval_status;
+public class ChatListUpdateDto {
+    private int roomId;
+    private int unreadCount;
+    private String lastMessage;
+    private LocalDateTime lastTime;
 }

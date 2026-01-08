@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.mapper.ChattingMapper">
+    <!-- 로그인 한 유저가 참여한 채팅방 목록 -->
+    <select id="chatRoomAll" parameterType="int" resultType="ChatRoomDTO">
+        select r.room_id,r.room_type,r.room_name
+        from chat_room r join chat_room_user ru
+        on r.room_id=ru.room_id
+        where ru.user_id=#{user_id}
+    </select>
+    <!-- 해당 유저가 참여한 채팅방인지 확인 -->
+    <select id="isParticipant" parameterType="map" resultType="int">
+        select count(*)
+        from chat_room_user
+        where room_id = #{room_id}
+        and user_id = #{user_id}
+    </select>
+    <!-- room_id 로 채팅방 정보 조회 -->
+    <select id="getRoom" parameterType="int" resultType="ChatRoomDTO">
+        select * from chat_room where room_id = #{room_id}
+    </select>
+    <!-- 해당 채팅방의 과거 메시지 조회 -->
+    <select id="getMessages" parameterType="int" resultType="ChatMessageDTO">
+        select * from chat_message where room_id = #{room_id} order by message_id asc
+    </select>
+    <insert id="sendMessage" parameterType="ChatMessageDTO">
+        insert into chat_message
+        (message_id, room_id, sender_id, content, created_at, read_count)
+        values
+        (message_seq.nextval,#{room_id},#{sender_id},#{content},sysdate, 1)
+    </insert>
+    <!-- 메시지 읽음 처리 -->
+    <update id="markMessageAsRead" parameterType="map">
+        update chat_message
+        set read_count = 0
+        where room_id = #{room_id}
+        and sender_id != #{user_id}
+        and read_count = 1
+    </update>
+    <!-- 메시지 읽힘 여부 조회 -->
+    <select id="selectReadCount" parameterType="int" resultType="ChatMessageDTO">
+        select *
+        from chat_message
+        where room_id = #{room_id}
+        order by message_id asc
+    </select>
+    <!-- 채팅 탭 눌렀을 때 보이는 채팅방 리스트 -->
+    <select id="chatRoomListSummary" parameterType="int" resultType="ChatRoomDTO">
+        SELECT
+        r.room_id,
+        r.room_name,
+
+        lm.content AS last_message,
+        lm.created_at AS last_time,
+
+        NVL(uc.unread_count, 0) AS unread_count
+        FROM chat_room r
+        JOIN chat_room_user ru
+        ON r.room_id = ru.room_id
+
+        -- ✅ 방별 마지막 메시지
+        LEFT JOIN (
+        SELECT room_id, content, created_at
+        FROM (
+        SELECT
+        room_id,
+        content,
+        created_at,
+        ROW_NUMBER() OVER (
+        PARTITION BY room_id
+        ORDER BY message_id DESC
+        ) rn
+        FROM chat_message
+        )
+        WHERE rn = 1
+        ) lm
+        ON lm.room_id = r.room_id
+
+        -- ✅ 방별 안 읽은 메시지 수
+        LEFT JOIN (
+        SELECT
+        room_id,
+        COUNT(*) AS unread_count
+        FROM chat_message
+        WHERE sender_id != #{userId}
+        AND read_count = 1
+        GROUP BY room_id
+        ) uc
+        ON uc.room_id = r.room_id
+
+        WHERE ru.user_id = #{userId}
+        ORDER BY lm.created_at DESC NULLS LAST
+    </select>
+    <!-- 채팅 상대방 id 찾기 -->
+    <select id="getOpponentUserId" resultType="int">
+        SELECT user_id
+        FROM chat_room_user
+        WHERE room_id = #{roomId}
+        AND user_id != #{userId}
+    </select>
+    <select id="selectChatRoomSummary"
+            resultType="ChatListUpdateDTO">
+        SELECT
+        r.room_id      AS roomId,
+        r.room_name    AS roomName,
+        lm.content     AS lastMessage,
+        lm.created_at  AS lastTime,
+        NVL(uc.unread_count, 0) AS unreadCount
+        FROM chat_room r
+        JOIN chat_room_user ru
+        ON r.room_id = ru.room_id
+        AND ru.user_id = #{userId}
+
+        LEFT JOIN (
+        SELECT room_id, content, created_at
+        FROM (
+        SELECT
+        room_id,
+        content,
+        created_at,
+        ROW_NUMBER() OVER (
+        PARTITION BY room_id
+        ORDER BY message_id DESC
+        ) rn
+        FROM chat_message
+        )
+        WHERE rn = 1
+        ) lm
+        ON lm.room_id = r.room_id
+
+        LEFT JOIN (
+        SELECT room_id, COUNT(*) AS unread_count
+        FROM chat_message
+        WHERE sender_id != #{userId}
+        AND read_count = 1
+        GROUP BY room_id
+        ) uc
+        ON uc.room_id = r.room_id
+
+        WHERE r.room_id = #{roomId}
+    </select>
+
+
+</mapper>

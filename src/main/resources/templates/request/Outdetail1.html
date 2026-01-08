@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>request/Outdetail1.html</title>
+  <link rel="stylesheet" th:href="@{/css/board.css}">
+</head>
+<body>
+<div class="wrap">
+  <div class="header">
+    <a th:href="@{/main}">main</a>
+  </div>
+  <div class="main">
+    <table>
+      <tr>
+        <th>상세 ID</th><th>ID</th><th>상품</th><th>수량</th><th>요청 현황</th>
+      </tr>
+      <tr th:each="dto:${list}">
+        <td th:text="${dto.outbound_detail_id}"></td><td th:text="${dto.outbound_id}"></td>
+        <td th:text="${dto.product_id}"></td>
+        <td th:text="${dto.quantity}"></td><td th:text="${dto.approval_status}"></td>
+      </tr>
+    </table>
+    <div id="reasonBox">
+    </div>
+  </div>
+  <div class="footer">
+  </div>
+</div>
+</body>
+</html>

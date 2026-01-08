@@ -8,12 +8,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class ApprovalDto {
-    private int approval_id;
-    private int approver_id;
-    private String bound_type;
-    private int inbound_id;
-    private int outbound_id;
-    private String approval_status;
+public class ChatMessageDto {
+    private Integer message_id;
+    private int room_id;
+    private int sender_id;
+    private String content;
     private LocalDateTime created_at;
+    private Integer read_count;
 }

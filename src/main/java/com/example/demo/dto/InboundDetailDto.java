@@ -4,16 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class InboundDto {
+public class InboundDetailDto {
+    private int inbound_detail_id;
     private int inbound_id;
-    private int webuser_id;
-    private LocalDateTime request_date;
+    private int product_id;
+    private int warehouse_id;
     private String approval_status;
-    private String is_refund;
-    private int lot_out_id;
+    private String inbound_status;
+    private int quantity;
+    private String reason;
 }
