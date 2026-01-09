@@ -4,7 +4,7 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.demo.mapper.ChattingMapper">
     <!-- 로그인 한 유저가 참여한 채팅방 목록 -->
-    <select id="chatRoomAll" parameterType="int" resultType="ChatRoomDTO">
+    <select id="chatRoomAll" parameterType="int" resultType="ChatRoomDto">
         select r.room_id,r.room_type,r.room_name
         from chat_room r join chat_room_user ru
         on r.room_id=ru.room_id
@@ -18,14 +18,14 @@
         and user_id = #{user_id}
     </select>
     <!-- room_id 로 채팅방 정보 조회 -->
-    <select id="getRoom" parameterType="int" resultType="ChatRoomDTO">
+    <select id="getRoom" parameterType="int" resultType="ChatRoomDto">
         select * from chat_room where room_id = #{room_id}
     </select>
     <!-- 해당 채팅방의 과거 메시지 조회 -->
-    <select id="getMessages" parameterType="int" resultType="ChatMessageDTO">
+    <select id="getMessages" parameterType="int" resultType="ChatMessageDto">
         select * from chat_message where room_id = #{room_id} order by message_id asc
     </select>
-    <insert id="sendMessage" parameterType="ChatMessageDTO">
+    <insert id="sendMessage" parameterType="ChatMessageDto">
         insert into chat_message
         (message_id, room_id, sender_id, content, created_at, read_count)
         values
@@ -40,14 +40,14 @@
         and read_count = 1
     </update>
     <!-- 메시지 읽힘 여부 조회 -->
-    <select id="selectReadCount" parameterType="int" resultType="ChatMessageDTO">
+    <select id="selectReadCount" parameterType="int" resultType="ChatMessageDto">
         select *
         from chat_message
         where room_id = #{room_id}
         order by message_id asc
     </select>
     <!-- 채팅 탭 눌렀을 때 보이는 채팅방 리스트 -->
-    <select id="chatRoomListSummary" parameterType="int" resultType="ChatRoomDTO">
+    <select id="chatRoomListSummary" parameterType="int" resultType="ChatRoomDto">
         SELECT
         r.room_id,
         r.room_name,
@@ -101,7 +101,7 @@
         AND user_id != #{userId}
     </select>
     <select id="selectChatRoomSummary"
-            resultType="ChatListUpdateDTO">
+            resultType="ChatListUpdateDto">
         SELECT
         r.room_id      AS roomId,
         r.room_name    AS roomName,
