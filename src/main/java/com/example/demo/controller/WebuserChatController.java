@@ -7,7 +7,10 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -16,26 +19,46 @@ import java.util.List;
 public class WebuserChatController {
     private final ChattingService service;
 
-    @GetMapping("/webuser/chatRoomList")
+    @GetMapping("/chat/list")
     public String chatRoomList(HttpSession session, Model model){
-        int user_id = (int) session.getAttribute("webuser_id");
+        int myId = (int) session.getAttribute("webuser_id");
 
-        List<ChatRoomDto> list=service.chatRoomListSummary(user_id);
+        List<ChatRoomDto> list=service.chatRoomListSummary(myId);
         model.addAttribute("list",list);
+        model.addAttribute("user_id",myId);
 
         return "chatRoomList";
     }
+
+    @GetMapping("/chat/new")
+    public String newChat(HttpSession session, Model model){
+
+        int myId = (int) session.getAttribute("webuser_id");
+
+        model.addAttribute("users",service.getAllExceptMe(myId));
+
+        return "newChat";
+    }
+
+    @PostMapping("/chat/start")
+    public String startChat(@RequestParam int targetId, HttpSession session){
+        int myId = (int) session.getAttribute("webuser_id");
+
+        int roomId = service.getOrCreateOneToOneRoom(myId,targetId);
+
+        return "redirect:/chat/room/" + roomId;
+    }
+
     @GetMapping("/chat/room/{roomId}")
     public String chatRoom(@PathVariable int roomId,
                            HttpSession session,
                            Model model){
-        int userId = (int) session.getAttribute("webuser_id");
+        int myId = (int) session.getAttribute("webuser_id");
 
-        List<ChatMessageDto> messages=service.getMessages(roomId,userId);
-
-        model.addAttribute("messages",messages);
         model.addAttribute("room_id",roomId);
-        model.addAttribute("user_id",userId);
+        model.addAttribute("user_id",myId);
+
+        model.addAttribute("messages",service.getMessages(roomId,myId));
         return "chatRoom";
     }
 

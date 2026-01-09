@@ -6,21 +6,19 @@
 </head>
 <body>
 <h1>채팅 목록</h1>
-<!--<ul>-->
-<!--  <li th:each="l:${list}"><a th:href="@{/chat/room/{room_id}(room_id=${l.room_id})}" th:text="${l.room_name}"></a></span></li>-->
-<!--</ul>-->
-<table>
+<button onclick="location.href='/chat/new'" style="margin-bottom: 10px">+ 새 채팅</button>
+<table id="chatTable">
     <tr th:each="room:${list}"
         th:attr="data-room-id=${room.room_id}">
         <td>
-            <div><a th:href="@{/chat/room/1}" th:text="${room.room_name}"></a></div>
+            <div><a th:href="@{'/chat/room/'+${room.room_id}}" th:text="${room.room_name}"></a></div>
             <div class="last-message" style="font-size: 12px;color: gray;"
                     th:text="${room.last_message}">
             </div>
         </td>
 
         <td style="text-align: right">
-            <div th:text="${#temporals.format(room.last_time, 'HH:mm')}"></div>
+            <div class="last-time" th:text="${#temporals.format(room.last_time, 'HH:mm')}"></div>
             <span class="unread-count" th:if="${room.unread_count > 0}" style="color: red;font-weight: bold">
                 [[${room.unread_count}]]
             </span>
@@ -47,8 +45,21 @@
             );
             if(!row) return;
 
+            //마지막 메시지 갱신
             row.querySelector(".last-message").innerText = data.lastMessage;
 
+            //시간 갱신
+            row.querySelector(".last-time").innerText =
+                new Date(data.lastTime).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+            row.style.backgroundColor = "#f0f8ff";
+            setTimeout(() => row.style.backgroundColor = "", 300);
+
+
+            //안 읽은 수 처리
             let unreadEl = row.querySelector(".unread-count");
 
             if (data.unreadCount > 0) {
@@ -65,9 +76,25 @@
                 if (unreadEl) unreadEl.style.display = "none";
             }
 
+            if (data.unreadCount > 0) {
+                moveRowToTop(row);
+            }
+
         });
 
     });
+
+    function moveRowToTop(row) {
+        const table = document.getElementById("chatTable");
+        table.prepend(row);
+    }
+
+    window.addEventListener("pageshow", function (event) {
+        if (event.persisted) {
+            location.reload();
+        }
+    });
+
 </script>
 </body>
 </html>

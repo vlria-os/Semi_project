@@ -141,6 +141,28 @@
 
         WHERE r.room_id = #{roomId}
     </select>
-
-
+    <select id="findOneToOneRoom" resultType="int">
+        SELECT cru.room_id
+        FROM chat_room_user cru
+        JOIN chat_room cr ON cr.room_id = cru.room_id
+        WHERE cr.room_type = 'one'
+        AND cru.user_id IN (#{myId}, #{targetId})
+        GROUP BY cru.room_id
+        HAVING COUNT(DISTINCT cru.user_id) = 2
+    </select>
+    <insert id="insertChatRoom">
+        insert into chat_room(room_id, room_type, created_at)
+        values(chat_room_seq.nextval, #{roomType}, sysdate)
+    </insert>
+    <select id="getLastRoomId" resultType="int">
+        select chat_room_seq.currval from dual
+    </select>
+    <insert id="insertChatRoomUser">
+        insert into chat_room_user(room_id, user_id)
+        values(#{roomId}, #{userId})
+    </insert>
+    <!-- 나를 제외한 모든 유저(임직원) -->
+    <select id="getAllExceptMe" resultType="int">
+        select webuser_id, name from webuser where webuser_id != #{myId}
+    </select>
 </mapper>

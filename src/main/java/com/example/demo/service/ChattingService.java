@@ -4,6 +4,7 @@ import com.example.demo.ChatPresenceStore;
 import com.example.demo.dto.ChatListUpdateDto;
 import com.example.demo.dto.ChatMessageDto;
 import com.example.demo.dto.ChatRoomDto;
+import com.example.demo.dto.WebuserDto;
 import com.example.demo.mapper.ChattingMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -68,6 +69,26 @@ public class ChattingService {
 
     public ChatListUpdateDto getChatListUpdate(int roomId, int userId) {
         return mapper.selectChatRoomSummary(roomId, userId);
+    }
+
+    public int getOrCreateOneToOneRoom(int myId, int targetId){
+        Integer roomId = mapper.findOneToOneRoom(myId, targetId);
+
+        if(roomId != null){
+            return roomId;
+        }
+
+        mapper.insertChatRoom("one");
+        int newRoomId = mapper.getLastRoomId();
+
+        mapper.insertChatRoomUser(newRoomId, myId);
+        mapper.insertChatRoomUser(newRoomId, targetId);
+
+        return newRoomId;
+    }
+
+    public List<WebuserDto> getAllExceptMe(int myId){
+        return mapper.getAllExceptMe(myId);
     }
 
 }

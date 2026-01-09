@@ -86,6 +86,7 @@
 </head>
 <body>
 <div class="chat-container">
+    <button onclick="goToChatlist()">← 채팅 목록</button>
     <!-- 접속 상태 표시 -->
     <div id="presence" style="font-size:12px;color:gray; padding:5px;">
         연결 중...
@@ -270,6 +271,10 @@
             }));
         }
     });
+
+    function goToChatlist(){
+        location.href="/webuser/chatRoomList";
+    }
 </script>
 </body>
 </html>

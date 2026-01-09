@@ -24,7 +24,7 @@ public class ChatSocketController {
         //db 저장
         service.sendMessage(dto);
 
-        //같은 방에 메시지 뿌리기
+        //채팅방 실시간
         template.convertAndSend(
                 "/topic/chat/" + dto.getRoom_id(), dto
         );
@@ -32,16 +32,15 @@ public class ChatSocketController {
         //상대방 userId 찾기
         int targetUserId =service.getOpponentUserId(dto.getRoom_id(),dto.getSender_id());
 
-        //상대가 지금 방에 없으면 unread 증가
-        if(store.isUserInRoom(dto.getRoom_id(),targetUserId)){
-            ChatListUpdateDto update=
-                    service.getChatListUpdate(dto.getRoom_id(),targetUserId);
 
-            template.convertAndSend(
-                    "/topic/chat-list/" + targetUserId,
-                    update
-            );
-        }
+        ChatListUpdateDto update=
+                service.getChatListUpdate(dto.getRoom_id(),targetUserId);
+
+        template.convertAndSend(
+                "/topic/chat-list/" + targetUserId,
+                update
+        );
+
     }
 
     //채팅방 입장
