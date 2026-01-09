@@ -321,7 +321,7 @@ public class ApprovalController {
     @ResponseBody
     public Object approvalDetailList(@RequestParam String bound_type,
                                      @RequestParam int bound_id){
-        if("in".equals(bound_type)){
+        if("IN".equals(bound_type)){
             List<Inbound_detailDto> list=service.inboundList(bound_id);
             return list;
         }else {
@@ -334,7 +334,7 @@ public class ApprovalController {
     @ResponseBody
     public String showReason(@RequestParam String bound_type,
                              @RequestParam int detail_id){
-        if("in".equals(bound_type)){
+        if("IN".equals(bound_type)){
             Inbound_detailDto dto=service.selectDetailIn(detail_id);
             String reason=dto.getReason();
             return reason;

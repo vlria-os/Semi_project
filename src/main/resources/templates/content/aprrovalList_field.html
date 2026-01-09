@@ -9,21 +9,13 @@
         <td th:text="${l.approval_id}"></td>
         <td th:text="${l.approver_id}"></td>
         <td th:text="${l.bound_type}"></td>
-        <td th:text="${l.bound_type == 'in' ? l.inbound_id : l.outbound_id}"></td>
+        <td th:text="${l.bound_type == 'IN' ? l.inbound_id : l.outbound_id}"></td>
         <td th:text="${l.approval_status}"></td>
         <td th:text="${l.created_at}"></td>
       </tr>
     </table>
   </div>
   <script>
-    function logout(){
-      fetch('/logout')
-              .then(resp=>resp.text())
-              .then(data=>{
-                alert(data);
-                location.href="/";
-              })
-    }
 
     function showDetail(btn){
       const currentTr=btn.closest("tr");
@@ -52,14 +44,14 @@
 
                   let reasonBtn="";
 
-                  if(l.approval_status == 'rejected' && bound_type == 'in'){
+                  if(l.approval_status == 'REJECTED' && bound_type == 'IN'){
                     reasonBtn = `
-                                      <button onclick="showReason('in',${l.inbound_detail_id},
+                                      <button onclick="showReason('IN',${l.inbound_detail_id},
                                       this)">사유 보기</button>
                                     `;
-                  }else if(l.approval_status == 'rejected' && bound_type == 'out'){
+                  }else if(l.approval_status == 'REJECTED' && bound_type == 'OUT'){
                     reasonBtn = `
-                                      <button onclick="showReason('out',${l.outbound_detail_id},
+                                      <button onclick="showReason('OUT',${l.outbound_detail_id},
                                       this)">사유 보기</button>
                                     `;
                   }
@@ -90,7 +82,7 @@
               });
     }
 
-    function showReason(bound_type,detail_id,btn){
+    function showReason(bound_type,bound_id,btn){
       const currentTr=btn.closest("tr");
 
       // 이미 사유 row 있으면 토글
@@ -100,7 +92,7 @@
         return;
       }
 
-      fetch(`/approval/showReason?detail_id=${detail_id}&bound_type=${bound_type}`)
+      fetch(`/approval/showReason?bound_id=${bound_id}&bound_type=${bound_type}`)
               .then(resp=>resp.text())
               .then(reason=>{
 
