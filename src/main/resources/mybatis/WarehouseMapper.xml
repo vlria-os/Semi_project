@@ -81,7 +81,15 @@
     </update>
 
     <select id="selectAll" parameterType="int" resultType="WarehouseDto">
-        select * from warehouse where warehouse_id=#{warehouse_id} order by warehouse_id desc
+        select
+            warehouse_id,
+            warehouse_name,
+            warehouse_type,
+            location,
+            maximum_capacity,
+            is_active,
+            created_at
+        from warehouse where warehouse_id=#{warehouse_id} order by warehouse_id desc
     </select>
 
     <delete id="deleteWarehouse" parameterType="int">
