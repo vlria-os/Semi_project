@@ -25,7 +25,9 @@ public class Inbound_req_Controller {
     public String inbound_reqForm(Model model){
         List<ProductDto> productDtos=productService.productList("");
         model.addAttribute("list", productDtos);
-        return "office_staff/inbound_req";
+        model.addAttribute("navFragment", "fragment/nav/officeNav");
+        model.addAttribute("content", "content/inbound_req");
+        return "layout";
     }
 
     @PostMapping("/office_staff/inbound_req")

@@ -1,33 +1,6 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>main.html</title>
-    <link rel="stylesheet" th:href="@{/css/board.css}">
-</head>
-<body>
-<div class="wrap">
-    <div class="header">
-        <div class="intoLogin">
-            <h2>warehouse</h2>
-            <div class="loginArea">
-            <p th:if="${session.roleMsg != null}" th:text="${session.roleMsg}"></p>
-            <ul>
-                <li th:if="${session.webuser_id != null}"><button onclick="logout()">logout</button></li>
-            </ul>
-            </div>
-        </div>
-    </div>
-    <div class="nav">
-        <ul>
-            <li th:if="${session.webuser_id != null && session.role_id == 2}"><a th:href="@{/office_staff/inbound_req}">입고 요청</a></li>
-            <li th:if="${session.webuser_id != null && session.role_id == 2}"><a th:href="@{/main}">입출고 요청 내역</a></li>
-            <li th:if="${session.webuser_id != null && session.role_id == 1}"><a th:href="@{/main}">입출고 요청 승인</a></li>
-            <li th:if="${session.webuser_id != null && session.role_id == 1}"><a th:href="@{/webuser/list}">계정 관리</a></li>
-            <li th:if="${session.webuser_id != null && session.role_id == 1}"><a th:href="@{/approval/list}">승인 내역</a></li>
-            <li><a th:href="@{/webuser/chatRoomList}">채팅 목록</a></li>
-        </ul>
-    </div>
+<!-- content/productList.html -->
+<section xmlns:th="http://www.thymeleaf.org"
+         th:fragment="content">
     <div class="main">
         <div th:if="${role_id == 1}">
             <button onclick="gomain()">전체</button> <button onclick="goinbound()">입고</button> <button onclick="gooutbound()">출고</button>
@@ -67,20 +40,17 @@
         <div>
             <ul id="pagingArea">
                 <li th:if="${pageInfo.startPageNum > 1}">
-                    <a th:href="@{/main(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
+                    <a th:href="@{/layout(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
                 </li>
                 <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
-                    <a th:href="@{/main(pageNum=${num})}">[[${num}]]</a>
+                    <a th:href="@{/layout(pageNum=${num})}">[[${num}]]</a>
                 </li>
                 <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
-                    <a th:href="@{/main(pageNum=${pageInfo.endPageNum + 1})}">다음</a>
+                    <a th:href="@{/layout(pageNum=${pageInfo.endPageNum + 1})}">다음</a>
                 </li>
             </ul>
         </div>
     </div>
-    <div class="footer"></div>
-</div>
-</body>
 <script th:inline="javascript">
     function logout(){
         fetch('/logout')
@@ -92,7 +62,7 @@
     }
 
     function gomain(){
-        location.href="/main";
+        location.href="/content/requsetList";
     }
 
     function goinbound(pageNum = 1){
@@ -347,4 +317,4 @@
         fetch(`/request/admin/inbound?inbound_id=`)
     }
 </script>
-</html>
+</section>

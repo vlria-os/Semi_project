@@ -310,7 +310,11 @@ public class ApprovalController {
     public String approvalList(Model model){
         List<ApprovalDto> list=service.approvalAll();
         model.addAttribute("list",list);
-        return "approvalList";
+
+        model.addAttribute("navFragment", "fragment/nav/adminNav");
+        model.addAttribute("content", "content/approvalList");
+
+        return "layout";
     }
 
     @GetMapping("/approval/detailList")

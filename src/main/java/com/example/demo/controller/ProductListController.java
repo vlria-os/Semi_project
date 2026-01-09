@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.ProductDto;
 import com.example.demo.dto.Product_imageDto;
 import com.example.demo.service.ProductService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,10 +25,20 @@ public class ProductListController {
     private final ProductService productService;
 
     @GetMapping("content/productList")
-    public String productList(Model model) {
+    public String productList(Model model,
+                              HttpSession session) {
         model.addAttribute("list", productService.productList());
-        model.addAttribute("navFragment", "fragment/nav/officeNav");
-        model.addAttribute("content", "content/productList");
+        if((int)session.getAttribute("role_id")==1){
+            model.addAttribute("navFragment", "fragment/nav/adminNav");
+            model.addAttribute("content", "content/productList");
+        }else if((int)session.getAttribute("role_id")==2){
+            model.addAttribute("navFragment", "fragment/nav/officeNav");
+            model.addAttribute("content", "content/productList");
+        }else if((int)session.getAttribute("role_id")==3){
+            model.addAttribute("navFragment", "fragment/nav/fieldNav");
+            model.addAttribute("content", "content/productList");
+        }
+
         return "layout";
     }
 

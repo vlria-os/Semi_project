@@ -40,6 +40,9 @@ public class WebuserListController {
         model.addAttribute("field",field);
         model.addAttribute("keyword",keyword);
 
-        return "webuserList";
+        model.addAttribute("navFragment", "fragment/nav/adminNav");
+        model.addAttribute("content", "content/webuserList");
+
+        return "layout";
     }
 }
