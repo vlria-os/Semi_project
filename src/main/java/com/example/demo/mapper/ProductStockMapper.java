@@ -9,15 +9,11 @@ import java.util.List;
 
 @Mapper
 public interface ProductStockMapper {
-    List<ListDto> selectlist();
+   // List<ListDto> selectlist();
 
     List<ProductStockDto> selectAll(
-            @Param("product_name")String product_name,
-            @Param("category_id")Integer category_id,
-            @Param("category_name")String category_name,
+            @Param("keyword")String keyword,
             @Param("product_type")String product_type
             );
-
-    List<ProductStockDto> selectAll(String productName, Integer categoryId);
 }
 

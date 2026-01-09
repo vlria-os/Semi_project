@@ -1,7 +1,9 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.CategoryDto;
 import com.example.demo.dto.ListDto;
 import com.example.demo.dto.ProductStockDto;
+import com.example.demo.mapper.CategoryMapper;
 import com.example.demo.service.ProductStockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -15,26 +17,20 @@ import java.util.List;
 @RequiredArgsConstructor //@Autowired 대신 사용
 public class ListController {
     private final ProductStockService service;
+  //  private final CategoryMapper categoryMapper;
 
     @GetMapping("/list")
     public String list(
-            @RequestParam(required = false)String product_name,
-            @RequestParam(required = false)Integer category_id,
-            @RequestParam(required = false)String category_name,
+            @RequestParam(required = false)String keyword,
             @RequestParam(required = false)String product_type,
             Model model) {
-
-        //재고목록
-        List<ListDto> m = service.selectlist();
-        model.addAttribute("m", m);
-
-//        List<ProductStockDto> p = service.selectAll();
-//        model.addAttribute("p", p);
-//        return "list";
-
-
-        List<ProductStockDto> p = service.selectAll(product_name,category_id,category_name,product_type);
+        System.out.println("keyword==>" + keyword);
+          List<ProductStockDto> p = service.selectAll(keyword,product_type);
           model.addAttribute("p",p);
+
+    //      List<CategoryDto> categories=categoryMapper.selectAllCategories();
+      //    model.addAttribute("categories",categories);
           return "list";
         }
 }
+

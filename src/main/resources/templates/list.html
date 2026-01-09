@@ -8,7 +8,18 @@
 
 <h1>재고확인목록</h1>
 <form th:action="@{/list}" th:method="get">
-    <input type="text" name="product_name" placeholder="상품명,카테고리">
+<!-- 상품명-->
+    <input type="text" name="keyword" placeholder="상품명 또는 카테고리명" th:value="${param.keyword}">
+<!--&lt;!&ndash;카테고리 드롭다운&ndash;&gt;-->
+<!--    <select name="category_Id">-->
+<!--        <option value="">전체카테고리</option>-->
+<!--        <option th:each="cat : ${categories}"-->
+<!--                th:value="${cat.category_id}"-->
+<!--                th:text="${cat.category_name}"-->
+<!--                th:selected="${param.catecory_id == cat.category_id}">-->
+<!--        </option>-->
+<!--    </select>-->
+
     <button type="submit" name="product_type" value="COLD">냉장</button>
     <button type="submit" name="product_type" value="FROZEN">냉동</button>
     <button type="submit" name="product_type" value="ROOM">상온</button>
@@ -21,6 +32,7 @@
             <th>재고이름</th>
             <th>카테고리</th>
             <th>가격</th>
+            <th>수량</th>
             <th>단위</th>
             <th>이미지</th>
             <th>제품종류</th>
@@ -28,8 +40,9 @@
         <tr th:each="ps : ${p}">
             <td>[[${ps.stock_id}]]</td>
             <td>[[${ps.product_name}]]</td>
-            <td>[[${ps.category_id}]]</td>
+            <td>[[${ps.category_path}]]</td>
             <td>[[${ps.price}]]</td>
+            <td>[[${ps.quantity}]]</td>
             <td>[[${ps.unit}]]</td>
             <td>[[${ps.image_id}]]</td>
             <td>[[${ps.product_type}]]</td>
