@@ -36,13 +36,17 @@ public class LoginController {
                 if(userDto.getRole_id() == 1){
                     session.setAttribute("webuser_id",userDto.getWebuser_id());
                     session.setAttribute("role_id",userDto.getRole_id());
-                    session.setAttribute("roleMsg","관리자 모드");
-                    return "redirect:/main";
+                    session.setAttribute("roleMsg","관리자");
+                    model.addAttribute("navFragment", "fragment/nav/adminNav");
+                    model.addAttribute("content", "content/notice");
+                    return "layout";
                 }else {
                     session.setAttribute("webuser_id",userDto.getWebuser_id());
                     session.setAttribute("role_id",userDto.getRole_id());
-                    session.setAttribute("roleMsg","직원 모드");
-                    return "redirect:/main";
+                    session.setAttribute("roleMsg","직원");
+                    model.addAttribute("navFragment", "fragment/nav/officeNav");
+                    model.addAttribute("content", "content/notice");
+                    return "layout";
                 }
             }
         }

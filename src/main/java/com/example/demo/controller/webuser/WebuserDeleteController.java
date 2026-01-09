@@ -1,4 +1,4 @@
-package com.example.demo.controller;
+package com.example.demo.controller.webuser;
 
 import com.example.demo.service.WebuserService;
 import lombok.RequiredArgsConstructor;

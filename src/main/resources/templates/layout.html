@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${title} ?: 'My Service'">My Service</title>
+    <link rel="stylesheet" th:href="@{/css/layout.css}">
+</head>
+
+<body>
+<!-- HEADER -->
+<header th:replace="~{fragment/header :: header}"></header>
+
+<div class="layout-container">
+    <!-- SIDEBAR (고정 UI) -->
+    <aside class="sidebar"
+           th:replace="~{fragment/sidebar :: sidebar}">
+    </aside>
+
+    <div class="layout-body">
+        <!-- NAV (권한별로 교체됨) -->
+        <nav class="nav"
+             th:replace="~{${navFragment}}">
+        </nav>
+
+        <!-- MAIN CONTENT -->
+        <main class="content">
+            <section th:replace="~{${content}}"></section>
+        </main>
+    </div>
+</div>
+
+<!-- FOOTER -->
+<footer th:replace="~{fragment/footer :: footer}"></footer>
+</body>
+</html>
