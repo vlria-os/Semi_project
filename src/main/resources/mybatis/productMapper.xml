@@ -67,8 +67,11 @@
         )
     </insert>
     <insert id="insert_image" parameterType="Product_imageDto">
+        <selectKey keyProperty="image_id" resultType="int" order="BEFORE">
+            SELECT image_seq.NEXTVAL FROM dual
+        </selectKey>
         insert into product_image values (
-            product_image_seq.nextval,
+            #{image_id},
             #{file_path},
             #{save_name}
         )

@@ -65,13 +65,15 @@ public class ProductListController {
         return productService.productList(keyword);
     }
 
-    @GetMapping("/common/product_insert")
+    @GetMapping("/content/product_insert")
     public String product_insertForm(Model model){
         model.addAttribute("productDto",new ProductDto());
-        return "common/product_insert";
+        model.addAttribute("navFragment", "fragment/nav/adminNav");
+        model.addAttribute("content", "content/product_insert");
+        return "layout";
     }
 
-    @PostMapping("/common/product_insert")
+    @PostMapping("/content/product_insert")
     public String product_insert(ProductDto productDto){
         MultipartFile file=productDto.getFile();
 
@@ -88,7 +90,7 @@ public class ProductListController {
         Product_imageDto imageDto=new Product_imageDto(0,UPLOADPATH + saveFileName,saveFileName);
 
         int n=productService.insert(productDto, imageDto);
-        return "redirect:/common/product_list";
+        return "redirect:/content/productList";
     }
 
 }
