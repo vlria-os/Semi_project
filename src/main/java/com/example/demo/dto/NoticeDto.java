@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @NoArgsConstructor
@@ -15,8 +16,8 @@ public class NoticeDto {
     private String  content;// 내용
     private String writer;// 작성자
     private Integer viewcount;// 조회수
-    private Date createdAt; // 작성일
-    private Date udatedAt;  // 수정일
+    private String pinYn; // 주요공지
+    private LocalDateTime createdAt;  // 가입일
 
 
 }

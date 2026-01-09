@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>상품조회</title>
+    <link rel="stylesheet"
+          href="http://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<div class="container mt-4">
+   <h4>회사 공지사항</h4>
+
+    <form method="get" class="mb-3text-end">
+    <input type="text" name="keyword" placeholder="제목 검색"
+           th:value="${keyword}">
+    <button class="btn btn-sm btn-outline-secondary">검색</button>
+    </form>
+
+   <table class="table table-hover">
+    <thead>
+    <tr>
+        <th>번호</th><th>제목</th><th>작성자</th>
+        <th>작성일</th><th>조회수</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="n : ${list}">
+        <td th:text="${n.noticeId}"></td>
+        <td>
+            <span th:if="${n.pinYn== 'Y'}"
+                  class="badge bg-success">중요</span>
+            <span th:if="${#temporals.daysBetween(n.createdAt, T(java.time.LocalDateTime).now()) <1}"
+                  class="badge bg-primary">N</span>
+            <a th:href="@{/notice/{id}(id=${n.noticeId})}"
+                th:text="${n.title}"></a>
+        </td>
+        <td th:text="${n.writer}"></td>
+        <td th:text="${#temporals.format(n.createdAt,'yyyy-MM-dd')}"></td>
+        <td th:text="${n.viewCount}"></td>
+    </tr>
+    </tbody>
+   </table>
+</div>
+</body>
+</html>
