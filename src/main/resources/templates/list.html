@@ -20,15 +20,15 @@
 <!--        </option>-->
 <!--    </select>-->
 
-    <button type="submit" name="product_type" value="COLD">냉장</button>
-    <button type="submit" name="product_type" value="FROZEN">냉동</button>
-    <button type="submit" name="product_type" value="ROOM">상온</button>
+    <button type="submit" name="status" value="COLD">냉장</button>
+    <button type="submit" name="status" value="FROZEN">냉동</button>
+    <button type="submit" name="status" value="ROOM">상온</button>
     <button type="submit">검색</button>
 </form>
 
     <table>
         <tr>
-            <th>재고번호</th>
+            <th>상품번호</th>
             <th>재고이름</th>
             <th>카테고리</th>
             <th>가격</th>
@@ -38,16 +38,167 @@
             <th>제품종류</th>
         </tr>
         <tr th:each="ps : ${p}">
-            <td>[[${ps.stock_id}]]</td>
+            <td>[[${ps.product_id}]]</td>
             <td>[[${ps.product_name}]]</td>
             <td>[[${ps.category_path}]]</td>
             <td>[[${ps.price}]]</td>
             <td>[[${ps.quantity}]]</td>
             <td>[[${ps.unit}]]</td>
             <td>[[${ps.image_id}]]</td>
-            <td>[[${ps.product_type}]]</td>
+            <td>[[${ps.status}]]</td>
         </tr>
 </table>
+<style>
+    /* 전체 테이블 스타일 */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin-top: 20px;
+    }
+
+    /* 헤더 스타일 */
+    th {
+        background-color: #007bff;
+        color: white;
+        padding: 12px 15px;
+        text-align: center;
+        font-weight: 700;
+        border: 1px solid #ddd;
+    }
+
+    /* 데이터 셀 스타일 */
+    td {
+        padding: 10px 15px;
+        text-align: center;
+        border: 1px solid #ddd;
+        vertical-align: middle;
+        color: #333;
+    }
+
+    /* 짝수 행 배경색 */
+    tbody tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    /* 행에 마우스 올릴 때 배경색 */
+    tbody tr:hover {
+        background-color: #e6f0ff;
+    }
+
+    /* 이미지 셀에 이미지 크기 조절 (만약 이미지가 들어갈 경우) */
+    td img {
+        max-width: 60px;
+        max-height: 60px;
+        border-radius: 6px;
+    }
+
+    /* 페이징 버튼 전체 컨테이너 */
+    .paging {
+        margin-top: 20px;
+        text-align: center;
+    }
+
+    /* 페이징 버튼 기본 스타일 */
+    .paging a {
+        display: inline-block;
+        padding: 8px 14px;
+        margin: 0 6px;
+        border: 2px solid #007bff;
+        background-color: #e9f0ff;
+        color: #007bff;
+        font-weight: 600;
+        text-decoration: none;
+        border-radius: 6px;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        user-select: none;
+        cursor: pointer;
+    }
+
+    /* 마우스 오버 시 */
+    .paging a:hover:not(.disabled) {
+        background-color: #007bff;
+        color: white;
+        border-color: #0056b3;
+    }
+
+    /* 비활성화된 버튼 */
+    .paging a.disabled {
+        pointer-events: none;
+        color: #b0c4de;
+        border-color: #b0c4de;
+        background-color: #f5f7fa;
+        cursor: default;
+    }
+
+    /* 현재 페이지 번호 스타일 */
+    .paging span {
+        display: inline-block;
+        padding: 8px 14px;
+        margin: 0 6px;
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #333;
+        user-select: none;
+    }
+</style>
+
+
+<div class="paging">
+    <a th:href="@{/list(pagenum=1, keyword=${param.keyword}, status=${status})}"
+       th:classappend="${pagenum == 1} ? 'disabled'"
+       th:text="'<<'"><<</a>
+
+    <a th:href="@{/list(pagenum=${pagenum - 1}, keyword=${param.keyword}, status=${status})}"
+       th:classappend="${pagenum == 1} ? 'disabled'"
+       th:text="'<'"><</a>
+
+    <span>[[${pagenum}]] / [[${totalPage}]]</span>
+
+    <a th:href="@{/list(pagenum=${pagenum + 1}, keyword=${param.keyword}, status=${status})}"
+       th:classappend="${pagenum == totalPage} ? 'disabled'"
+       th:text="'>'">></a>
+
+    <a th:href="@{/list(pagenum=${totalPage}, keyword=${param.keyword}, status=${status})}"
+       th:classappend="${pagenum == totalPage} ? 'disabled'"
+       th:text="'>>'">>></a>
+</div>
+
+   <!--페이징버튼-->
+<div>
+    <!-- 처음 페이지로 이동 -->
+    <a th:href="@{/list(pagenum=1, keyword=${param.keyword}, status=${status})}"
+       th:if="${pagenum > 1}"><<</a>
+
+    <!-- 이전 페이지로 이동 -->
+    <a th:href="@{/list(pagenum=${pagenum - 1}, keyword=${param.keyword}, status=${status})}"
+       th:if="${pagenum > 1}"><</a>
+
+    <!-- 현재 페이지 번호 -->
+    <span>[[${pagenum}]] / [[${totalPage}]]</span>
+
+    <!-- 다음 페이지로 이동 -->
+    <a th:href="@{/list(pagenum=${pagenum + 1}, keyword=${param.keyword}, status=${status})}"
+       th:if="${pagenum < totalPage}">></a>
+
+    <!-- 마지막 페이지로 이동 -->
+    <a th:href="@{/list(pagenum=${totalPage}, keyword=${param.keyword}, status=${status})}"
+       th:if="${pagenum < totalPage}">>></a>
+</div>
+
+
+<span th:each="i : ${#numbers.sequence(1, totalPage)}">
+    <a th:href="@{/list(pagenum=${i}, keyword=${param.keyword}, status=${status})}"
+       th:text="${i}" th:classappend="${pagenum == i}? 'current'"></a>
+</span>
 
 </body>
 </html>
+
+
+
+
+
+
+
+

@@ -3,6 +3,7 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.demo.mapper.ProductStockMapper">
+
     <select id="selectAll" resultType="com.example.demo.dto.ProductStockDto" >
 <!--        SELECT-->
 <!--        P.PRODUCT_NAME as product_name,-->
@@ -32,7 +33,7 @@
             p.product_name,
             p.price,
             p.unit,
-            p.product_type,
+            p.status,
             p.category_id,
             c.category_path,
             sum(s.quantity) as quantity<!--집계함수적용-->
@@ -52,8 +53,8 @@
                 p.product_name LIKE '%' || #{keyword} || '%'
                 OR c.category_path LIKE '%' || #{keyword} || '%'
             </if>
-            <if test="product_type != null and product_type !=''">
-                and  p.product_type = #{product_type}
+            <if test="status != null and status !=''">
+                and  p.status = #{status}
             </if>
         </where>
         group by
@@ -61,9 +62,33 @@
             p.product_name,
             p.price,
             p.unit,
-            p.product_type,
+            p.status,
             p.category_id,
             c.category_path
+        order by p.product_id
 
+        offset #{offset} rows fetch next #{pagesize} rows only
     </select>
+    <select id="count" resultType="int">
+        SELECT COUNT(*)
+        FROM product p
+        JOIN (
+        SELECT
+        category_id,
+        LTRIM(SYS_CONNECT_BY_PATH(category_name, '>'), '>') AS category_path
+        FROM category
+        START WITH parent_id IS NULL
+        CONNECT BY PRIOR category_id = parent_id
+        ) c ON p.category_id = c.category_id
+        <if test="keyword != null and keyword.trim() != ''">
+            AND (p.product_name LIKE '%' || #{keyword} || '%'
+            OR c.category_path LIKE '%' || #{keyword} || '%')
+        </if>
+        <if test="status != null and status != ''">
+            AND p.status = #{status}
+        </if>
+    </select>
+
 </mapper>
+
+
