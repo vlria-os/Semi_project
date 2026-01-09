@@ -12,6 +12,7 @@ public class SalesStatsDto {
     private long total_quantity;
     private long avg_price;
     private String product_name;
+    private long price;
     private int quantity;
     private long revenue;
     private double share;

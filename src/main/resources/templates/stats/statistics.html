@@ -47,13 +47,14 @@
   <div class="item-list">
     <table class="stats-table">
       <tr>
-        <th>순위</th><th>품목명</th><th>판매량</th><th>매출액</th><th>점유율</th>
+        <th>순위</th><th>품목명</th><th>판매량</th><th>단가</th><th>매출액</th><th>점유율</th>
       </tr>
       <tr th:each="item, stat : ${rankList}">
         <td th:text="${stat.count}"></td>
         <td th:text="${item.product_name}"></td>
         <td th:text="${item.quantity}"></td>
-        <td th:text="${#numbers.formatInteger(item.revenue, 3, 'COMMA')}"></td>
+        <td th:text="${#numbers.formatInteger(item.price, 3, 'COMMA')} + '원'"></td>
+        <td th:text="${#numbers.formatInteger(item.revenue, 3, 'COMMA')} + '원'"></td>
         <td>
           <div class="progress-bar">
             <div class="progress" th:style="'width:' + ${item.share} + '%'"></div>

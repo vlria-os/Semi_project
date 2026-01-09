@@ -21,13 +21,14 @@
     <select id="selectProductRanking" resultType="SalesStatsDto">
         select
             p.product_name,
+            p.price,
             sum(lo.quantity) as quantity,
             sum(lo.quantity * p.price) as revenue
         from lot_out lo
         join outbound_detail obd on lo.outbound_detail_id = obd.outbound_detail_id
         join product p on obd.product_id = p.product_id
         where lo.is_expired = 'N'
-        group by p.product_name
+        group by p.product_name, p.price
         order by revenue desc
     </select>
 </mapper>
