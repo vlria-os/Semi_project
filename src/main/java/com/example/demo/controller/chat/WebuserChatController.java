@@ -2,6 +2,7 @@ package com.example.demo.controller.chat;
 
 import com.example.demo.dto.ChatMessageDto;
 import com.example.demo.dto.ChatRoomDto;
+import com.example.demo.dto.WebuserDto;
 import com.example.demo.service.ChattingService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -40,8 +41,19 @@ public class WebuserChatController {
         return "newChat";
     }
 
-    @PostMapping("/chat/start")
-    public String startChat(@RequestParam int targetId, HttpSession session){
+    @GetMapping("/chat/group/new")
+    public String newGropChat(Model model,HttpSession session){
+
+        int myId=(int)session.getAttribute("webuser_id");
+
+        List<WebuserDto> userList=service.getAllExceptMe(myId);
+
+        model.addAttribute("users",userList);
+        return "groupChatCreate";
+    }
+
+    @GetMapping("/chat/start/{targetId}")
+    public String startChat(@PathVariable int targetId, HttpSession session){
         int myId = (int) session.getAttribute("webuser_id");
 
         int roomId = service.getOrCreateOneToOneRoom(myId,targetId);
@@ -67,9 +79,23 @@ public class WebuserChatController {
                               @RequestParam int sender_id,
                               @RequestParam String content){
 
-        ChatMessageDto dto=new ChatMessageDto(0,room_id,sender_id,content,null,0);
+        ChatMessageDto dto=new ChatMessageDto(0,room_id,sender_id,null,content,null,0);
         service.sendMessage(dto);
 
         return "redirect:/chat/room/" + room_id;
+    }
+
+    @PostMapping("/chat/group/create")
+    public String createGroupChat(@RequestParam String roomName, @RequestParam List<Integer> userIds,
+                                  HttpSession session){
+
+        int myId = (int) session.getAttribute("webuser_id");
+
+        //방 만든 사람도 자동 포함
+        userIds.add(myId);
+
+        int roomId=service.createGroupRoom(roomName,userIds);
+
+        return "redirect:/chat/room/"+roomId;
     }
 }

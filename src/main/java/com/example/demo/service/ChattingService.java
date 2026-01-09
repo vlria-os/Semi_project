@@ -37,26 +37,42 @@ public class ChattingService {
     }
 
     public List<ChatMessageDto> getMessages(int room_id, int user_id){
-        Map<String,Object> map=new HashMap<>();
-        map.put("room_id",room_id);
-        map.put("user_id",user_id);
-        mapper.markMessageAsRead(map);
+        enterAndMarkReadAll(room_id,user_id);
         return mapper.getMessages(room_id);
     }
 
     public void sendMessage(ChatMessageDto dto){
-        boolean opponentOnline=store.getUserCount(dto.getRoom_id()) > 1;
-        dto.setRead_count(opponentOnline ? 0 : 1);
+        //insert
+        mapper.sendMessage(dto);
 
-        int n=mapper.sendMessage(dto);
-        System.out.println("insert => " + n);
+        //보낸 사람은 이 메시지까지 읽은 상태로 기록
+        Map<String,Object> map=new HashMap<>();
+        map.put("roomId",dto.getRoom_id());
+        map.put("userId",dto.getSender_id());
+        map.put("lastReadMessageId",dto.getMessage_id());
+        mapper.updateLastReadMessageId(map);
+
+        //이 메시지를 읽은 사람 수(보낸 사람 제외)
+        Map<String,Object> p=new HashMap<>();
+        p.put("roomId",dto.getRoom_id());
+        p.put("senderId",dto.getSender_id());
+        p.put("messageId",dto.getMessage_id());
+        int readers=mapper.countReadersForMessage(p);
+
+        //전체 인원 - 1(보낸 사람) - readers = 안 읽은 사람 수
+        int total=mapper.getRoomUserCount(dto.getRoom_id());
+        int unreadPeople= (total - 1) - readers;
+        dto.setRead_count(Math.max(unreadPeople,0));
     }
 
-    public void markMessageAsRead(int room_id, int user_id){
-        Map<String,Object> map=new HashMap<>();
-        map.put("room_id",room_id);
-        map.put("user_id",user_id);
-        mapper.markMessageAsRead(map);
+    public int enterAndMarkReadAll(int roomId, int userId){
+        int maxId = mapper.selectMaxMessageId(roomId);
+        Map<String,Object> map = new HashMap<>();
+        map.put("roomId",roomId);
+        map.put("userId",userId);
+        map.put("lastReadMessageId",maxId);
+        mapper.updateLastReadMessageId(map);
+        return maxId;
     }
 
     public List<ChatRoomDto> chatRoomListSummary(int user_id){
@@ -74,11 +90,12 @@ public class ChattingService {
     public int getOrCreateOneToOneRoom(int myId, int targetId){
         Integer roomId = mapper.findOneToOneRoom(myId, targetId);
 
+
         if(roomId != null){
             return roomId;
         }
 
-        mapper.insertChatRoom("one");
+        mapper.insertChatRoom("one","1:1 채팅");
         int newRoomId = mapper.getLastRoomId();
 
         mapper.insertChatRoomUser(newRoomId, myId);
@@ -89,6 +106,33 @@ public class ChattingService {
 
     public List<WebuserDto> getAllExceptMe(int myId){
         return mapper.getAllExceptMe(myId);
+    }
+
+    @Transactional
+    public int createGroupRoom(String roomName, List<Integer> userIds){
+        //방 생성
+        mapper.insertChatRoom("group",roomName);
+
+        int roomId=mapper.getLastRoomId();
+
+        for(Integer userId:userIds){
+            mapper.insertChatRoomUser(roomId,userId);
+        }
+
+        return roomId;
+    }
+
+    public String getUserName(int userId){
+        return mapper.selectUserName(userId);
+    }
+
+    public int getUnReadCount(int roomId){
+        int total=mapper.getRoomUserCount(roomId);
+        return total - 1;
+    }
+
+    public List<Integer> getRoomUserIds(int roomId){
+        return mapper.selectRoomUserIds(roomId);
     }
 
 }

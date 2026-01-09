@@ -20,25 +20,47 @@
       }
 
       .message {
-        margin-bottom: 10px;
-        display: flex;
+          position: relative;
+          display: flex;
           align-items: flex-end;
+          margin-bottom: 10px;
+          flex-direction: column;
       }
 
       .message.me {
-        justify-content: flex-end;
+          align-items: flex-end;
       }
 
       .message.other {
-        justify-content: flex-start;
+          align-items: flex-start;
       }
 
-      .message .read {
-          font-size: 10px;     /* 글자 작게 */
-          color: gray;         /* 옅은 회색 */
-          margin-right: 5px;    /* 말풍선과 간격 */
-          align-self: flex-end;/* 오른쪽 끝 정렬 */
-          line-height: 1.4;
+      .meta {
+          font-size: 10px;
+          color: gray;
+          margin-top: 2px;
+      }
+
+      .my-row{
+          display:flex;
+          align-items:flex-end;
+          justify-content:flex-end;
+          gap:6px;
+      }
+
+      /* 내 메시지 옆 숫자 */
+      .my-row .meta{
+          position: static !important;
+          margin: 0;
+          font-size: 10px;
+          color: gray;
+      }
+
+
+      .sender-name {
+          font-size: 12px;
+          color: #666;
+          margin-bottom: 2px;
       }
 
 
@@ -94,17 +116,24 @@
 
     <!-- 메시지 영역 -->
   <div class="chat-messages" id="chatMessages">
-    <div th:each="msg:${messages}"
-         th:attr="data-id=${msg.message_id}"
-         th:class="${msg.sender_id == user_id} ? 'message me' : 'message other'">
-        <!-- 읽음 표시 -->
-        <span class="read"
-              th:if="${msg.sender_id ==user_id and msg.read_count == 1}">
-            1
-        </span>
-        <div class="bubble" th:text="${msg.content}">
+      <div th:each="msg:${messages}"
+           th:class="${msg.sender_id == user_id} ? 'message me' : 'message other'">
+
+          <!-- 상대 이름 (말풍선 위) -->
+          <div class="sender-name"
+               th:if="${msg.sender_id != user_id}"
+               th:text="${msg.senderName}">
+          </div>
+
+          <!-- 말풍선 -->
+          <div class="bubble" th:text="${msg.content}"></div>
+
+          <!-- 읽음 표시 (내 메시지) -->
+          <div class="meta"
+               th:if="${msg.sender_id == user_id and msg.read_count > 0}">
+              <span class="read" th:text="${msg.read_count}"></span>
+          </div>
       </div>
-    </div>
   </div>
 
   <!-- 입력 영역 -->
@@ -134,52 +163,45 @@
         chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    //내 메시지의 모든 '1' 제거
-    function removeAllReadMarks(){
-        document.querySelectorAll('.message.me .read')
-            .forEach(el => el.remove());
-    }
-
-    //내 마지막 메시지에만 '1' 표시
-    function markLastMyMessage(){
-        const myMessages = document.querySelectorAll('.message.me');
-        if(myMessages.length === 0) return;
-
-        const last = myMessages[myMessages.length - 1];
-
-        //이미 읽힌 메시지면 표시 안 함
-        if(last.dataset.readCount === "0") return;
-
-        //중복 방지
-        if(last.querySelector('.read')) return;
-
-        const span=document.createElement("span");
-        span.className="read";
-        span.innerText="1";
-
-        last.prepend(span);
-    }
-
     // 메시지 화면에 추가하는 함수
-    function addMessage(msgContent, sender_id, message_id, read_count = 1) {
+    function addMessage(data) {
+        const sid = (data.sender_id ?? data.senderId);
+        const unread = (data.read_count ?? data.readCount ?? 0);
+        const mid = (data.message_id ?? data.messageId ?? 0);
+
         const div = document.createElement("div");
-        div.className = sender_id == user_id ? "message me" : "message other";
-        div.dataset.readCount = read_count;
+        div.className = (sid == user_id) ? "message me" : "message other";
+        div.dataset.messageId = mid;
 
-        div.innerHTML=`<div class="bubble">${msgContent}</div>`;
-        chatBox.appendChild(div);
-
-        //내가 보낸 메시지면 마지막 것에만 1 표시
-        if(sender_id == user_id && read_count === 1){
-            removeAllReadMarks();
-            markLastMyMessage();
+        // 상대 메시지
+        if (sid != user_id) {
+            const name = data.senderName ?? data.sender_name ?? "";
+            div.innerHTML = `
+      <div class="sender-name">${name}</div>
+      <div class="bubble">${data.content}</div>
+    `;
+        }
+        // 내 메시지
+        else {
+            div.innerHTML = `
+      <div class="my-row">
+        ${unread > 0 ? `<div class="meta"><span class="read">${unread}</span></div>` : ``}
+        <div class="bubble">${data.content}</div>
+      </div>
+    `;
         }
 
+        chatBox.appendChild(div);
         scrollToBottom();
     }
 
+
     // STOMP 웹소켓 연결
     let stompClient = null;
+    let currentPresenceCount = 0;
+
+    const readerProgress = {}; // {userId: lastReadId}
+
     function connect() {
         const socket = new SockJS('/ws');
         stompClient = Stomp.over(socket);
@@ -196,23 +218,19 @@
                 currentPresenceCount = parseInt(message.body);
                 const el = document.getElementById("presence");
 
-                if (currentPresenceCount > 1) { //나를 제외한 다른 사람이 접속 중
-                    el.innerText = "상대 접속 중";
-                } else {
-                    el.innerText = "상대 오프라인";
-                }
+                el.innerText=`현재 접속자 ${currentPresenceCount}명`;
             });
 
             // 채팅방 구독
             stompClient.subscribe('/topic/chat/' + room_id, function(message) {
+                console.log("✅ chat topic 수신 raw:", message.body);
                 const data = JSON.parse(message.body);
+                console.log("수신된 메시지 전체: ", data);
+                console.log("받은 data keys:", Object.keys(data));
+                console.log("sender 비교:", data.sender_id, data.senderId, "vs", user_id);
+                console.log("read_count 확인:", data.read_count, data.readCount);
 
-                addMessage(
-                    data.content,
-                    data.sender_id,
-                    data.message_id,
-                    data.read_count
-                );
+                addMessage(data);
 
             });
 
@@ -222,9 +240,35 @@
                     userId: user_id
                 }));
 
-                stompClient.subscribe('/topic/read/' + room_id, function (){
-                    removeAllReadMarks();
-                })
+                stompClient.subscribe('/topic/read/' + room_id, function (message){
+                   const data = JSON.parse(message.body);
+                   const readerId = data.userId;
+                   const newLastRead = data.lastReadId;
+
+                   if(readerId == user_id) return;
+
+                   const prev = readerProgress[readerId] || 0;
+                   if(newLastRead <= prev) return;
+
+                   readerProgress[readerId] = newLastRead;
+
+                   document.querySelectorAll(".message.me").forEach(el => {
+                       const mid = parseInt(el.dataset.messageId || "0");
+                       if(mid > prev && mid <= newLastRead){
+                           const readSpan = el.querySelector(".read");
+                           if(!readSpan) return;
+
+                           let cnt = parseInt(readSpan.innerText || "0");
+                           cnt --;
+
+                           if(cnt <= 0){
+                               readSpan.closest(".meta").remove();
+                           }else {
+                               readSpan.innerText = cnt;
+                           }
+                       }
+                   })
+                });
         });
 
     }
@@ -239,7 +283,12 @@
 
     // 메시지 보내기
     function sendMessage(content) {
-        if(!stompClient || !content || content.trim() === "") return;
+        if(!stompClient || !stompClient.connected){
+            console.log("❌ stomp 연결 안됨");
+            return;
+        }
+
+        if(!content || content.trim() === "") return;
 
         const msg = {
             room_id: room_id,
@@ -247,12 +296,19 @@
             content: content
         };
 
+        console.log("📤 send", msg);
         stompClient.send("/app/chat/message", {}, JSON.stringify(msg));
     }
 
     function handleSend() {
-        sendMessage(input.value);
-        input.value = "";
+        console.log("handleSend 클릭됨");
+        const content = input.value.trim();
+        if(content === "") return;
+
+        //서버에 전송
+        sendMessage(content);
+
+        input.value="";
     }
 
     input.addEventListener("keydown", function(e){
@@ -273,7 +329,7 @@
     });
 
     function goToChatlist(){
-        location.href="/webuser/chatRoomList";
+        location.href="/chat/list";
     }
 </script>
 </body>

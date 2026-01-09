@@ -21,24 +21,36 @@
     <select id="getRoom" parameterType="int" resultType="ChatRoomDto">
         select * from chat_room where room_id = #{room_id}
     </select>
-    <!-- 해당 채팅방의 과거 메시지 조회 -->
+    <!-- 해당 채팅방의 과거 메시지 전체 조회 -->
     <select id="getMessages" parameterType="int" resultType="ChatMessageDto">
-        select * from chat_message where room_id = #{room_id} order by message_id asc
+        SELECT
+        m.message_id,
+        m.room_id,
+        m.sender_id,
+        u.webuser_name AS senderName,
+        m.content,
+        m.created_at
+        FROM chat_message m
+        JOIN webuser u ON m.sender_id = u.webuser_id
+        WHERE m.room_id = #{roomId}
+        ORDER BY m.message_id
+    </select>
+    <!-- 이름 가져오기 -->
+    <select id="selectUserName" resultType="string">
+        SELECT webuser_name
+        FROM webuser
+        WHERE webuser_id = #{userId}
     </select>
     <insert id="sendMessage" parameterType="ChatMessageDto">
-        insert into chat_message
-        (message_id, room_id, sender_id, content, created_at, read_count)
-        values
-        (message_seq.nextval,#{room_id},#{sender_id},#{content},sysdate, 1)
+        <selectKey keyProperty="message_id" resultType="int" order="BEFORE">
+            SELECT message_seq.NEXTVAL FROM dual
+        </selectKey>
+
+        INSERT INTO chat_message
+        (message_id, room_id, sender_id, content, created_at)
+        VALUES
+        (#{message_id}, #{room_id}, #{sender_id}, #{content}, SYSDATE)
     </insert>
-    <!-- 메시지 읽음 처리 -->
-    <update id="markMessageAsRead" parameterType="map">
-        update chat_message
-        set read_count = 0
-        where room_id = #{room_id}
-        and sender_id != #{user_id}
-        and read_count = 1
-    </update>
     <!-- 메시지 읽힘 여부 조회 -->
     <select id="selectReadCount" parameterType="int" resultType="ChatMessageDto">
         select *
@@ -81,14 +93,18 @@
         -- ✅ 방별 안 읽은 메시지 수
         LEFT JOIN (
         SELECT
-        room_id,
+        m.room_id,
         COUNT(*) AS unread_count
-        FROM chat_message
-        WHERE sender_id != #{userId}
-        AND read_count = 1
-        GROUP BY room_id
+        FROM chat_message m
+        JOIN chat_room_user cru
+        ON cru.room_id = m.room_id
+        AND cru.user_id = #{userId}
+        WHERE m.sender_id != #{userId}
+        AND m.message_id > cru.last_read_message_id
+        GROUP BY m.room_id
         ) uc
         ON uc.room_id = r.room_id
+
 
         WHERE ru.user_id = #{userId}
         ORDER BY lm.created_at DESC NULLS LAST
@@ -131,11 +147,16 @@
         ON lm.room_id = r.room_id
 
         LEFT JOIN (
-        SELECT room_id, COUNT(*) AS unread_count
-        FROM chat_message
-        WHERE sender_id != #{userId}
-        AND read_count = 1
-        GROUP BY room_id
+        SELECT
+        m.room_id,
+        COUNT(*) AS unread_count
+        FROM chat_message m
+        JOIN chat_room_user cru
+        ON cru.room_id = m.room_id
+        AND cru.user_id = #{userId}
+        WHERE m.sender_id != #{userId}
+        AND m.message_id > cru.last_read_message_id
+        GROUP BY m.room_id
         ) uc
         ON uc.room_id = r.room_id
 
@@ -151,8 +172,8 @@
         HAVING COUNT(DISTINCT cru.user_id) = 2
     </select>
     <insert id="insertChatRoom">
-        insert into chat_room(room_id, room_type, created_at)
-        values(chat_room_seq.nextval, #{roomType}, sysdate)
+        insert into chat_room(room_id, room_type, room_name, created_at)
+        values(chat_room_seq.nextval, #{roomType}, #{roomName}, sysdate)
     </insert>
     <select id="getLastRoomId" resultType="int">
         select chat_room_seq.currval from dual
@@ -162,7 +183,40 @@
         values(#{roomId}, #{userId})
     </insert>
     <!-- 나를 제외한 모든 유저(임직원) -->
-    <select id="getAllExceptMe" resultType="int">
+    <select id="getAllExceptMe" resultType="WebuserDto">
         select webuser_id, webuser_name from webuser where webuser_id != #{myId}
+    </select>
+    <!-- 인원 수 조회 -->
+    <select id="getRoomUserCount" resultType="int">
+        select count(*)
+        from chat_room_user
+        where room_id = #{roomId}
+    </select>
+    <!-- 특정 채팅방의 최신 메시지 아이디 조회 -->
+    <select id="selectMaxMessageId" resultType="int">
+        SELECT NVL(MAX(message_id), 0)
+        FROM chat_message
+        WHERE room_id = #{roomId}
+    </select>
+    <!-- 특정 채팅방의 특정 유저가 마지막으로 읽은 메시지 아이디 저장 -->
+    <update id="updateLastReadMessageId" parameterType="map">
+        UPDATE chat_room_user
+        SET last_read_message_id = #{lastReadMessageId}
+        WHERE room_id = #{roomId}
+        AND user_id = #{userId}
+    </update>
+    <!-- 메시지 읽은 사람 수 -->
+    <select id="countReadersForMessage" parameterType="map" resultType="int">
+        SELECT COUNT(*)
+        FROM chat_room_user
+        WHERE room_id = #{roomId}
+        AND user_id != #{senderId}
+        AND last_read_message_id >= #{messageId}
+    </select>
+    <!-- 채팅방 유저 아이디 리스트 -->
+    <select id="selectRoomUserIds" resultType="int">
+        SELECT user_id
+        FROM chat_room_user
+        WHERE room_id = #{roomId}
     </select>
 </mapper>
