@@ -1,0 +1,112 @@
+<section xmlns:th="http://www.thymeleaf.org"
+         th:fragment="content">
+  <div class="main">
+    <table>
+      <tr>
+        <th>승인 번호</th><th>승인자</th><th>입출고</th><th>입출고 번호</th><th>승인 상태</th><th>승인일</th>
+      </tr>
+      <tr th:each="l:${list}" onclick="showDetail(this)">
+        <td th:text="${l.approval_id}"></td>
+        <td th:text="${l.approver_id}"></td>
+        <td th:text="${l.bound_type}"></td>
+        <td th:text="${l.bound_type == 'IN' ? l.inbound_id : l.outbound_id}"></td>
+        <td th:text="${l.approval_status}"></td>
+        <td th:text="${l.created_at}"></td>
+      </tr>
+    </table>
+  </div>
+  <script>
+
+    function showDetail(btn){
+      const currentTr=btn.closest("tr");
+      const colCount = currentTr.children.length;
+
+      // 이미 상세 row 있으면 토글
+      if(currentTr.nextElementSibling &&
+              currentTr.nextElementSibling.classList.contains("detailRow")){
+        currentTr.nextElementSibling.remove();
+        return;
+      }
+
+      const bound_type=currentTr.children[2].innerText.trim();
+      const bound_id=currentTr.children[3].innerText.trim();
+
+      fetch(`/approval/detailList?bound_type=${bound_type}&bound_id=${bound_id}`)
+              .then(resp=>resp.json())
+              .then(data=>{
+
+                const tr = document.createElement("tr");
+                tr.className = "detailRow";
+
+                let rows = "";
+
+                data.forEach(l=>{
+
+                  let reasonBtn="";
+
+                  if(l.approval_status == 'REJECTED' && bound_type == 'IN'){
+                    reasonBtn = `
+                                      <button onclick="showReason('IN',${l.inbound_detail_id},
+                                      this)">사유 보기</button>
+                                    `;
+                  }else if(l.approval_status == 'REJECTED' && bound_type == 'OUT'){
+                    reasonBtn = `
+                                      <button onclick="showReason('OUT',${l.outbound_detail_id},
+                                      this)">사유 보기</button>
+                                    `;
+                  }
+
+                  rows += `
+                  <tr>
+                    <td>${l.product_id}</td>
+                    <td>${l.quantity}</td>
+                    <td>${l.approval_status}
+                        ${reasonBtn}
+                    </td>
+                  </tr>
+                `;
+                });
+
+                tr.innerHTML=`
+                  <td colspan="${colCount}">
+                     <table>
+                     <tr>
+                        <th>상품 번호</th><th>수량</th><th>승인 상태</th>
+                     </tr>
+                     ${rows}
+                     </table>
+                  </td>
+                  `;
+
+                currentTr.after(tr);
+              });
+    }
+
+    function showReason(bound_type,bound_id,btn){
+      const currentTr=btn.closest("tr");
+
+      // 이미 사유 row 있으면 토글
+      if(currentTr.nextElementSibling &&
+              currentTr.nextElementSibling.classList.contains("reasonRow")){
+        currentTr.nextElementSibling.remove();
+        return;
+      }
+
+      fetch(`/approval/showReason?bound_id=${bound_id}&bound_type=${bound_type}`)
+              .then(resp=>resp.text())
+              .then(reason=>{
+
+                const tr=document.createElement("tr");
+                tr.className="reasonRow";
+
+                tr.innerHTML= `
+                                <td colspan="3">
+                                    ${reason}
+                                </td>
+                              `;
+
+                currentTr.after(tr);
+              })
+    }
+  </script>
+</section>

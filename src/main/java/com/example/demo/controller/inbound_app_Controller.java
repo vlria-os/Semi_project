@@ -9,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -77,15 +79,19 @@ public class inbound_app_Controller {
 //        }
 //    }
 
-//    @PostMapping("/admin/inbound_app")
-//    public String inbound_app(int inbound_id,
-//                              @ModelAttribute Inbound_detailDto inbound_detailDto,
-//                              HttpSession session){
-//
-//       // int approver_id=(int)session.getAttribute("webuser_id"); //검사 필요
-//        int approver_id=1000; //
-//        int n=inboundService.update_approval(inbound_id,inbound_detailDto,approver_id);
-//
-//        return "redirect:/admin/inbound_app";
-//    }
+    @PostMapping("/admin/inbound_app")
+    @ResponseBody
+    public Map<String,Object> inbound_app(int inbound_id,
+                              Inbound_detailDto inbound_detailDto,
+                              HttpSession session){
+
+        int approver_id=(int)session.getAttribute("webuser_id");
+        int n=inboundService.update_approval(inbound_id,inbound_detailDto,approver_id);
+        List<Inbound_detailDto> detailList = requestService.inboundList(inbound_id);
+
+        Map<String,Object> result = new HashMap<>();
+        result.put("success", n>0);
+        result.put("detailList", detailList); // 최신 상세 리스트 반환
+        return result;
+    }
 }

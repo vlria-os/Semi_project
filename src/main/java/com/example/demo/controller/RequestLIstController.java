@@ -13,35 +13,40 @@ import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
-public class MainController {
+public class RequestLIstController {
     private final RequestService service;
 
-    @GetMapping("/main")
-    public String main(HttpSession session, Model model,
+    @GetMapping("/content/requsetList")
+    public String main(HttpSession session,
+                       Model model,
                        @RequestParam(name = "pageNum",defaultValue = "1") int pageNum){
         Integer role_id = (Integer) session.getAttribute("role_id");
         Integer webuser_id = (Integer) session.getAttribute("webuser_id");
 
         if (role_id == null) {
-            return "redirect:/login";
+            return "redirect:/";
         }else if(role_id == 1){
             Map<String,Object> map=service.adminBound(pageNum);
 
             model.addAttribute("list",map.get("list"));
             model.addAttribute("pageInfo",map.get("pageInfo"));
+            model.addAttribute("navFragment", "fragment/nav/adminNav");
+            model.addAttribute("content", "content/requestList");
         }else {
             if (webuser_id == null) {
-                return "redirect:/login";
+                return "redirect:/";
             }
 
             Map<String,Object> map=service.userBound(pageNum,webuser_id);
 
             model.addAttribute("list",map.get("list"));
             model.addAttribute("pageInfo",map.get("pageInfo"));
+            model.addAttribute("navFragment", "fragment/nav/officeNav");
+            model.addAttribute("content", "content/requestList");
         }
         model.addAttribute("webuser_id",webuser_id);
         model.addAttribute("role_id",role_id);
-        return "main";
+        return "layout";
     }
 
     @GetMapping("/goinbound")

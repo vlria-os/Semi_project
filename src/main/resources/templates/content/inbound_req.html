@@ -1,39 +1,6 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-
-        table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        th, td {
-            border: 1px solid #ccc;
-            padding: 6px;
-            text-align: center;
-        }
-
-        th {
-            background: #eee;
-        }
-
-        input, button {
-            padding: 4px;
-        }
-
-        a {
-            display: inline-block;
-            margin-top: 10px;
-        }
-    </style>
-</head>
-<body>
+<!-- content/productList.html -->
+<section xmlns:th="http://www.thymeleaf.org"
+         th:fragment="content">
 <table>
     <thead>
     <tr>
@@ -179,9 +146,23 @@
             .then(result => {
                 alert('요청 완료');
                 console.log(result);
+                // 1. 선택 데이터 초기화
+                Object.keys(selectedMap).forEach(id => delete selectedMap[id]);
+
+                // 2. 체크박스, 창고, 수량 초기화
+                document.querySelectorAll('#productBody tr').forEach(row => {
+                    const checkbox = row.querySelector('.chk');
+                    const warehouse = row.querySelector('.warehouse');
+                    const qty = row.querySelector('.qty');
+
+                    checkbox.checked = false;
+                    warehouse.value = '';
+                    warehouse.disabled = true;
+                    qty.value = '';
+                    qty.disabled = true;
+                });
             })
             .catch(err => console.error(err));
     }
 </script>
-</body>
-</html>
+</section>

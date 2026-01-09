@@ -1,32 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>webuserList.html</title>
-    <link rel="stylesheet" th:href="@{/css/board.css}">
-</head>
-<body>
-<div class="wrap">
-    <div class="header">
-        <div class="intoLogin">
-            <h2>warehouse</h2>
-            <div class="loginArea">
-                <p th:if="${session.roleMsg != null}" th:text="${session.roleMsg}"></p>
-                <ul>
-                    <li th:if="${session.webuser_id != null}"><button type="button" onclick="logout()">logout</button></li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="nav">
-        <ul>
-            <li th:if="${session.webuser_id != null && session.role_id == 2}"><a th:href="@{/main}">입출고 요청 내역</a></li>
-            <li th:if="${session.webuser_id != null && session.role_id == 1}"><a th:href="@{/main}">입출고 요청 승인</a></li>
-            <li th:if="${session.webuser_id != null && session.role_id == 1}"><a th:href="@{/webuser/list}">계정 관리</a></li>
-            <li th:if="${session.webuser_id != null && session.role_id == 1}"><a th:href="@{/approval/list}">승인 내역</a></li>
-        </ul>
-    </div>
+<section xmlns:th="http://www.thymeleaf.org"
+         th:fragment="content">
     <div class="main">
         <div>
             <button onclick="insertWebuser()">계정 추가</button>
@@ -83,8 +56,6 @@
             </ul>
         </div>
     </div>
-</div>
-</body>
 <script th:inline="javascript">
     function logout(){
         fetch('/logout')
@@ -106,4 +77,4 @@
         alert(msg);
     }
 </script>
-</html>
+</section>
