@@ -13,14 +13,8 @@ import java.util.List;
 public class ProductStockService {
     private final ProductStockMapper mapper;
 
-
-    public List<ListDto> selectlist() {
-        return mapper.selectlist();
-
-    }
-
-    public List<ProductStockDto> selectAll(String product_name,Integer category_id,String category_name,String product_type) {
-        return mapper.selectAll( product_name, category_id,category_name,product_type);
+    public List<ProductStockDto> selectAll(String keyword,String product_type) {
+        return mapper.selectAll(keyword,product_type);
     }
 
 }

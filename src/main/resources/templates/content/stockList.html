@@ -1,0 +1,36 @@
+<section xmlns:th="http://www.thymeleaf.org"
+         th:fragment="content">
+
+<h1>재고확인목록</h1>
+<form th:action="@{/stockList}" th:method="get">
+    <input type="text" name="product_name" placeholder="상품명,카테고리">
+    <button type="submit" style="display:none;"></button>
+    <button type="submit" name="status" value="COLD">냉장</button>
+    <button type="submit" name="status" value="FROZEN">냉동</button>
+    <button type="submit" name="status" value="ROOM">상온</button>
+    <button type="submit">검색</button>
+</form>
+
+    <table>
+        <tr>
+            <th>상품번호</th>
+            <th>이미지</th>
+            <th>상품명</th>
+            <th>가격</th>
+            <th>단위</th>
+            <th>재고수량</th>
+            <th>제품종류</th>
+            <th>카테고리</th>
+        </tr>
+        <tr th:each="ps : ${p}">
+            <td>[[${ps.product_id}]]</td>
+            <td>[[${ps.product_name}]]</td>
+            <td>[[${ps.image_id}]]</td>
+            <td>[[${ps.price}]]</td>
+            <td>[[${ps.unit}]]</td>
+            <td>[[${ps.quantity}]]</td>
+            <td>[[${ps.status}]]</td>
+            <td>[[${ps.category_path}]]</td>
+        </tr>
+</table>
+</section>

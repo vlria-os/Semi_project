@@ -24,7 +24,7 @@ public class RequestLIstController {
         Integer webuser_id = (Integer) session.getAttribute("webuser_id");
 
         if (role_id == null) {
-            return "redirect:/login";
+            return "redirect:/";
         }else if(role_id == 1){
             Map<String,Object> map=service.adminBound(pageNum);
 
@@ -34,7 +34,7 @@ public class RequestLIstController {
             model.addAttribute("content", "content/requestList");
         }else {
             if (webuser_id == null) {
-                return "redirect:/login";
+                return "redirect:/";
             }
 
             Map<String,Object> map=service.userBound(pageNum,webuser_id);

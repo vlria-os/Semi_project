@@ -14,9 +14,10 @@ public class ProductStockDto {
     private Integer price;
     private String unit;
     private Integer image_id;
-    private String product_type;
+    private String status;
     private String category_name;
     private Long stock_id;
     private Long lot_in_id;
     private Integer quantity;
+    private String category_path;
 }

@@ -3,38 +3,70 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.demo.mapper.ProductStockMapper">
+    <select id="selectAll" resultType="ProductStockDto" >
+        <!--        SELECT-->
+        <!--        P.PRODUCT_NAME as product_name,-->
+        <!--        P.CATEGORY_ID as category_id,-->
+        <!--        P.PRICE as price,-->
+        <!--        P.UNIT as unit,-->
+        <!--        P.IMAGE_ID as image_id,-->
+        <!--        P.PRODUCT_TYPE as product_type,-->
+        <!--        S.STOCK_ID as stock_id,-->
+        <!--        S.LOT_IN_ID as lot_in_id,-->
+        <!--        S.QUANTITY as quantity-->
+        <!--        FROM PRODUCT P-->
+        <!--        JOIN STOCK S ON P.PRODUCT_ID=S.PRODUCT_ID-->
+        <!--        JOIN category c ON P.category_ID=c.category_ID-->
 
-    <select id="selectlist" resultType="com.example.demo.dto.ListDto">
-        select * from STOCK
-    </select>
-    <select id="selectAll" resultType="com.example.demo.dto.ProductStockDto" parameterType="string">
+
+
+
+        <!--            <if test="product_name !=null and product_name !=''">-->
+        <!--                and p.product_name like '%' || #{product_name} || '%'-->
+        <!--            </if>-->
+        <!--            <if test="category_name !=null and category_name !=''">-->
+        <!--                or c.category_name like '%' || #{category_name} || '%'-->
+        <!--            </if>-->
+        <!--상품명 or 카테고리명 검색  -->
+
+
         SELECT
-        P.PRODUCT_NAME as product_name,
-        P.CATEGORY_ID as category_id,
-        P.PRICE as price,
-        P.UNIT as unit,
-        P.IMAGE_ID as image_id,
-        P.PRODUCT_TYPE as product_type,
-        S.STOCK_ID as stock_id,
-        S.LOT_IN_ID as lot_in_id,
-        S.QUANTITY as quantity
-        FROM PRODUCT P JOIN STOCK S
-        ON P.PRODUCT_ID=S.PRODUCT_ID
+            p.product_id,
+            p.product_name,
+            p.price,
+            p.unit,
+            p.status,
+            p.category_id,
+            c.category_path,
+            sum(s.quantity) as quantity<!--집계함수적용-->
+        FROM product p
+        JOIN (
+            SELECT
+            category_id,
+            LTRIM(SYS_CONNECT_BY_PATH(category_name, '>'), '>') AS category_path
+            FROM category
+            START WITH parent_id IS NULL
+            CONNECT BY PRIOR category_id = parent_id
+        ) c ON p.category_id = c.category_id
+        join stock s on p.product_id=s.product_id
+
         <where>
-            <if test="product_name !=null and product_name !=''">
-                and p.product_name like '%' || #{product_name} || '%'
+            <if test="keyword != null and keyword.trim() != ''">
+                p.product_name LIKE '%' || #{keyword} || '%'
+                OR c.category_path LIKE '%' || #{keyword} || '%'
             </if>
-            <if test="category_name !=null and category_name !=''">
-                and c.category_name like '%' || #{category_name} || '%'
+            <if test="status != null and status !=''">
+                and  p.status = #{status}
             </if>
-
-            <if test="category_id !=null and category_id !=''">
-                and p.category_id = #{category_id}
-            </if>
-            <if test="product_type != null and product_type !=''">
-                and p.product_type = #{product_type}
-            </if>
-
         </where>
+        group by
+            p.product_id,
+            p.product_name,
+            p.price,
+            p.unit,
+            p.status,
+            p.category_id,
+            c.category_path
     </select>
 </mapper>
+
