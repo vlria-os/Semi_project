@@ -23,6 +23,14 @@ public class ProductListController {
     private final String UPLOADPATH="c:/image_Semi/";
     private final ProductService productService;
 
+    @GetMapping("content/productList")
+    public String productList(Model model) {
+        model.addAttribute("list", productService.productList());
+        model.addAttribute("navFragment", "fragment/nav/officeNav");
+        model.addAttribute("content", "content/productList");
+        return "layout";
+    }
+
     @GetMapping("/common/product_list")
     public String inbound_reqForm(Model model){
         List<ProductDto> productDtos=productService.productList("");

@@ -1,4 +1,4 @@
-package com.example.demo.controller;
+package com.example.demo.controller.chat;
 
 import com.example.demo.ChatPresenceStore;
 import com.example.demo.dto.ChatListUpdateDto;
