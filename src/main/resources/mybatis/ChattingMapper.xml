@@ -163,6 +163,6 @@
     </insert>
     <!-- 나를 제외한 모든 유저(임직원) -->
     <select id="getAllExceptMe" resultType="int">
-        select webuser_id, name from webuser where webuser_id != #{myId}
+        select webuser_id, webuser_name from webuser where webuser_id != #{myId}
     </select>
 </mapper>
