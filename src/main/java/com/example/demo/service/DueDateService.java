@@ -40,9 +40,6 @@ public class DueDateService {
     }
 
     public List<DueDateDto> getSideDateList(){
-        Map<String, Object> map=new HashMap<>();
-        map.put("startRow", 1);
-        map.put("endRow", 3);
-        return dMapper.getDueDateList(map);
+        return dMapper.getSideDateList();
     }
 }

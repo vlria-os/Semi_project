@@ -75,7 +75,7 @@
   </div>
 
   <!-- sidebar -->
-  <div class="sidebar">
+  <div class="sidebar" th:fragment="sidebarContent">
     <!--유통기한 임박-->
     <div class="expiration-notif">
       <div class="side-title">
@@ -91,7 +91,7 @@
           </li>
         </ul>
         <div class="no-data" th:if="${#lists.isEmpty(dueList)}">
-          <p>임학한 상품이 없습니다.</p>
+          <p>임박한 상품이 없습니다.</p>
         </div>
       </div>
     </div>
@@ -118,4 +118,13 @@
   </div>
 </div>
 </body>
+<script>
+  document.addEventListener("DOMContentLoaded", function (){
+    fetch('/main/sidebar')
+            .then(response=>response.text())
+            .then(html=>{
+              document.querySelector(".sidebar-container").innerHTML=html;
+            });
+  });
+</script>
 </html>

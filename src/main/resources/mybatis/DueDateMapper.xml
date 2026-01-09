@@ -61,4 +61,21 @@
         join product p on id.product_id = p.product_id
         <include refid="dateSearch"/>
     </select>
+
+    <select id="getSideDateList" resultType="DueDateDto">
+        select * from (
+            select
+                p.product_name,
+                trunc(li.expiration_date) - trunc(sysdate) as days_left
+            from stock s
+            join lot_in li on s.lot_in_id = li.lot_in_id
+            join inbound_detail id on li.inbound_detail_id = id.inbound_detail_id
+            join product p on id.product_id = p.product_id
+            where s.quantity > 0
+            and li.expiration_date >= trunc(sysdate)
+            order by li.expiration_date asc
+        <![CDATA[
+        ) where rownum <= 3
+        ]]>
+    </select>
 </mapper>

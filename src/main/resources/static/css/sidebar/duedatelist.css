@@ -1,4 +1,3 @@
-/* Layout & Container */
 body {
     background-color: #f8fafc;
     margin: 0;
@@ -28,7 +27,6 @@ body {
     color: #1e293b;
 }
 
-/* View Toggle (Top Buttons) */
 .view-toggle {
     display: flex;
     gap: 15px;
@@ -55,10 +53,9 @@ body {
 .view-btn.active {
     color: #2563eb;
     border-bottom: 3px solid #2563eb;
-    margin-bottom: -2px; /* Overlap the border */
+    margin-bottom: -2px;
 }
 
-/* Filter Container */
 .filter-container {
     background: #fff;
     padding: 20px;
@@ -121,7 +118,6 @@ body {
     cursor: pointer;
 }
 
-/* Data Table */
 .dueDateTable {
     width: 100%;
     border-collapse: collapse;
@@ -151,7 +147,6 @@ body {
     background-color: #f1f5f9;
 }
 
-/* D-Day Alert Styling */
 .alert {
     background-color: #fee2e2;
     color: #ef4444;
@@ -160,7 +155,6 @@ body {
     font-weight: bold;
 }
 
-/* Pagination */
 .pagination_wrap {
     margin-top: 30px;
     display: flex;
@@ -190,7 +184,6 @@ body {
     border-color: #2563eb;
 }
 
-/* AJAX Loading State */
 #dueDateContainer {
     transition: opacity 0.3s ease;
 }

@@ -10,4 +10,5 @@ import java.util.Map;
 public interface DueDateMapper {
     List<DueDateDto> getDueDateList(Map<String, Object> map);
     int getDateCount(Map<String, Object> map);
+    List<DueDateDto> getSideDateList();
 }

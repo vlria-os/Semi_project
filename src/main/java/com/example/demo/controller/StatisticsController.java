@@ -17,7 +17,7 @@ public class StatisticsController {
     private final StatisticsService statsService;
 
     @GetMapping("/statistics")
-    public String itemStats(Model model){
+    public String itemStats(Model model) throws Exception{
         Map<String, Object> statsData= statsService.getSalesBoard();
         model.addAttribute("stats", statsData.get("summary"));
         model.addAttribute("rankList", statsData.get("ranking"));

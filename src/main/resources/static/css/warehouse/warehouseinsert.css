@@ -1,4 +1,3 @@
-/* General Page Styling */
 body {
     background-color: #f8faff;
     font-family: 'Inter', -apple-system, sans-serif;
@@ -8,11 +7,10 @@ body {
 }
 
 .container {
-    max-width: 600px; /* Centered narrow form for better UX */
+    max-width: 600px;
     margin: 0 auto;
 }
 
-/* Card Styling for the Form */
 .addWarehouse {
     background: white;
     padding: 40px;
@@ -21,25 +19,24 @@ body {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
 }
 
-/* Spacing for each form group */
 .addWarehouse form > div {
     margin-bottom: 20px;
     display: flex;
-    flex-direction: column; /* Label on top of Input */
+    flex-direction: column;
     gap: 8px;
 }
 .addWarehouse a {
-    display: block; /* Makes it fill the width like the submit button */
+    display: block;
     text-align: center;
-    text-decoration: none; /* Removes underline */
-    background-color: #f1f5f9; /* Light grey/blue */
-    color: #64748b; /* Slate grey */
+    text-decoration: none;
+    background-color: #f1f5f9;
+    color: #64748b;
     padding: 14px;
     border-radius: 10px;
     font-weight: 500;
     font-size: 15px;
     transition: background 0.2s, color 0.2s;
-    margin-top: 10px; /* Space between Reset and Back */
+    margin-top: 10px;
 }
 
 .addWarehouse a:hover {
@@ -47,14 +44,12 @@ body {
     color: #334155;
 }
 
-/* Label Styling */
 label {
     font-size: 14px;
     font-weight: 600;
     color: #475569;
 }
 
-/* Input & Select Field Styling */
 input[type="text"],
 input[type="number"],
 select {
@@ -64,7 +59,7 @@ select {
     border-radius: 10px;
     font-size: 15px;
     background-color: #fcfcfc;
-    box-sizing: border-box; /* Ensures padding doesn't break width */
+    box-sizing: border-box;
     transition: border-color 0.2s, box-shadow 0.2s;
 }
 
@@ -74,9 +69,8 @@ input:focus, select:focus {
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* Submit Button Styling */
 input[type="submit"] {
-    background-color: #3b82f6; /* Bright Blue */
+    background-color: #3b82f6;
     color: white;
     border: none;
     padding: 14px;
@@ -101,41 +95,37 @@ input[type="reset"] {
     border-radius: 10px;
     font-weight: 500;
     cursor: pointer;
-    width: 100%; /* Optional: makes buttons equal width */
+    width: 100%;
 }
 
 input[type="reset"]:hover {
     background-color: #e2e8f0;
 }
 
-/* Styling the Select Dropdown */
 select {
     cursor: pointer;
-    appearance: none; /* Removes default arrow to custom style it if desired */
+    appearance: none;
     background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 1rem center;
     background-size: 1em;
 }
 
-/* Container for the buttons */
 .button-group {
     display: flex;
     flex-direction: column;
     gap: 10px;
 }
 
-/* Putting Reset and Back on the same line */
 .sub-button {
     display: flex;
     gap: 10px;
 }
 
 .sub-button > * {
-    flex: 1; /* Makes them equal width */
+    flex: 1;
 }
 
-/* Ensure the link inside secondary-actions matches the padding of the input */
 .sub-button a {
-    margin-top: 0; /* Reset margin since we use gap now */
+    margin-top: 0;
 }

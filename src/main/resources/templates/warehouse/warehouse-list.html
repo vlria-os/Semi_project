@@ -12,7 +12,7 @@
     <div class="storage">
         <div class="main">
             <div class="main-title">
-                <span class="main-icon">[ICON]</span>
+                <span class="main-icon">🏗️</span>
                 창고 관리
             </div>
             <div class="main-option">
@@ -86,7 +86,7 @@
             const url=`/warehouse/list?keyword=${encodeURIComponent(keyword)}&field=${currentField}&isAjax=true`;
             try{
                 const response=await fetch(url);
-                if(!response.ok) throw new Error("Server Error");
+                if(!response.ok) throw new Error(`Server Error: ${response.status}`);
                 const html=await response.text();
                 const parser=new DOMParser(); //convert text to DOM to extract the specific section
                 const doc=parser.parseFromString(html, 'text/html');

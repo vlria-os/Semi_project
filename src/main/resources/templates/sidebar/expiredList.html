@@ -11,7 +11,7 @@
     <!--폐기 목록-->
     <div class="main">
         <div class="main-title">
-            <span class="main-icon">[ICON]</span>
+            <span class="main-icon">🗑️</span>
             폐기 내역
         </div>
         <!--이동 버튼-->
@@ -89,6 +89,8 @@
         async function updateTable(pageNum =1){
             const keyword=searchBar.value;
             const warehouseFilter=warehouseSelect.value;
+            //const activeBtn=document.querySelect(".filter-btn.active");
+            //const typeFilter=activeBtn ? activeBtn.value : "all";
             const typeFilter=document.querySelector(".filter-btn.active").value;
 
             container.style.opacity="0.5";

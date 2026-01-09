@@ -9,25 +9,25 @@
 <body>
 <div class="container">
 
-  <!--창고 관리-->
+  <!--매출 동계-->
   <div class="storage">
     <div class="main">
       <div class="main-title">
         <span class="main-icon">📊</span>
-        매충 동계
+        매출 통계
       </div>
       <!--이동 버튼-->
       <div class="view-toggle">
         <button class="view-btn active" data-view=""><a th:href="@{/stats/statistics}">품목별</a></button>
         <button class="view-btn"><a th:href="@{/stats/period}">기간별</a></button>
-        <button class="view-btn"><a th:href="@{/stats/waste}">폐기률</a></button>
+        <button class="view-btn"><a th:href="@{/stats/waste}">폐기율</a></button>
       </div>
     </div>
   </div>
 
   <div class="total-stats">
     <div class="stat-card">
-      <span class="label">총 매충액</span>
+      <span class="label">총 매출액</span>
       <div class="value" th:text="${#numbers.formatInteger(stats.total_revenue, 3, 'COMMA')} + '원'">0원</div>
     </div>
     <div class="stat-card">
@@ -40,14 +40,14 @@
     </div>
   </div>
   <!--통계 차트-->
-  <div class="chart-container" style="position: relative; height:40ch; width: 80vw; margin: auto;">
+  <div class="chart-container" style="position: relative; height:400px;">
     <canvas id="salesChart"></canvas>
   </div>
   <!--통계 게시판-->
   <div class="item-list">
     <table class="stats-table">
       <tr>
-        <th>순위</th><th>품목명</th><th>판매일</th><th>매출액</th><th>점유율</th>
+        <th>순위</th><th>품목명</th><th>판매량</th><th>매출액</th><th>점유율</th>
       </tr>
       <tr th:each="item, stat : ${rankList}">
         <td th:text="${stat.count}"></td>
@@ -66,13 +66,13 @@
 </body>
 <script th:inline="javascript">
   document.addEventListener("DOMContentLoaded", function(){
-    const rawData=/*[[${Ranking}]]*/'[]';
-    const data=JSON.parse(rawData);
+    const data=/*[[${rankList}]]*/'[]';
+    if(!data || data.length===0) return;
 
     const labels=data.map(item=>item.product_name);
     const revenues=data.map(item=>item.revenue);
-    const sC=document.getElementById('salesChart').getContext('2d');
-    new Chart(sC, {
+    const ctx=document.getElementById('salesChart').getContext('2d');
+    new Chart(ctx, {
     type: 'bar',
     data: {
       labels: labels,

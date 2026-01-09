@@ -109,9 +109,10 @@
             ROUND((NVL(sum_stock.total, 0) / w.maximum_capacity) * 100, 1) as usage_rate
         from warehouse w
         left join (
-            select warehouse_id, sum(quantity) as total
-            from stock
-            group by warehouse_id
+            select li.warehouse_id, sum(s.quantity) as total
+            from stock s
+            join lot_in li on s.lot_in_id = li.lot_in_id
+            group by li.warehouse_id
         ) sum_stock on w.warehouse_id = sum_stock.warehouse_id
         order by usage_rate desc
         fetch first 10 rows only
