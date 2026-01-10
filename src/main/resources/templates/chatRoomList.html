@@ -25,7 +25,20 @@
     <tr th:each="room:${list}"
         th:attr="data-room-id=${room.room_id}">
         <td>
-            <div><a th:href="@{'/chat/room/'+${room.room_id}}" th:text="${room.room_name}"></a></div>
+            <div class="room-title">
+                <a href="#" th:attr="data-room-id=${room.room_id}"
+                    th:text="${room.room_name}"
+                    onclick="openChatWindow(this); return false;"></a>
+
+                <!-- ✅ 단체방이면 인원수 뱃지 -->
+                <span class="group-badge"
+                      th:attr="data-room-type=${room.roomType}"
+                      th:text="${room.user_count}"
+                      th:style="${room.roomType == 'group' and room.user_count >= 3}
+                ? 'font-size:11px;padding:2px 6px;border-radius:999px;border:1px solid #ccc;color:#555;background:#f7f7f7;display:inline-block;margin-left:6px;'
+                : 'display:none;'">
+                </span>
+            </div>
             <div class="last-message" style="font-size: 12px;color: gray;"
                     th:text="${room.last_message}">
             </div>
@@ -94,6 +107,26 @@
                 moveRowToTop(row);
             }
 
+            // ✅ 단체방 인원 뱃지 갱신
+            const badge = row.querySelector(".group-badge");
+            if(!badge) return;
+            const cnt = data.userCount ?? 0;
+
+            if (data.roomType === "group" && cnt >= 3) {
+                badge.innerText = cnt;
+                badge.style.display = "inline-block";
+            } else {
+                badge.style.display = "none";
+            }
+
+
+
+        });
+
+        stompClient.subscribe("/topic/chat-room-removed/" + userId, function(msg){
+            const roomId = parseInt(msg.body);
+            const row = document.querySelector(`[data-room-id="${roomId}"]`);
+            if(row) row.remove();
         });
 
     });
@@ -127,6 +160,41 @@
             menu.style.display = "none";
         }
     });
+
+    function openChatWindow(el){
+        const roomId = el.getAttribute("data-room-id");
+        const url = "/chat/room/" + roomId;
+
+        // 같은 방이면 같은 창을 재사용(PC카톡 느낌)
+        const windowName = "chat_room_" + roomId;
+
+        // 창 옵션
+        const features = "width=420,height=720,resizable=yes,scrollbars=yes";
+
+        const w = window.open(url, windowName, features);
+
+        // 팝업 차단 대비
+        if(!w){
+            alert("팝업 차단 중! 허용 후 다시 시도하세요.");
+            return;
+        }
+
+        w.focus();
+    }
+
+    window.addEventListener("message", function (event) {
+        if (event.origin !== window.location.origin) return;
+
+        const data = event.data || {};
+        if (data.type !== "CHAT_ROOM_LEFT") return;
+
+        const roomId = data.roomId;
+
+        // ✅ 목록에서 해당 방 즉시 제거
+        const row = document.querySelector(`[data-room-id="${roomId}"]`);
+        if (row) row.remove();
+    });
+
 </script>
 </body>
 </html>

@@ -1,10 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.ChatPresenceStore;
-import com.example.demo.dto.ChatListUpdateDto;
-import com.example.demo.dto.ChatMessageDto;
-import com.example.demo.dto.ChatRoomDto;
-import com.example.demo.dto.WebuserDto;
+import com.example.demo.dto.*;
 import com.example.demo.mapper.ChattingMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -151,6 +148,35 @@ public class ChattingService {
 
     public String getDisplayRoomName(int roomId, int userId){
         return mapper.selectDisplayRoomName(roomId, userId);
+    }
+
+    public int getRoomUserCount(int roomId){
+        return mapper.getRoomUserCount(roomId);
+    }
+
+    @Transactional
+    public ChatLeaveResultDto leaveGroupRoom(int roomId, int userId){
+        //1. group 방인지 체크
+        String roomType = mapper.selectRoomType(roomId);
+        if(!"group".equals(roomType)){
+            throw new IllegalStateException("단체 채팅방만 퇴장할 수 있어요!");
+        }
+
+        //2. 퇴장 전 멤버 목록 확보
+        List<Integer> beforeMembers=mapper.selectRoomUserIds(roomId);
+        if(!beforeMembers.contains(userId)){
+            return new ChatLeaveResultDto(roomId, userId, List.of());
+        }
+
+        //3. 삭제
+        Map<String,Object> del=new HashMap<>();
+        del.put("roomId",roomId);
+        del.put("userId",userId);
+        mapper.deleteChatRoomUser(del);
+
+        List<Integer> remaining = mapper.selectRoomUserIds(roomId);
+
+        return new ChatLeaveResultDto(roomId, userId, remaining);
     }
 
 

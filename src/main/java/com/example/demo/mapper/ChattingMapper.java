@@ -63,5 +63,9 @@ public interface ChattingMapper {
     String selectDisplayRoomName(@Param("roomId") int roomId,
                                  @Param("userId") int userId);
 
+    String selectRoomType(@Param("roomId") int roomId);
+
+    int deleteChatRoomUser(Map<String, Object> map);
+
 
 }

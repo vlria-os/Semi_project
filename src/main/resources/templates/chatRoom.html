@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>chatRoom.html</title>
+    <title th:text="${displayRoomName}">chatRoom</title>
     <style>
       .chat-container {
         width: 400px;
@@ -109,8 +109,16 @@
 <body>
 <div class="chat-container">
     <button onclick="goToChatlist()">← 채팅 목록</button>
+    <button type="button" onclick="leaveRoom()">🚪 퇴장</button>
+
     <div style="padding:6px 10px; font-weight:bold;">
         <span th:text="${displayRoomName}">채팅방</span>
+        <span th:if="${roomUserCount != null and roomUserCount > 2}"
+                th:text="${roomUserCount}"
+              style="font-size:11px;padding:2px 6px;
+              border-radius:999px;border:1px solid #ccc;color:#555;background:#f7f7f7;">
+
+        </span>
     </div>
     <!-- 접속 상태 표시 -->
     <div id="presence" style="font-size:12px;color:gray; padding:5px;">
@@ -331,8 +339,58 @@
         }
     });
 
+    async function leaveRoom() {
+        const ok = confirm("이 단체 채팅방에서 퇴장할까요?");
+        if (!ok) return;
+
+        try {
+            const res = await fetch(`/chat/room/${room_id}/leave`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (!res.ok) {
+                alert("퇴장 실패");
+                return;
+            }
+
+            // 웹소켓 퇴장 알림 (선택이지만 정석)
+            try {
+                if (stompClient && stompClient.connected) {
+                    stompClient.send("/app/chat/leave", {}, JSON.stringify({
+                        roomId: room_id,
+                        userId: user_id
+                    }));
+                    stompClient.disconnect(() => {});
+                }
+            } catch (e) {}
+
+            // 팝업이면 닫기 / 일반 페이지면 목록으로
+            if (window.opener) {
+                window.opener.postMessage(
+                    { type: "CHAT_ROOM_LEFT", roomId: room_id },
+                    window.location.origin
+                );
+                window.close();
+            } else {
+                location.href = "/chat/list";
+            }
+
+        } catch (e) {
+            console.error(e);
+            alert("퇴장 중 오류 발생");
+        }
+    }
+
+
     function goToChatlist(){
-        location.href="/chat/list";
+        if(window.opener){
+            window.close();
+        }else {
+            location.href="/chat/list";
+        }
     }
 </script>
 </body>

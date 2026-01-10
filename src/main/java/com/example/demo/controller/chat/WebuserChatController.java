@@ -1,24 +1,24 @@
 package com.example.demo.controller.chat;
 
-import com.example.demo.dto.ChatMessageDto;
-import com.example.demo.dto.ChatRoomDto;
-import com.example.demo.dto.WebuserDto;
+import com.example.demo.ChatPresenceStore;
+import com.example.demo.dto.*;
 import com.example.demo.service.ChattingService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
 public class WebuserChatController {
     private final ChattingService service;
+    private final SimpMessagingTemplate template;
+    private final ChatPresenceStore store;
 
     @GetMapping("/chat/list")
     public String chatRoomList(HttpSession session, Model model){
@@ -71,8 +71,15 @@ public class WebuserChatController {
         model.addAttribute("user_id",myId);
         model.addAttribute("displayRoomName",
                 service.getDisplayRoomName(roomId,myId));
+        model.addAttribute("roomUserCount",
+                            service.getRoomUserCount(roomId));
 
         model.addAttribute("messages",service.getMessages(roomId,myId));
+
+        if(!service.isParticipant(roomId, myId)){
+            return "redirect:/chat/list";
+        }
+
         return "chatRoom";
     }
 
@@ -99,5 +106,29 @@ public class WebuserChatController {
         int roomId=service.createGroupRoom(roomName,userIds);
 
         return "redirect:/chat/room/"+roomId;
+    }
+
+    @PostMapping("/chat/room/{roomId}/leave")
+    @ResponseBody
+    public ChatLeaveResultDto leaveGroupRoom(@PathVariable int roomId, HttpSession session){
+        int userId=(int)session.getAttribute("webuser_id");
+
+        ChatLeaveResultDto result=service.leaveGroupRoom(roomId,userId);
+
+        result.getRemainingUserIds().removeIf(uid -> uid == userId);
+
+        store.leaveRoom(roomId,userId);
+
+        template.convertAndSend("/topic/presence/" + roomId,
+                store.getUserCount(roomId));
+
+        template.convertAndSend("/topic/chat-room-removed/" + userId, roomId);
+
+        for(Integer uid: result.getRemainingUserIds()){
+            ChatListUpdateDto update=service.getChatListUpdate(roomId,uid);
+            template.convertAndSend("/topic/chat-list/" + uid, update);
+        }
+
+        return result;
     }
 }

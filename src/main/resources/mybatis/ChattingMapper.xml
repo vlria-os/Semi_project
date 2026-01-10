@@ -62,7 +62,7 @@
     <select id="chatRoomListSummary" parameterType="int" resultType="ChatRoomDto">
         SELECT
         r.room_id,
-        r.room_type,
+        r.room_type AS roomType,
         CASE
         WHEN r.room_type = 'one' THEN opp.webuser_name
         ELSE r.room_name
@@ -71,16 +71,28 @@
         lm.content AS last_message,
         lm.created_at AS last_time,
 
-        NVL(uc.unread_count, 0) AS unread_count
+        NVL(uc.unread_count, 0) AS unread_count,
+        NVL(cnt.user_count, 0) AS user_count
+
         FROM chat_room r
         JOIN chat_room_user ru
         ON r.room_id = ru.room_id
         AND ru.user_id = #{userId}
 
-        -- ✅ 1:1 상대 이름 가져오기 (내가 아닌 유저)
+        LEFT JOIN (
+        SELECT room_id, COUNT(*) AS user_count
+        FROM chat_room_user
+        GROUP BY room_id
+        ) cnt
+        ON cnt.room_id = r.room_id
+
+        -- ✅ 1:1 상대 이름 가져오기 (내가 아닌 유저) : one일 때만 붙도록
         LEFT JOIN chat_room_user ru2
         ON ru2.room_id = r.room_id
+        AND r.room_type = 'one'
         AND ru2.user_id != #{userId}
+
+        -- ✅ 이 줄이 없어서 에러난 거!
         LEFT JOIN webuser opp
         ON opp.webuser_id = ru2.user_id
 
@@ -102,7 +114,7 @@
         ) lm
         ON lm.room_id = r.room_id
 
-        -- ✅ 방별 안 읽은 메시지 수 (너가 이미 last_read 방식으로 만든 버전)
+        -- ✅ 방별 안 읽은 메시지 수
         LEFT JOIN (
         SELECT
         m.room_id,
@@ -129,27 +141,20 @@
     <select id="selectChatRoomSummary"
             resultType="ChatListUpdateDto">
         SELECT
-        r.room_id AS roomId,
+        r.room_id     AS roomId,
+        r.room_type   AS roomType,
 
-        CASE
-        WHEN r.room_type = 'one' THEN opp.webuser_name
-        ELSE r.room_name
-        END AS roomName,
-
-        lm.content AS lastMessage,
+        lm.content    AS lastMessage,
         lm.created_at AS lastTime,
-        NVL(uc.unread_count, 0) AS unreadCount
+
+        NVL(uc.unread_count, 0) AS unreadCount,
+        NVL(cnt.user_count, 0)  AS userCount
         FROM chat_room r
         JOIN chat_room_user ru
         ON r.room_id = ru.room_id
         AND ru.user_id = #{userId}
 
-        LEFT JOIN chat_room_user ru2
-        ON ru2.room_id = r.room_id
-        AND ru2.user_id != #{userId}
-        LEFT JOIN webuser opp
-        ON opp.webuser_id = ru2.user_id
-
+        -- ✅ 마지막 메시지
         LEFT JOIN (
         SELECT room_id, content, created_at
         FROM (
@@ -167,6 +172,7 @@
         ) lm
         ON lm.room_id = r.room_id
 
+        -- ✅ 안 읽은 메시지 수(last_read 기반)
         LEFT JOIN (
         SELECT
         m.room_id,
@@ -180,6 +186,14 @@
         GROUP BY m.room_id
         ) uc
         ON uc.room_id = r.room_id
+
+        -- ✅ 방 인원수
+        LEFT JOIN (
+        SELECT room_id, COUNT(*) AS user_count
+        FROM chat_room_user
+        GROUP BY room_id
+        ) cnt
+        ON cnt.room_id = r.room_id
 
         WHERE r.room_id = #{roomId}
     </select>
@@ -251,6 +265,7 @@
         </foreach>
         <![CDATA[AND last_read_message_id < #{messageId}]]>
     </update>
+    <!-- 채팅방 이름 -->
     <select id="selectDisplayRoomName" resultType="string">
         SELECT
         CASE
@@ -261,12 +276,30 @@
         JOIN chat_room_user ru
         ON ru.room_id = r.room_id
         AND ru.user_id = #{userId}
+
+        LEFT JOIN (
+        SELECT room_id, COUNT(*) AS user_count
+        FROM chat_room_user
+        GROUP BY room_id
+        ) cnt
+        ON cnt.room_id = r.room_id
+
+        -- ✅ 1:1일 때만 상대 조인 (group이면 ru2/opp가 안 붙어서 1줄만 나옴)
         LEFT JOIN chat_room_user ru2
         ON ru2.room_id = r.room_id
+        AND r.room_type = 'one'
         AND ru2.user_id != #{userId}
         LEFT JOIN webuser opp
         ON opp.webuser_id = ru2.user_id
+
+        LEFT JOIN webuser opp ON opp.webuser_id = ru2.user_id
+
         WHERE r.room_id = #{roomId}
     </select>
-
+    <delete id="deleteChatRoomUser" parameterType="map">
+        delete from chat_room_user where room_id = #{roomId} and user_id = #{userId}
+    </delete>
+    <select id="selectRoomType" resultType="String">
+        select room_type from chat_room where room_id = #{roomId}
+    </select>
 </mapper>
