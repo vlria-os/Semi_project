@@ -45,18 +45,32 @@ public class ChattingService {
         //insert
         mapper.sendMessage(dto);
 
-        //보낸 사람은 이 메시지까지 읽은 상태로 기록
-        Map<String,Object> map=new HashMap<>();
-        map.put("roomId",dto.getRoom_id());
-        map.put("userId",dto.getSender_id());
-        map.put("lastReadMessageId",dto.getMessage_id());
-        mapper.updateLastReadMessageId(map);
+        int roomId = dto.getRoom_id();
+        int messageId = dto.getMessage_id();
+        int senderId = dto.getSender_id();
 
-        //이 메시지를 읽은 사람 수(보낸 사람 제외)
+        //보낸 사람은 이 메시지까지 읽은 상태로 기록
+        Map<String,Object> senderMap=new HashMap<>();
+        senderMap.put("roomId",roomId);
+        senderMap.put("userId",senderId);
+        senderMap.put("lastReadMessageId",messageId);
+        mapper.updateLastReadMessageId(senderMap);
+
+        //지금 방에 접속 중인 사람들도 읽은 상태로 기록
+        List<Integer> onlineUserIds=store.getUsersInRoomExcept(roomId,senderId);
+        if(!onlineUserIds.isEmpty()){
+            Map<String,Object> onlineMap=new HashMap<>();
+            onlineMap.put("roomId",roomId);
+            onlineMap.put("messageId",messageId);
+            onlineMap.put("userIds",onlineUserIds);
+            mapper.updateLastReadForOnlineUsers(onlineMap);
+        }
+
+        //이 메시지를 읽은 사람 수(보낸 사람 + 접속 중인 유저 제외)
         Map<String,Object> p=new HashMap<>();
-        p.put("roomId",dto.getRoom_id());
-        p.put("senderId",dto.getSender_id());
-        p.put("messageId",dto.getMessage_id());
+        p.put("roomId",roomId);
+        p.put("senderId",senderId);
+        p.put("messageId",messageId);
         int readers=mapper.countReadersForMessage(p);
 
         //전체 인원 - 1(보낸 사람) - readers = 안 읽은 사람 수
@@ -134,5 +148,10 @@ public class ChattingService {
     public List<Integer> getRoomUserIds(int roomId){
         return mapper.selectRoomUserIds(roomId);
     }
+
+    public String getDisplayRoomName(int roomId, int userId){
+        return mapper.selectDisplayRoomName(roomId, userId);
+    }
+
 
 }

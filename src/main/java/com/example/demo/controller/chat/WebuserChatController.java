@@ -69,6 +69,8 @@ public class WebuserChatController {
 
         model.addAttribute("room_id",roomId);
         model.addAttribute("user_id",myId);
+        model.addAttribute("displayRoomName",
+                service.getDisplayRoomName(roomId,myId));
 
         model.addAttribute("messages",service.getMessages(roomId,myId));
         return "chatRoom";

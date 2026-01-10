@@ -58,4 +58,10 @@ public interface ChattingMapper {
 
     List<Integer> selectRoomUserIds(@Param("roomId") int roomId);
 
+    int updateLastReadForOnlineUsers(Map<String,Object> map);
+
+    String selectDisplayRoomName(@Param("roomId") int roomId,
+                                 @Param("userId") int userId);
+
+
 }
