@@ -72,5 +72,11 @@ public interface ChattingMapper {
 
     int deleteChatRoomUser(Map<String, Object> map);
 
+    List<WebuserDto> selectInviteCandidates(@Param("roomId") int roomId, @Param("myId") int myId);
+
+    int isAlreadyMember(@Param("roomId") int roomId, @Param("userId") int userId);
+
+    int insertChatRoomUserWithLastRead(Map<String,Object> map);
+
 
 }

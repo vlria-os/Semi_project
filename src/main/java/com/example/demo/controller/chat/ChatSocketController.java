@@ -29,25 +29,12 @@ public class ChatSocketController {
         String senderName=service.getUserName(dto.getSender_id());
         dto.setSenderName(senderName);
 
-        // ✅ 내 메시지면 "안 읽은 사람 수" 계산해서 읽음 숫자 띄우기
-        if(dto.getSender_id() != 0){
-            int unread = service.calcUnreadCountForMyMessage(dto.getRoom_id(), dto.getSender_id(), dto.getMessage_id());
-            dto.setRead_count(unread);
-        }else{
-            dto.setRead_count(0);
-        }
-
         //채팅방 실시간
         template.convertAndSend(
                 "/topic/chat/" + dto.getRoom_id(), dto
         );
 
-        // (추가 추천) 채팅 리스트 실시간 업데이트 방송도 여기서 해야 함
-        List<Integer> userIds = service.getRoomUserIds(dto.getRoom_id());
-        for(int uid: userIds){
-            ChatListUpdateDto update=service.getChatListUpdate(dto.getRoom_id(), uid);
-            template.convertAndSend("/topic/chat-list/" + uid, update);
-        }
+        broadcastChatListUpdateToRoomUsers(dto.getRoom_id());
     }
 
     //채팅방 입장
@@ -87,6 +74,7 @@ public class ChatSocketController {
 
         // 2) ✅ "내 채팅 목록" unread 즉시 갱신 (0으로 떨어짐)
         ChatListUpdateDto update = service.getChatListUpdate(dto.getRoomId(), dto.getUserId());
+        update.setAction("upsert");
         template.convertAndSend("/topic/chat-list/" + dto.getUserId(), update);
 
         // 3) ✅ 방에 "누가 어디까지 읽었는지" 브로드캐스트 (상대 read_count 감소용)
@@ -108,5 +96,15 @@ public class ChatSocketController {
                 store.getUserCount(dto.getRoomId())
         );
     }
+
+    private void broadcastChatListUpdateToRoomUsers(int roomId) {
+        List<Integer> userIds = service.getRoomUserIds(roomId);
+        for (int uid : userIds) {
+            ChatListUpdateDto update = service.getChatListUpdate(roomId, uid);
+            update.setAction("upsert");
+            template.convertAndSend("/topic/chat-list/" + uid, update);
+        }
+    }
+
 
 }

@@ -133,6 +133,11 @@ public class WebuserChatController {
         //남은 유저들 채팅 목록 업데이트
         for(Integer uid: result.getRemainingUserIds()){
             ChatListUpdateDto update=service.getChatListUpdate(roomId,uid);
+
+            // ✅ 강제 보정 (여기!)
+            update.setUserCount(service.getRoomUserCount(roomId));
+            update.setRoomType("group");
+
             template.convertAndSend("/topic/chat-list/" + uid, update);
         }
 
@@ -146,6 +151,50 @@ public class WebuserChatController {
         }catch(Exception e){
             e.printStackTrace();
         }
+
+        int memberCount = service.getRoomUserCount(roomId);
+        template.convertAndSend("/topic/member-count/" + roomId, memberCount);
+
+        return result;
+    }
+
+    @GetMapping("/chat/room/{roomId}/invite/candidates")
+    @ResponseBody
+    public List<WebuserDto> inviteCandidates(@PathVariable int roomId,
+                                             HttpSession session){
+        int myId = (int) session.getAttribute("webuser_id");
+        return service.getInviteCandidates(roomId,myId);
+    }
+
+    @PostMapping("/chat/room/{roomId}/invite")
+    @ResponseBody
+    public ChatInviteResultDto inviteUsers(@PathVariable int roomId,
+                                           @RequestBody ChatInviteRequestDto req,
+                                           HttpSession session){
+        int myId = (int) session.getAttribute("webuser_id");
+
+        ChatInviteResultDto result=service.inviteUsersToRoom(roomId,myId,req.getUserIds());
+        if(!result.isOk())return result;
+
+        //초대 성공했으면: 시스템 메시지 발송 + 목록 업데이트 + 인원 수 업데이트
+        ChatMessageDto sys=service.sendInviteSystemMessage(roomId,myId,result.getInvitedUserIds());
+        template.convertAndSend("/topic/chat/" + roomId, sys);
+
+        //기존 멤버 + 초대된 멤버 모두 목록 업데이트
+        List<Integer> allUserIds=service.getRoomUserIds(roomId);
+
+        for(int uid:allUserIds){
+            ChatListUpdateDto update=service.getChatListUpdate(roomId,uid);
+            update.setAction("upsert");
+
+            update.setUserCount(service.getRoomUserCount(roomId));
+            update.setRoomType("group");
+
+            template.convertAndSend("/topic/chat-list/" + uid, update);
+        }
+
+        int memberCount = service.getRoomUserCount(roomId);
+        template.convertAndSend("/topic/member-count/" + roomId, memberCount);
 
         return result;
     }

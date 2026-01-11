@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,10 +19,6 @@ public class ChattingService {
     private final ChattingMapper mapper;
     private final ChatPresenceStore store;
     private static final int SYSTEM_USER_ID = 9999;
-
-    public List<ChatRoomDto> chatRoomAll(int user_id){
-        return mapper.chatRoomAll(user_id);
-    }
 
     public boolean isParticipant(int room_id, int user_id){
         Map<String, Object> map=new HashMap<>();
@@ -59,16 +56,6 @@ public class ChattingService {
         senderMap.put("lastReadMessageId",messageId);
         mapper.updateLastReadMessageId(senderMap);
 
-        //지금 방에 접속 중인 사람들도 읽은 상태로 기록
-        List<Integer> onlineUserIds=store.getUsersInRoomExcept(roomId,senderId);
-        if(!onlineUserIds.isEmpty()){
-            Map<String,Object> onlineMap=new HashMap<>();
-            onlineMap.put("roomId",roomId);
-            onlineMap.put("messageId",messageId);
-            onlineMap.put("userIds",onlineUserIds);
-            mapper.updateLastReadForOnlineUsers(onlineMap);
-        }
-
         //이 메시지를 읽은 사람 수(보낸 사람 + 접속 중인 유저 제외)
         Map<String,Object> p=new HashMap<>();
         p.put("roomId",roomId);
@@ -76,12 +63,9 @@ public class ChattingService {
         p.put("messageId",messageId);
         int readers=mapper.countReadersForMessage(p);
 
-        //전체 인원 - 1(보낸 사람) - readers = 안 읽은 사람 수
-        int total=mapper.getRoomUserCount(dto.getRoom_id());
+        int unreadPeople= calcUnreadCountForMyMessage(roomId, senderId,messageId);
 
-        int unreadPeople= (total - 1) - readers;
-
-        dto.setRead_count(Math.max(unreadPeople, 0));
+        dto.setRead_count(unreadPeople);
     }
 
     public int enterAndMarkReadAll(int roomId, int userId){
@@ -224,4 +208,75 @@ public class ChattingService {
         return Math.max(unread, 0);
     }
 
+    //초대 후보
+    public List<WebuserDto> getInviteCandidates(int roomId, int myId){
+        return mapper.selectInviteCandidates(roomId, myId);
+    }
+
+    //초대 처리
+    @Transactional
+    public ChatInviteResultDto inviteUsersToRoom(int roomId, int inviterId,
+                                                 List<Integer> targetUserIds) {
+        //방 참가자 체크(초대하는 사람도 방 멤버여야 함) => 어차피 초대 버튼은 방 안에 있는데..?
+        if (!isParticipant(roomId,inviterId)) {
+            return new ChatInviteResultDto(false, List.of(), "방 참가자가 아니라 초대할 수 없어요.");
+        }
+
+        //단체 채팅방만 => 초대 버튼 방마다 다 생겨...?
+        String roomType = mapper.selectRoomType(roomId);
+        if (!"group".equals(roomType)) {
+            return new ChatInviteResultDto(false, List.of(), "단체 채팅방에서만 초대할 수 있어요.");
+        }
+
+        if (targetUserIds == null || targetUserIds.isEmpty()) {
+            return new ChatInviteResultDto(false, List.of(), "초대할 사람을 선택하세요.");
+        }
+
+        //중복 제거
+        targetUserIds = targetUserIds.stream().distinct().toList();
+
+        int lastMessageId = mapper.selectMaxMessageId(roomId);
+
+        //이미 멤버면 제외하고 insert
+        List<Integer> invited = new ArrayList<>();
+
+        for (Integer uid : targetUserIds) {
+            int exists = mapper.isAlreadyMember(roomId, uid);
+            if (exists > 0) continue;
+
+            Map<String,Object> map=new HashMap<>();
+            map.put("roomId",roomId);
+            map.put("userId",uid);
+            map.put("lastReadMessageId",lastMessageId);
+
+            mapper.insertChatRoomUserWithLastRead(map);
+            invited.add(uid);
+        }
+
+        if (invited.isEmpty()) {
+            return new ChatInviteResultDto(false, List.of(), "이미 모두 방에 있거나 초대할 수 없어요.");
+        }
+
+        return new ChatInviteResultDto(true, invited, "초대 완료!");
+    }
+
+    //초대 시스템 메시지 생성 + 저장
+    @Transactional
+    public ChatMessageDto sendInviteSystemMessage(int roomId, int inviterId,
+                                                  List<Integer> invitedUserIds){
+        String inviterName = getUserName(inviterId);
+
+        //초대된 사람들 이름
+        List<String> names=invitedUserIds.stream().map(this :: getUserName).toList();
+
+        String content=inviterName + "님이 " + String.join(", ",names) + "님을 초대했습니다.";
+
+        ChatMessageDto dto=new ChatMessageDto(0,roomId,9999,"SYSTEM",content,null,0);
+
+        mapper.sendMessage(dto);
+        return dto;
+
+    }
 }
+
+

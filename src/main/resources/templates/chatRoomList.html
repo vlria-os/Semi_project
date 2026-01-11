@@ -65,10 +65,11 @@
                                      th:text="${room != null and room.last_time != null ? #temporals.format(room.last_time, 'HH:mm') : ''}">
                                 </div>
                                 <span class="unread unread-count"
-                                      th:if="${room != null and (room.unread_count ?: 0) > 0}"
-                                      th:text="${room.unread_count}">
+                                      th:text="${room != null ? (room.unread_count ?: 0) : 0}"
+                                      th:style="${room != null and (room.unread_count ?: 0) > 0}
+                                                    ? 'display:inline-flex;'
+                                                    : 'display:none;'">
                                 </span>
-
 
                             </div>
                         </div>
@@ -94,61 +95,55 @@
 
         stompClient.subscribe("/topic/chat-list/" + userId, function(msg){
             const data = JSON.parse(msg.body);
+            console.log("chat-list update:", data);
 
-            const row = document.querySelector(
-                `[data-room-id="${data.roomId}"]`
-            );
-            if(!row) return;
+            if(data.action === "remove"){
+                const row = document.querySelector(`[data-room-id="${data.roomId}"]`);
+                if(row) row.remove();
+                return;
+            }
 
-            //마지막 메시지 갱신
-            row.querySelector(".last-message").innerText = data.lastMessage;
+            const row = ensureRow(data); // 없으면 생성
 
-            //시간 갱신
-            row.querySelector(".last-time").innerText =
-                new Date(data.lastTime).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
+            // 마지막 메시지
+            const lastMsgEl = row.querySelector(".last-message");
+            if(lastMsgEl) lastMsgEl.innerText = data.lastMessage ?? "";
 
-            row.style.backgroundColor = "#f0f8ff";
-            setTimeout(() => row.style.backgroundColor = "", 300);
+            // 시간
+            const timeEl = row.querySelector(".last-time");
+            if(timeEl){
+                timeEl.innerText = data.lastTime
+                    ? new Date(data.lastTime).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})
+                    : "";
+            }
 
-
-            //안 읽은 수 처리
-            let unreadEl = row.querySelector(".unread-count");
-
-            if (data.unreadCount > 0) {
-                if (!unreadEl) {
-                    unreadEl = document.createElement("span");
-                    unreadEl.className = "unread unread-count";
-                    unreadEl.style.color = "";
-                    unreadEl.style.fontWeight = "";
-                    row.querySelector(".time").parentElement.appendChild(unreadEl);
-
+            // unread
+            const unreadEl = row.querySelector(".unread-count");
+            if (unreadEl) {
+                if ((data.unreadCount ?? 0) > 0) {
+                    unreadEl.style.display = "inline-flex";
+                    unreadEl.innerText = data.unreadCount;
+                } else {
+                    unreadEl.style.display = "none";
                 }
-                unreadEl.innerText = data.unreadCount;
-                unreadEl.style.display = "inline";
-            } else {
-                if (unreadEl) unreadEl.style.display = "none";
+            }
+
+            // ✅ userCount (group badge)
+            const badge = row.querySelector(".group-badge");
+            if(badge){
+                const cnt = Number(data.userCount ?? 0);
+                if(data.roomType === "group" && cnt >= 3){
+                    badge.style.display = "inline-flex";
+                    badge.innerText = cnt;
+                }else{
+                    badge.style.display = "none";
+                    badge.innerText = "";
+                }
             }
 
             moveRowToTop(row);
-
-            // ✅ 단체방 인원 뱃지 갱신
-            const badge = row.querySelector(".group-badge");
-            if(!badge) return;
-            const cnt = data.userCount ?? 0;
-
-            if (data.roomType === "group" && cnt >= 3) {
-                badge.innerText = cnt;
-                badge.style.display = "inline-block";
-            } else {
-                badge.style.display = "none";
-            }
-
-
-
         });
+
 
         stompClient.subscribe("/topic/chat-room-removed/" + userId, function(msg){
             const roomId = parseInt(msg.body);
@@ -221,6 +216,46 @@
         const row = document.querySelector(`[data-room-id="${roomId}"]`);
         if (row) row.remove();
     });
+
+    function ensureRow(data){
+        let row = document.querySelector(`[data-room-id="${data.roomId}"]`);
+        if(row) return row;
+
+        const table = document.getElementById("chatTable");
+
+        const tr = document.createElement("tr");
+        tr.className = "room-row";
+        tr.dataset.roomId = data.roomId;
+
+        const firstChar = (data.roomName && data.roomName.length > 0) ? data.roomName.substring(0,1) : "C";
+
+        tr.innerHTML = `
+    <td class="room-cell">
+      <div class="room-main">
+        <div class="avatar">${firstChar}</div>
+
+        <div class="room-text">
+          <div class="room-name-line">
+            <a class="room-name" href="#" data-room-id="${data.roomId}"
+               onclick="openChatWindow(this); return false;">${data.roomName ?? "채팅방"}</a>
+            <span class="pill group-badge" style="display:none;"></span>
+          </div>
+          <div class="sub-line last-message"></div>
+        </div>
+
+        <div style="min-width:72px; text-align:right;">
+          <div class="time last-time"></div>
+          <span class="unread unread-count" style="display:none;"></span>
+        </div>
+      </div>
+    </td>
+  `;
+
+        table.prepend(tr);
+        return tr;
+    }
+
+
 
 </script>
 </body>

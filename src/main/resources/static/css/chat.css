@@ -502,3 +502,115 @@ a.room-name:focus{
     background: var(--blue-soft);
     color: var(--blue) !important;
 }
+
+/* ---------- room actions ---------- */
+.room-actions{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+/* ---------- modal (invite) ---------- */
+.modal-overlay{
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.35);
+    z-index: 9999;
+    padding: 16px;
+}
+
+.modal-card{
+    width: 360px;
+    max-width: 92vw;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+.modal-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line);
+}
+
+.modal-title{
+    font-weight: 900;
+    font-size: 14px;
+}
+
+.modal-x{
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--muted);
+}
+
+.modal-body{
+    padding: 12px 14px;
+}
+
+.modal-hint{
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 10px;
+}
+
+.invite-list{
+    display:flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 320px;
+    overflow: auto;
+    padding-right: 4px;
+}
+
+.invite-item{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    padding: 10px 10px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    cursor: pointer;
+    background: #fff;
+}
+
+.invite-item:hover{
+    background: #f7f7f7;
+}
+
+.invite-item input{
+    width: 16px;
+    height: 16px;
+}
+
+.invite-name{
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.invite-empty{
+    padding: 14px 10px;
+    font-size: 13px;
+    color: var(--muted);
+    text-align:center;
+    border: 1px dashed var(--line);
+    border-radius: 14px;
+}
+
+.modal-foot{
+    display:flex;
+    justify-content:flex-end;
+    gap: 8px;
+    padding: 12px 14px;
+    border-top: 1px solid var(--line);
+}
