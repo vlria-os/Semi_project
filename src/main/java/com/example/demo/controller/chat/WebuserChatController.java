@@ -25,6 +25,7 @@ public class WebuserChatController {
         int myId = (int) session.getAttribute("webuser_id");
 
         List<ChatRoomDto> list=service.chatRoomListSummary(myId);
+        if(list != null) list.removeIf(r -> r == null);
         model.addAttribute("list",list);
         model.addAttribute("user_id",myId);
 
@@ -115,18 +116,35 @@ public class WebuserChatController {
 
         ChatLeaveResultDto result=service.leaveGroupRoom(roomId,userId);
 
-        result.getRemainingUserIds().removeIf(uid -> uid == userId);
+        if(result.getRemainingUserIds() == null){
+            result.setRemainingUserIds(List.of());
+        }
 
+        //presence store에서도 제거
         store.leaveRoom(roomId,userId);
 
+        //접속 인원 갱신
         template.convertAndSend("/topic/presence/" + roomId,
                 store.getUserCount(roomId));
 
+        //내 채팅 목록에서 방 제거
         template.convertAndSend("/topic/chat-room-removed/" + userId, roomId);
 
+        //남은 유저들 채팅 목록 업데이트
         for(Integer uid: result.getRemainingUserIds()){
             ChatListUpdateDto update=service.getChatListUpdate(roomId,uid);
             template.convertAndSend("/topic/chat-list/" + uid, update);
+        }
+
+        //퇴장 시스템 메시지 저장 + 채팅방에 broadcast
+        //남은 사람이 없으면 굳이 안 보내도 됨
+        try{
+            if(!result.getRemainingUserIds().isEmpty()){
+                ChatMessageDto leaveMsg=service.sendLeaveSystemMessage(roomId,userId);
+                template.convertAndSend("/topic/chat/" + roomId, leaveMsg);
+            }
+        }catch(Exception e){
+            e.printStackTrace();
         }
 
         return result;

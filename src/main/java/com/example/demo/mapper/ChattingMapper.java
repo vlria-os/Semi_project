@@ -15,7 +15,12 @@ public interface ChattingMapper {
     List<ChatRoomDto> chatRoomAll(int user_id);
     int isParticipant(Map<String, Object> map);
     ChatRoomDto getRoom(int room_id);
-    List<ChatMessageDto> getMessages(@Param("roomId") int roomId);
+    List<ChatMessageDto> getMessages(
+            @Param("roomId") int roomId,
+            @Param("userId") int userId,
+            @Param("systemId") int systemId
+    );
+
     int sendMessage(ChatMessageDto dto);
     ChatMessageDto selectReadCount(int room_id);
     List<ChatRoomDto> chatRoomListSummary(int user_id);

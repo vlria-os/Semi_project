@@ -17,6 +17,7 @@ import java.util.Map;
 public class ChattingService {
     private final ChattingMapper mapper;
     private final ChatPresenceStore store;
+    private static final int SYSTEM_USER_ID = 9999;
 
     public List<ChatRoomDto> chatRoomAll(int user_id){
         return mapper.chatRoomAll(user_id);
@@ -35,7 +36,7 @@ public class ChattingService {
 
     public List<ChatMessageDto> getMessages(int room_id, int user_id){
         enterAndMarkReadAll(room_id,user_id);
-        return mapper.getMessages(room_id);
+        return mapper.getMessages(room_id,user_id,SYSTEM_USER_ID);
     }
 
     public void sendMessage(ChatMessageDto dto){
@@ -45,6 +46,11 @@ public class ChattingService {
         int roomId = dto.getRoom_id();
         int messageId = dto.getMessage_id();
         int senderId = dto.getSender_id();
+
+        if(senderId == SYSTEM_USER_ID){
+            dto.setRead_count(0);
+            return;
+        }
 
         //보낸 사람은 이 메시지까지 읽은 상태로 기록
         Map<String,Object> senderMap=new HashMap<>();
@@ -72,8 +78,10 @@ public class ChattingService {
 
         //전체 인원 - 1(보낸 사람) - readers = 안 읽은 사람 수
         int total=mapper.getRoomUserCount(dto.getRoom_id());
+
         int unreadPeople= (total - 1) - readers;
-        dto.setRead_count(Math.max(unreadPeople,0));
+
+        dto.setRead_count(Math.max(unreadPeople, 0));
     }
 
     public int enterAndMarkReadAll(int roomId, int userId){
@@ -179,5 +187,41 @@ public class ChattingService {
         return new ChatLeaveResultDto(roomId, userId, remaining);
     }
 
+    public ChatMessageDto sendLeaveSystemMessage(int roomId, int leaverId){
+        String name=mapper.selectUserName(leaverId);
+
+        ChatMessageDto sys=new ChatMessageDto();
+        sys.setRoom_id(roomId);
+        sys.setSender_id(SYSTEM_USER_ID);
+        sys.setSenderName("SYSTEM");
+        sys.setContent(name + "님이 퇴장하였습니다.");
+
+        //db 저장
+        sendMessage(sys);
+
+        return sys; //컨트롤러에서 웹소켓으로 뿌릴 용도
+    }
+
+    @Transactional
+    public void updateLastReadUpTo(int roomId, int userId, int lastReadId){
+        Map<String,Object> map=new HashMap<>();
+        map.put("roomId",roomId);
+        map.put("userId",userId);
+        map.put("lastReadMessageId",lastReadId);
+
+        mapper.updateLastReadMessageId(map);
+    }
+
+    public int calcUnreadCountForMyMessage(int roomId, int senderId, int messageId){
+        int total = mapper.getRoomUserCount(roomId);   // 방 전체 인원
+        Map<String,Object> map = new HashMap<>();
+        map.put("roomId", roomId);
+        map.put("senderId", senderId);
+        map.put("messageId", messageId);
+
+        int readers = mapper.countReadersForMessage(map); // 나 제외하고 "읽은 사람 수"
+        int unread = (total - 1) - readers;
+        return Math.max(unread, 0);
+    }
 
 }

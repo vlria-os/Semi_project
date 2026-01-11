@@ -3,55 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <title>chatRoomList.html</title>
+    <link rel="stylesheet" th:href="@{/css/chat.css}">
 </head>
 <body>
-<h1>채팅 목록</h1>
-<div id="chatMenuWrapper" style="position: relative;display: inline-block;"></div>
-<button onclick="toggleMenu()">➕ 새 채팅</button>
-<div id="chatMenu"
-     style="display:none;
-                position:absolute;
-                background:#fff;
-                border:1px solid #ccc;
-                padding:5px;
-                z-index:100;">
-        <div>
-            <a th:href="@{/chat/new}">1:1 채팅</a>
-            <a th:href="@{/chat/group/new}">단체 채팅</a>
+<div class="chat-page">
+    <div class="chat-card">
+        <div class="chat-header">
+            <div class="title">
+                <span class="badge-dot"></span>
+                <span>채팅</span>
+            </div>
+
+            <!-- ✅ 버튼+메뉴 래퍼 (기준점) -->
+            <div class="header-actions menu-wrap">
+                <button class="btn btn-primary" type="button" onclick="toggleMenu(event)">새 채팅</button>
+
+                <!-- ✅ 버튼 바로 아래 뜨는 드롭다운 -->
+                <div id="chatMenu" class="menu-dropdown" style="display:none;">
+                    <a class="menu-item" th:href="@{/chat/new}">1:1 채팅</a>
+                    <a class="menu-item" th:href="@{/chat/group/new}">단체 채팅</a>
+                </div>
+            </div>
         </div>
-</div>
-</div>
-<table id="chatTable">
-    <tr th:each="room:${list}"
-        th:attr="data-room-id=${room.room_id}">
-        <td>
-            <div class="room-title">
-                <a href="#" th:attr="data-room-id=${room.room_id}"
-                    th:text="${room.room_name}"
-                    onclick="openChatWindow(this); return false;"></a>
 
-                <!-- ✅ 단체방이면 인원수 뱃지 -->
-                <span class="group-badge"
-                      th:attr="data-room-type=${room.roomType}"
-                      th:text="${room.user_count}"
-                      th:style="${room.roomType == 'group' and room.user_count >= 3}
-                ? 'font-size:11px;padding:2px 6px;border-radius:999px;border:1px solid #ccc;color:#555;background:#f7f7f7;display:inline-block;margin-left:6px;'
-                : 'display:none;'">
-                </span>
-            </div>
-            <div class="last-message" style="font-size: 12px;color: gray;"
-                    th:text="${room.last_message}">
-            </div>
-        </td>
+        <div class="list-wrap">
+            <table class="room-list" id="chatTable">
+                <tr th:each="room:${list}"
+                    class="room-row"
+                    th:attr="data-room-id=${room.room_id}">
+                    <td class="room-cell">
+                        <div class="room-main">
+                            <div class="avatar"
+                                 th:text="
+                                 ${room != null and room.room_name != null and #strings.length(room.room_name) > 0 ? #strings.substring(room.room_name,0,1) : 'C'}
+                                 ">C</div>
 
-        <td style="text-align: right">
-            <div class="last-time" th:text="${#temporals.format(room.last_time, 'HH:mm')}"></div>
-            <span class="unread-count" th:if="${room.unread_count > 0}" style="color: red;font-weight: bold">
-                [[${room.unread_count}]]
-            </span>
-        </td>
-    </tr>
-</table>
+
+                            <div class="room-text">
+                                <div class="room-name-line">
+                                    <a class="room-name"
+                                       href="#"
+                                       th:attr="data-room-id=${room.room_id}"
+                                       th:text="${room.room_name}"
+                                       onclick="openChatWindow(this); return false;"></a>
+
+                                    <span class="pill group-badge"
+                                          th:attr="data-room-type=${room.roomType}"
+                                          th:text="${room.user_count}"
+                                          th:style="${room.roomType == 'group' and room.user_count >= 3}
+                                            ? 'display:inline-flex;'
+                                            : 'display:none;'"></span>
+                                </div>
+
+                                <div class="sub-line last-message"
+                                     th:text="${room.last_message}">
+                                </div>
+                            </div>
+
+                            <div style="min-width:72px; text-align:right;">
+                                <div class="time last-time"
+                                     th:text="${room != null and room.last_time != null ? #temporals.format(room.last_time, 'HH:mm') : ''}">
+                                </div>
+                                <span class="unread unread-count"
+                                      th:if="${room != null and (room.unread_count ?: 0) > 0}"
+                                      th:text="${room.unread_count}">
+                                </span>
+
+
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+    </div>
+</div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
@@ -92,10 +120,11 @@
             if (data.unreadCount > 0) {
                 if (!unreadEl) {
                     unreadEl = document.createElement("span");
-                    unreadEl.className = "unread-count";
-                    unreadEl.style.color = "red";
-                    unreadEl.style.fontWeight = "bold";
-                    row.children[1].appendChild(unreadEl);
+                    unreadEl.className = "unread unread-count";
+                    unreadEl.style.color = "";
+                    unreadEl.style.fontWeight = "";
+                    row.querySelector(".time").parentElement.appendChild(unreadEl);
+
                 }
                 unreadEl.innerText = data.unreadCount;
                 unreadEl.style.display = "inline";
@@ -103,9 +132,7 @@
                 if (unreadEl) unreadEl.style.display = "none";
             }
 
-            if (data.unreadCount > 0) {
-                moveRowToTop(row);
-            }
+            moveRowToTop(row);
 
             // ✅ 단체방 인원 뱃지 갱신
             const badge = row.querySelector(".group-badge");
@@ -142,24 +169,24 @@
         }
     });
 
-    function goNewChat(){
-        location.href="/chat/new"
+    function toggleMenu(e) {
+        if (e) e.stopPropagation();
+        const menu = document.getElementById("chatMenu");
+        menu.style.display = (menu.style.display === "none" || menu.style.display === "")
+            ? "block" : "none";
     }
 
-    function toggleMenu() {
-        event.stopPropagation();
+    // 바깥 클릭 시 닫기
+    document.addEventListener("click", function () {
         const menu = document.getElementById("chatMenu");
-        menu.style.display =
-            menu.style.display === "none" ? "block" : "none";
-    }
-
-    // 바깥 클릭 시 닫기 (선택)
-    document.addEventListener("click", function (e) {
-        const menu = document.getElementById("chatMenu");
-        if (!e.target.closest("div")) {
-            menu.style.display = "none";
-        }
+        if (menu) menu.style.display = "none";
     });
+
+    // 메뉴 클릭은 닫히지 않게
+    document.getElementById("chatMenu")?.addEventListener("click", function(e){
+        e.stopPropagation();
+    });
+
 
     function openChatWindow(el){
         const roomId = el.getAttribute("data-room-id");

@@ -3,136 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="${displayRoomName}">chatRoom</title>
-    <style>
-      .chat-container {
-        width: 400px;
-        height: 600px;
-        border: 1px solid #ddd;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .chat-messages {
-        flex: 1;
-        padding: 10px;
-        overflow-y: auto;
-        background: #f9f9f9;
-      }
-
-      .message {
-          position: relative;
-          display: flex;
-          align-items: flex-end;
-          margin-bottom: 10px;
-          flex-direction: column;
-      }
-
-      .message.me {
-          align-items: flex-end;
-      }
-
-      .message.other {
-          align-items: flex-start;
-      }
-
-      .meta {
-          font-size: 10px;
-          color: gray;
-          margin-top: 2px;
-      }
-
-      .my-row{
-          display:flex;
-          align-items:flex-end;
-          justify-content:flex-end;
-          gap:6px;
-      }
-
-      /* 내 메시지 옆 숫자 */
-      .my-row .meta{
-          position: static !important;
-          margin: 0;
-          font-size: 10px;
-          color: gray;
-      }
-
-
-      .sender-name {
-          font-size: 12px;
-          color: #666;
-          margin-bottom: 2px;
-      }
-
-
-      .bubble {
-        max-width: 70%;
-        padding: 8px 12px;
-        border-radius: 16px;
-        font-size: 14px;
-        line-height: 1.4;
-        word-break: break-word;
-      }
-
-      .message.me .bubble {
-        background: #dcf8c6;
-        border-bottom-right-radius: 4px;
-      }
-
-      .message.other .bubble {
-        background: #fff;
-        border: 1px solid #ddd;
-        border-bottom-left-radius: 4px;
-      }
-
-      .chat-input {
-        display: flex;
-        padding: 10px;
-        border-top: 1px solid #ddd;
-        background: #fff;
-      }
-
-      .chat-input input {
-        flex: 1;
-        padding: 8px 10px;
-        border-radius: 20px;
-        border: 1px solid #ccc;
-      }
-
-      .chat-input button {
-        margin-left: 5px;
-        padding: 8px 12px;
-      }
-
-
-    </style>
+    <link rel="stylesheet" th:href="@{/css/chat.css}">
 </head>
 <body>
 <div class="chat-container">
-    <button onclick="goToChatlist()">← 채팅 목록</button>
-    <button type="button" onclick="leaveRoom()">🚪 퇴장</button>
+    <div class="room-topbar">
+        <button class="btn btn-ghost back-btn" onclick="goToChatlist()">
+            채팅 목록
+        </button>
 
-    <div style="padding:6px 10px; font-weight:bold;">
-        <span th:text="${displayRoomName}">채팅방</span>
-        <span th:if="${roomUserCount != null and roomUserCount > 2}"
-                th:text="${roomUserCount}"
-              style="font-size:11px;padding:2px 6px;
-              border-radius:999px;border:1px solid #ccc;color:#555;background:#f7f7f7;">
+        <div class="room-title">
+            <span class="name" th:text="${displayRoomName}">채팅방</span>
 
+            <span class="count"
+                  id="roomUserBadge"
+                  th:if="${roomUserCount != null and roomUserCount > 2}"
+                  th:text="${roomUserCount}">
         </span>
+        </div>
+
+        <button class="btn btn-danger leave-btn" onclick="leaveRoom()">
+            퇴장
+        </button>
     </div>
+
     <!-- 접속 상태 표시 -->
-    <div id="presence" style="font-size:12px;color:gray; padding:5px;">
+    <div id="presence" class="presence" style="font-size:12px;color:gray; padding:5px;">
         연결 중...
     </div>
 
     <!-- 메시지 영역 -->
   <div class="chat-messages" id="chatMessages">
       <div th:each="msg:${messages}"
-           th:class="${msg.sender_id == user_id} ? 'message me' : 'message other'">
+           th:class="${msg.sender_id == 9999} ? 'message system'
+              : (${msg.sender_id == user_id} ? 'message me' : 'message other')"
+           th:attr="data-message-id=${msg.message_id}">
 
-          <!-- 상대 이름 (말풍선 위) -->
+
+      <!-- 상대 이름 (말풍선 위) -->
           <div class="sender-name"
-               th:if="${msg.sender_id != user_id}"
+               th:if="${msg.sender_id != user_id and msg.sender_id != 9999}"
                th:text="${msg.senderName}">
           </div>
 
@@ -176,13 +86,25 @@
 
     // 메시지 화면에 추가하는 함수
     function addMessage(data) {
-        const sid = (data.sender_id ?? data.senderId);
+        const sid = Number(data.sender_id ?? data.senderId);
+        const SYSTEM_ID = 9999; // 동일하게
         const unread = (data.read_count ?? data.readCount ?? 0);
         const mid = (data.message_id ?? data.messageId ?? 0);
 
         const div = document.createElement("div");
-        div.className = (sid == user_id) ? "message me" : "message other";
         div.dataset.messageId = mid;
+
+        //system 메시지
+        if (sid === SYSTEM_ID) {
+            div.className = "message system";
+            div.innerHTML = `<div class="system-line">${data.content}</div>`;
+            chatBox.appendChild(div);
+            scrollToBottom();
+            return;
+        }
+
+
+        div.className = (sid == user_id) ? "message me" : "message other";
 
         // 상대 메시지
         if (sid != user_id) {
@@ -230,26 +152,53 @@
                 const el = document.getElementById("presence");
 
                 el.innerText=`현재 접속자 ${currentPresenceCount}명`;
+
+                const badge=document.getElementById("roomUserBadge");
+                if(badge) badge.innerText = currentPresenceCount;
             });
 
             // 채팅방 구독
-            stompClient.subscribe('/topic/chat/' + room_id, function(message) {
-                console.log("✅ chat topic 수신 raw:", message.body);
-                const data = JSON.parse(message.body);
-                console.log("수신된 메시지 전체: ", data);
-                console.log("받은 data keys:", Object.keys(data));
-                console.log("sender 비교:", data.sender_id, data.senderId, "vs", user_id);
-                console.log("read_count 확인:", data.read_count, data.readCount);
+                stompClient.subscribe('/topic/chat/' + room_id, function(message) {
+                    console.log("✅ chat topic 수신 raw:", message.body);
+                    const data = JSON.parse(message.body);
 
-                addMessage(data);
+                    addMessage(data);
 
-            });
+                    // ✅ 내가 방을 보고 있는 상태니까 "받은 메시지까지 읽음 처리"를 서버에 알림
+                    const mid = (data.message_id ?? data.messageId ?? 0);
+                    const sid = (data.sender_id ?? data.senderId ?? 0);
+
+                    // system(0)도 포함해서 마지막 읽은 메시지로 인정하면 목록 unread이 더 안정적으로 0 유지됨
+                    if (mid > 0 && stompClient && stompClient.connected) {
+                        stompClient.send("/app/chat/read", {}, JSON.stringify({
+                            roomId: room_id,
+                            userId: user_id,
+                            lastReadId: mid
+                        }));
+                    }
+                });
+
 
                 //채팅방 입장 알림
                 stompClient.send("/app/chat/enter", {}, JSON.stringify({
                     roomId: room_id,
                     userId: user_id
                 }));
+
+                // ✅ 안전장치: 화면 로드된 메시지의 마지막 message_id까지 read 한번 더 보냄
+                setTimeout(() => {
+                    const last = document.querySelector("#chatMessages .message:last-child");
+                    const lastId = last ? parseInt(last.dataset.messageId || "0") : 0;
+
+                    if (lastId > 0 && stompClient && stompClient.connected) {
+                        stompClient.send("/app/chat/read", {}, JSON.stringify({
+                            roomId: room_id,
+                            userId: user_id,
+                            lastReadId: lastId
+                        }));
+                    }
+                }, 150);
+
 
                 stompClient.subscribe('/topic/read/' + room_id, function (message){
                    const data = JSON.parse(message.body);
