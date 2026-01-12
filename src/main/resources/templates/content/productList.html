@@ -43,6 +43,20 @@
 
     <a th:href="@{/content/product_insert}">상품등록</a>
 
+    <div>
+        <ul>
+            <li th:if="${pageInfo.startPageNum > 1}">
+                <a th:href="@{/content/productList(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
+            </li>
+            <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
+                <a th:href="@{/content/productList(pageNum=${num},field=${field},keyword=${keyword})}">[[${num}]]</a>
+            </li>
+            <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
+                <a th:href="@{/content/productList(pageNum=${pageInfo.endPageNum + 1})}">다음</a>
+            </li>
+        </ul>
+    </div>
+
     <!-- 페이지 전용 스크립트 -->
     <script>
         function search(){
