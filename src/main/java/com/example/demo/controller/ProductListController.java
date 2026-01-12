@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Controller
@@ -24,10 +25,14 @@ public class ProductListController {
     private final String UPLOADPATH="c:/image_Semi/";
     private final ProductService productService;
 
-    @GetMapping("content/productList")
+    @GetMapping("/content/productList")
     public String productList(Model model,
+                              @RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
                               HttpSession session) {
-        model.addAttribute("list", productService.productList());
+        Map<String,Object> map=productService.productList(pageNum);
+
+        model.addAttribute("list", map.get("productDtos"));
+        model.addAttribute("pageInfo",map.get("pageInfo"));
         if((int)session.getAttribute("role_id")==1){
             model.addAttribute("navFragment", "fragment/nav/adminNav");
             model.addAttribute("content", "content/productList");
@@ -43,26 +48,29 @@ public class ProductListController {
     }
 
     @GetMapping("/common/product_list")
-    public String inbound_reqForm(Model model){
-        List<ProductDto> productDtos=productService.productList("");
-        model.addAttribute("list", productDtos);
+    public String inbound_reqForm(@RequestParam(name = "pageNum", defaultValue = "1") int pageNum, Model model){
+        Map<String,Object> map=productService.productList(pageNum);
+        model.addAttribute("list", map.get("productDtos"));
+        model.addAttribute("pageInfo",map.get("pageInfo"));
         return "common/product_list";
     }
 
     @PostMapping("/common/product_list")
     public String product_search(String keyword,
+                                 @RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
                                  Model model){
-        List<ProductDto> productDtos=productService.productList(keyword);
-        model.addAttribute("list", productDtos);
+        Map<String,Object> map=productService.productList(pageNum, keyword);
+        model.addAttribute("list", map.get("productDtos"));
         model.addAttribute("keyword",keyword);
         return "common/product_list";
     }
 
     @GetMapping("/common/product_search")
     @ResponseBody
-    public List<ProductDto> productSearch(@RequestParam String keyword) {
-        System.out.println(productService.productList(keyword));
-        return productService.productList(keyword);
+    public Map<String,Object> productSearch(@RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
+                                          @RequestParam String keyword) {
+        Map<String,Object> map=productService.productList(pageNum, keyword);
+        return map;
     }
 
     @GetMapping("/content/product_insert")

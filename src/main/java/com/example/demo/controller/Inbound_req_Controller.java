@@ -22,9 +22,11 @@ public class Inbound_req_Controller {
     private final ProductService productService;
 
     @GetMapping("/office_staff/inbound_req")
-    public String inbound_reqForm(Model model){
-        List<ProductDto> productDtos=productService.productList("");
-        model.addAttribute("list", productDtos);
+    public String inbound_reqForm(@RequestParam(name = "pageNum", defaultValue = "1") int pageNum, Model model){
+        Map<String,Object> map=productService.productList(pageNum);
+
+        model.addAttribute("list", map.get("productDtos"));
+        model.addAttribute("pageInfo",map.get("pageInfo"));
         model.addAttribute("navFragment", "fragment/nav/officeNav");
         model.addAttribute("content", "content/inbound_req");
         return "layout";

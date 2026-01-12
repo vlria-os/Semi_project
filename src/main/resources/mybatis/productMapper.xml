@@ -24,8 +24,11 @@
     <select id="selectOne_category" parameterType="String" resultType="int">
         select category_id from category where category_name=#{value}
     </select>
-    <select id="selectAll_keyword" parameterType="String" resultType="ProductDto">
+    <select id="selectAll_keyword" parameterType="map" resultType="ProductDto">
+        SELECT * FROM
+        (
         SELECT
+            rownum rn,
             p.product_id,
             p.product_name,
             p.price,
@@ -46,6 +49,25 @@
         WHERE
             p.product_name LIKE '%' || #{value} || '%'
             OR c.category_path LIKE '%' || #{value} || '%'
+        )
+        <![CDATA[
+        WHERE rn >= {startRow} and rn <= {endRow}
+        ]]>
+    </select>
+    <select id="count" resultType="int">
+        SELECT count(*) from product p
+        JOIN (
+        SELECT
+        category_id,
+        LTRIM(SYS_CONNECT_BY_PATH(category_name, '>'), '>') AS category_path
+        FROM category
+        START WITH parent_id IS NULL
+        CONNECT BY PRIOR category_id = parent_id
+        ) c
+        ON p.category_id = c.category_id
+        WHERE
+        p.product_name LIKE '%' || #{value} || '%'
+        OR c.category_path LIKE '%' || #{value} || '%'
     </select>
     <insert id="insert" parameterType="ProductDto">
         insert into product(
