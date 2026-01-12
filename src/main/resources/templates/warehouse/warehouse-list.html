@@ -1,11 +1,5 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" th:href="@{/css/warehouse/warehouselist.css}">
-</head>
-<body>
+<section xmlns:th="http://www.thymeleaf.org" th:fragment="content">
+<link rel="stylesheet" th:href="@{/css/warehouse/warehouselist.css}">
 <div class="container">
 
     <!--창고 관리-->
@@ -70,7 +64,6 @@
         </div>
     </div>
 </div>
-</body>
 <script>
     document.addEventListener("DOMContentLoaded", function (){
         const keywordInput=document.getElementById("keyword");
@@ -120,4 +113,4 @@
         })
     });
 </script>
-</html>
+</section>
