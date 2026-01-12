@@ -73,6 +73,7 @@ public class InboundService {
 
         if(inbound_detailDto.getApproval_status().equals("REJECTED")){
             int b=inbound_detailMapper.update_inbStatus_rej(inbound_detailDto.getInbound_detail_id());
+            int c=inbound_detailMapper.update_reason(inbound_detailDto.getReason());
         }
         return 1;
     }

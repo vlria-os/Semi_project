@@ -43,4 +43,7 @@
     <select id="selectAll" resultType="ApprovalDto">
         select * from approval
     </select>
+    <select id="select_product" parameterType="int" resultType="String">
+        select product_name from product where product_id=#{value}
+    </select>
 </mapper>

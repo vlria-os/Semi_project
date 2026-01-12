@@ -13,4 +13,5 @@ public interface Inbound_detailMapper {
     int update_appStatus(Inbound_detailDto inbound_detailDto);
     int update_appStatus_rej(int inbound_detail_id);
     int update_appStatus_conf(int inbound_detail_id);
+    int update_reason(String reason);
 }

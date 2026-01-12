@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -309,7 +311,8 @@ public class ApprovalController {
     @GetMapping("/approval/list")
     public String approvalList(Model model){
         List<ApprovalDto> list=service.approvalAll();
-        model.addAttribute("list",list);
+
+        model.addAttribute("list", list);
 
         model.addAttribute("navFragment", "fragment/nav/adminNav");
         model.addAttribute("content", "content/approvalList");

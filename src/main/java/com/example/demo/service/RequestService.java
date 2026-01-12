@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.*;
+import com.example.demo.mapper.ProductMapper;
 import com.example.demo.mapper.RequestMapper;
 import com.example.demo.pagination.PageInfo;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class RequestService {
     private final RequestMapper mapper;
+    private final ProductMapper productMapper;
 
    /* ===============================
        1. 입출고 요청 조회
@@ -185,6 +187,10 @@ public class RequestService {
     // 입고 번호로 입고 상세 조회
     public List<Inbound_detailDto> inboundList(int inbound_id){
         return mapper.inboundList(inbound_id);
+    }
+
+    public String product_name(int product_id){
+        return productMapper.select_product(product_id);
     }
 
     // 출고 번호로 출고 상세 조회

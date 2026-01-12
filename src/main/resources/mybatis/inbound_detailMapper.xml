@@ -38,6 +38,9 @@
     <update id="update_inbStatus_rej" parameterType="int">
         update inbound_detail set inbound_status='REJECTED' where inbound_detail_id=#{inbound_detail_id}
     </update>
+    <update id="update_reason" parameterType="String">
+        update inbound_detail set reason=#{value} where inbound_detail_id=#{inbound_detail_id}
+    </update>
     <update id="update_inbStatus_conf" parameterType="int">
         update inbound_detail set inbound_status='CONFIRMED' where inbound_detail_id=#{inbound_detail_id}
     </update>

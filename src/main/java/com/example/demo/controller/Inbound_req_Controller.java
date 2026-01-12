@@ -36,8 +36,7 @@ public class Inbound_req_Controller {
                               HttpSession session,
                               Model model){
         List<Inbound_reqDto> inbound_reqDtos=new ArrayList<>();
-        //int webuser_id=(int)session.getAttribute("webuser_id");
-        int webuser_id=1000;
+        int webuser_id=(int)session.getAttribute("webuser_id");
 
         for (Map<String, String> item : data) {
             Inbound_reqDto inbound_reqDto=new Inbound_reqDto(
@@ -52,17 +51,3 @@ public class Inbound_req_Controller {
         return Map.of("status", "success", "count", data.size());
     }
 }
-
-/*
-<input name="inbound_reqDtos[0].product_id" />
-<input name="inbound_reqDtos[0].warehouse_id" />
-<input name="inbound_reqDtos[0].quantity" />
-
-<input name="inbound_reqDtos[1].product_id" />
-<input name="inbound_reqDtos[1].warehouse_id" />
-<input name="inbound_reqDtos[1].quantity" />
-
-<input name="inbound_reqDtos[2].product_id" />
-<input name="inbound_reqDtos[2].warehouse_id" />
-<input name="inbound_reqDtos[2].quantity" />
- */

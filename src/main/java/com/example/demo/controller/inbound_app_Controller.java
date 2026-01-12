@@ -19,6 +19,7 @@ public class inbound_app_Controller {
     private final InboundService inboundService;
     private final RequestService requestService;
 
+
     @GetMapping("/admin/inbound_app")
     public String main(HttpSession session, Model model,
                        @RequestParam(name = "pageNum",defaultValue = "1") int pageNum){
@@ -83,6 +84,7 @@ public class inbound_app_Controller {
     @ResponseBody
     public Map<String,Object> inbound_app(int inbound_id,
                               Inbound_detailDto inbound_detailDto,
+                              String reason,
                               HttpSession session){
 
         int approver_id=(int)session.getAttribute("webuser_id");

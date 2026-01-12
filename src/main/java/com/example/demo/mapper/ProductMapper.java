@@ -15,4 +15,5 @@ public interface ProductMapper {
     int insert(ProductDto productDto);
     int selectOne_category(String category_name);
     int insert_image(Product_imageDto product_imageDto);
+    String select_product(int product_id);
 }
