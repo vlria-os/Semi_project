@@ -13,4 +13,8 @@ public class ChatListUpdateDto {
     private int unreadCount;
     private String lastMessage;
     private LocalDateTime lastTime;
+    private Integer userCount;
+    private String roomType;
+    private String roomName;
+    private String action; // "upsert" or "remove"
 }

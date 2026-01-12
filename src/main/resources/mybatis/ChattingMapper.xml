@@ -22,19 +22,38 @@
         select * from chat_room where room_id = #{room_id}
     </select>
     <!-- 해당 채팅방의 과거 메시지 전체 조회 -->
-    <select id="getMessages" parameterType="int" resultType="ChatMessageDto">
+    <select id="getMessages" resultType="ChatMessageDto">
         SELECT
         m.message_id,
         m.room_id,
         m.sender_id,
-        u.webuser_name AS senderName,
+        CASE
+        WHEN m.sender_id = #{systemId} THEN 'SYSTEM'
+        ELSE u.webuser_name
+        END AS senderName,
         m.content,
-        m.created_at
+        m.created_at,
+
+        /* ✅ 내 메시지일 때만: 아직 안 읽은 사람 수 계산 */
+        CASE
+        WHEN m.sender_id = #{systemId} THEN 0
+        WHEN m.sender_id = #{userId} THEN (
+        SELECT COUNT(*)
+        FROM chat_room_user cru
+        WHERE cru.room_id = m.room_id
+        <![CDATA[AND cru.user_id <> m.sender_id
+        AND NVL(cru.last_read_message_id,0) < m.message_id
+        )]]>
+        ELSE 0
+        END AS read_count
+
         FROM chat_message m
-        JOIN webuser u ON m.sender_id = u.webuser_id
+        LEFT JOIN webuser u
+        ON m.sender_id = u.webuser_id
         WHERE m.room_id = #{roomId}
         ORDER BY m.message_id
     </select>
+
     <!-- 이름 가져오기 -->
     <select id="selectUserName" resultType="string">
         SELECT webuser_name
@@ -62,15 +81,39 @@
     <select id="chatRoomListSummary" parameterType="int" resultType="ChatRoomDto">
         SELECT
         r.room_id,
-        r.room_name,
+        r.room_type AS roomType,
+        CASE
+        WHEN r.room_type = 'one' THEN opp.webuser_name
+        ELSE r.room_name
+        END AS room_name,
 
         lm.content AS last_message,
         lm.created_at AS last_time,
 
-        NVL(uc.unread_count, 0) AS unread_count
+        NVL(uc.unread_count, 0) AS unread_count,
+        NVL(cnt.user_count, 0) AS user_count
+
         FROM chat_room r
         JOIN chat_room_user ru
         ON r.room_id = ru.room_id
+        AND ru.user_id = #{userId}
+
+        LEFT JOIN (
+        SELECT room_id, COUNT(*) AS user_count
+        FROM chat_room_user
+        GROUP BY room_id
+        ) cnt
+        ON cnt.room_id = r.room_id
+
+        -- ✅ 1:1 상대 이름 가져오기 (내가 아닌 유저) : one일 때만 붙도록
+        LEFT JOIN chat_room_user ru2
+        ON ru2.room_id = r.room_id
+        AND r.room_type = 'one'
+        AND ru2.user_id != #{userId}
+
+        -- ✅ 이 줄이 없어서 에러난 거!
+        LEFT JOIN webuser opp
+        ON opp.webuser_id = ru2.user_id
 
         -- ✅ 방별 마지막 메시지
         LEFT JOIN (
@@ -100,13 +143,11 @@
         ON cru.room_id = m.room_id
         AND cru.user_id = #{userId}
         WHERE m.sender_id != #{userId}
-        AND m.message_id > cru.last_read_message_id
+        AND m.message_id > NVL(cru.last_read_message_id,0)
         GROUP BY m.room_id
         ) uc
         ON uc.room_id = r.room_id
 
-
-        WHERE ru.user_id = #{userId}
         ORDER BY lm.created_at DESC NULLS LAST
     </select>
     <!-- 채팅 상대방 id 찾기 -->
@@ -118,49 +159,67 @@
     </select>
     <select id="selectChatRoomSummary"
             resultType="ChatListUpdateDto">
-        SELECT
-        r.room_id      AS roomId,
-        r.room_name    AS roomName,
-        lm.content     AS lastMessage,
-        lm.created_at  AS lastTime,
-        NVL(uc.unread_count, 0) AS unreadCount
-        FROM chat_room r
-        JOIN chat_room_user ru
-        ON r.room_id = ru.room_id
-        AND ru.user_id = #{userId}
+            SELECT
+            r.room_id     AS roomId,
+            r.room_type   AS roomType,
 
-        LEFT JOIN (
-        SELECT room_id, content, created_at
-        FROM (
-        SELECT
-        room_id,
-        content,
-        created_at,
-        ROW_NUMBER() OVER (
-        PARTITION BY room_id
-        ORDER BY message_id DESC
-        ) rn
-        FROM chat_message
-        )
-        WHERE rn = 1
-        ) lm
-        ON lm.room_id = r.room_id
+            CASE
+            WHEN r.room_type = 'one' THEN opp.webuser_name
+            ELSE r.room_name
+            END AS roomName,
 
-        LEFT JOIN (
-        SELECT
-        m.room_id,
-        COUNT(*) AS unread_count
-        FROM chat_message m
-        JOIN chat_room_user cru
-        ON cru.room_id = m.room_id
-        AND cru.user_id = #{userId}
-        WHERE m.sender_id != #{userId}
-        AND m.message_id > cru.last_read_message_id
-        GROUP BY m.room_id
-        ) uc
-        ON uc.room_id = r.room_id
+            lm.content    AS lastMessage,
+            lm.created_at AS lastTime,
 
-        WHERE r.room_id = #{roomId}
+            NVL(uc.unread_count, 0) AS unreadCount,
+            NVL(cnt.user_count, 0)  AS userCount
+            FROM chat_room r
+            JOIN chat_room_user ru
+            ON r.room_id = ru.room_id
+            AND ru.user_id = #{userId}
+
+            -- ✅ one일 때 상대 이름용 조인
+            LEFT JOIN chat_room_user ru2
+            ON ru2.room_id = r.room_id
+            AND r.room_type = 'one'
+            AND ru2.user_id != #{userId}
+            LEFT JOIN webuser opp
+            ON opp.webuser_id = ru2.user_id
+
+            -- 마지막 메시지
+            LEFT JOIN (
+            SELECT room_id, content, created_at
+            FROM (
+            SELECT room_id, content, created_at,
+            ROW_NUMBER() OVER (PARTITION BY room_id ORDER BY message_id DESC) rn
+            FROM chat_message
+            )
+            WHERE rn = 1
+            ) lm
+            ON lm.room_id = r.room_id
+
+            -- ✅ unread (원하면 시스템메시지 제외도 가능: 아래 참고)
+            LEFT JOIN (
+            SELECT m.room_id, COUNT(*) AS unread_count
+            FROM chat_message m
+            JOIN chat_room_user cru
+            ON cru.room_id = m.room_id
+            AND cru.user_id = #{userId}
+            WHERE m.sender_id != #{userId}
+            AND m.message_id > NVL(cru.last_read_message_id, 0)
+            GROUP BY m.room_id
+            ) uc
+            ON uc.room_id = r.room_id
+
+            -- 인원수
+            LEFT JOIN (
+            SELECT room_id, COUNT(*) AS user_count
+            FROM chat_room_user
+            GROUP BY room_id
+            ) cnt
+            ON cnt.room_id = r.room_id
+
+            WHERE r.room_id = #{roomId}
     </select>
     <select id="findOneToOneRoom" resultType="int">
         SELECT cru.room_id
@@ -182,6 +241,11 @@
         insert into chat_room_user(room_id, user_id)
         values(#{roomId}, #{userId})
     </insert>
+    <insert id="insertChatRoomUserWithLastRead" parameterType="map">
+        INSERT INTO chat_room_user(room_id, user_id, last_read_message_id)
+        VALUES(#{roomId}, #{userId}, #{lastReadMessageId})
+    </insert>
+
     <!-- 나를 제외한 모든 유저(임직원) -->
     <select id="getAllExceptMe" resultType="WebuserDto">
         select webuser_id, webuser_name from webuser where webuser_id != #{myId}
@@ -201,10 +265,11 @@
     <!-- 특정 채팅방의 특정 유저가 마지막으로 읽은 메시지 아이디 저장 -->
     <update id="updateLastReadMessageId" parameterType="map">
         UPDATE chat_room_user
-        SET last_read_message_id = #{lastReadMessageId}
+        SET last_read_message_id = GREATEST(NVL(last_read_message_id,0), #{lastReadMessageId})
         WHERE room_id = #{roomId}
         AND user_id = #{userId}
     </update>
+
     <!-- 메시지 읽은 사람 수 -->
     <select id="countReadersForMessage" parameterType="map" resultType="int">
         SELECT COUNT(*)
@@ -218,5 +283,79 @@
         SELECT user_id
         FROM chat_room_user
         WHERE room_id = #{roomId}
+    </select>
+    <!-- 접속 중인 유저들(여러명)의 last_read_message_id를 한 번에 갱신 -->
+    <update id="updateLastReadForOnlineUsers" parameterType="map">
+        UPDATE chat_room_user
+        SET last_read_message_id = #{messageId}
+        WHERE room_id = #{roomId}
+        AND user_id IN
+        <foreach collection="userIds" item="uid" open="(" separator="," close=")">
+            #{uid}
+        </foreach>
+        <![CDATA[AND last_read_message_id < #{messageId}]]>
+    </update>
+    <!-- 채팅방 이름 -->
+    <select id="selectDisplayRoomName" resultType="string">
+        SELECT
+        CASE
+        WHEN r.room_type = 'one' THEN opp.webuser_name
+        ELSE r.room_name
+        END AS display_name
+        FROM chat_room r
+        JOIN chat_room_user ru
+        ON ru.room_id = r.room_id
+        AND ru.user_id = #{userId}
+
+        LEFT JOIN (
+        SELECT room_id, COUNT(*) AS user_count
+        FROM chat_room_user
+        GROUP BY room_id
+        ) cnt
+        ON cnt.room_id = r.room_id
+
+        -- ✅ 1:1일 때만 상대 조인 (group이면 ru2/opp가 안 붙어서 1줄만 나옴)
+        LEFT JOIN chat_room_user ru2
+        ON ru2.room_id = r.room_id
+        AND r.room_type = 'one'
+        AND ru2.user_id != #{userId}
+        LEFT JOIN webuser opp
+        ON opp.webuser_id = ru2.user_id
+
+        WHERE r.room_id = #{roomId}
+    </select>
+    <delete id="deleteChatRoomUser" parameterType="map">
+        delete from chat_room_user where room_id = #{roomId} and user_id = #{userId}
+    </delete>
+    <select id="selectRoomType" resultType="String">
+        select room_type from chat_room where room_id = #{roomId}
+    </select>
+    <!-- 초대 가능한 유저 목록: (전체 - 나 - 이미 방에 있는 사람) -->
+    <select id="selectInviteCandidates" resultType="WebuserDto">
+        SELECT u.webuser_id, u.webuser_name
+        FROM webuser u
+        WHERE u.webuser_id != #{myId}
+        AND NOT EXISTS (
+        SELECT 1
+        FROM chat_room_user cru
+        WHERE cru.room_id = #{roomId}
+        AND cru.user_id = u.webuser_id
+        )
+        ORDER BY u.webuser_name
+    </select>
+
+    <!-- 이미 방에 있는지 체크 -->
+    <select id="isAlreadyMember" parameterType="map" resultType="int">
+        select count(*) from chat_room_user
+        where room_id = #{roomId}
+        and user_id = #{userId}
+    </select>
+    <!-- 단체 채팅방 참가자 목록 -->
+    <select id="selectRoomMembers" resultType="WebuserDto">
+        select u.webuser_id, u.webuser_name
+        from chat_room_user cru join webuser u
+        on u.webuser_id = cru.user_id
+        where cru.room_id = #{roomId}
+        order by u.webuser_name
     </select>
 </mapper>

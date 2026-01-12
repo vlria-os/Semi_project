@@ -19,12 +19,9 @@ public class ChatPresenceStore {
     // 유저 퇴장
     public void leaveRoom(int roomId, int userId){
         Set<Integer> users = roomUsers.get(roomId);
-        if(users != null){
-            users.remove(userId);
-            if (users.isEmpty()){
-                roomUsers.remove(roomId);
-            }
-        }
+        if(users == null) return;
+        users.remove(userId);
+        if(users.isEmpty()) roomUsers.remove(roomId);
     }
 
     // 특정 방에 유저가 있는지

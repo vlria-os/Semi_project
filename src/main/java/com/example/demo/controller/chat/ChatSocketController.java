@@ -1,10 +1,7 @@
 package com.example.demo.controller.chat;
 
 import com.example.demo.ChatPresenceStore;
-import com.example.demo.dto.ChatListUpdateDto;
-import com.example.demo.dto.ChatMessageDto;
-import com.example.demo.dto.ChatPresenceDto;
-import com.example.demo.dto.Inbound_detailDto;
+import com.example.demo.dto.*;
 import com.example.demo.service.ChattingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -37,12 +34,7 @@ public class ChatSocketController {
                 "/topic/chat/" + dto.getRoom_id(), dto
         );
 
-        // (추가 추천) 채팅 리스트 실시간 업데이트 방송도 여기서 해야 함
-        List<Integer> userIds = service.getRoomUserIds(dto.getRoom_id());
-        for(int uid: userIds){
-            ChatListUpdateDto update=service.getChatListUpdate(dto.getRoom_id(), uid);
-            template.convertAndSend("/topic/chat-list/" + uid, update);
-        }
+        broadcastChatListUpdateToRoomUsers(dto.getRoom_id());
     }
 
     //채팅방 입장
@@ -69,7 +61,29 @@ public class ChatSocketController {
                 "/topic/presence/" + dto.getRoomId(),
                 store.getUserCount(dto.getRoomId())
         );
+
+        ChatListUpdateDto update=service.getChatListUpdate(dto.getRoomId(),dto.getUserId());
+        template.convertAndSend("/topic/chat-list/" + dto.getUserId(), update);
     }
+
+    @MessageMapping("/chat/read")
+    public void read(ChatReadDto dto){
+
+        // 1) DB last_read 갱신
+        service.updateLastReadUpTo(dto.getRoomId(), dto.getUserId(), dto.getLastReadId());
+
+        // 2) ✅ "내 채팅 목록" unread 즉시 갱신 (0으로 떨어짐)
+        ChatListUpdateDto update = service.getChatListUpdate(dto.getRoomId(), dto.getUserId());
+        update.setAction("upsert");
+        template.convertAndSend("/topic/chat-list/" + dto.getUserId(), update);
+
+        // 3) ✅ 방에 "누가 어디까지 읽었는지" 브로드캐스트 (상대 read_count 감소용)
+        Map<String,Object> payload = new HashMap<>();
+        payload.put("userId", dto.getUserId());
+        payload.put("lastReadId", dto.getLastReadId());
+        template.convertAndSend("/topic/read/" + dto.getRoomId(), (Object) payload);
+    }
+
 
     //채팅방 퇴장
     @MessageMapping("/chat/leave")
@@ -82,5 +96,15 @@ public class ChatSocketController {
                 store.getUserCount(dto.getRoomId())
         );
     }
+
+    private void broadcastChatListUpdateToRoomUsers(int roomId) {
+        List<Integer> userIds = service.getRoomUserIds(roomId);
+        for (int uid : userIds) {
+            ChatListUpdateDto update = service.getChatListUpdate(roomId, uid);
+            update.setAction("upsert");
+            template.convertAndSend("/topic/chat-list/" + uid, update);
+        }
+    }
+
 
 }
