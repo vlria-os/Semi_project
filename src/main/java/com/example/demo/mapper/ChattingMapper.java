@@ -15,7 +15,12 @@ public interface ChattingMapper {
     List<ChatRoomDto> chatRoomAll(int user_id);
     int isParticipant(Map<String, Object> map);
     ChatRoomDto getRoom(int room_id);
-    List<ChatMessageDto> getMessages(@Param("roomId") int roomId);
+    List<ChatMessageDto> getMessages(
+            @Param("roomId") int roomId,
+            @Param("userId") int userId,
+            @Param("systemId") int systemId
+    );
+
     int sendMessage(ChatMessageDto dto);
     ChatMessageDto selectReadCount(int room_id);
     List<ChatRoomDto> chatRoomListSummary(int user_id);
@@ -57,5 +62,23 @@ public interface ChattingMapper {
     int countReadersForMessage(Map<String,Object> map);
 
     List<Integer> selectRoomUserIds(@Param("roomId") int roomId);
+
+    int updateLastReadForOnlineUsers(Map<String,Object> map);
+
+    String selectDisplayRoomName(@Param("roomId") int roomId,
+                                 @Param("userId") int userId);
+
+    String selectRoomType(@Param("roomId") int roomId);
+
+    int deleteChatRoomUser(Map<String, Object> map);
+
+    List<WebuserDto> selectInviteCandidates(@Param("roomId") int roomId, @Param("myId") int myId);
+
+    int isAlreadyMember(@Param("roomId") int roomId, @Param("userId") int userId);
+
+    int insertChatRoomUserWithLastRead(Map<String,Object> map);
+
+    List<WebuserDto> selectRoomMembers(@Param("roomId") int roomId);
+
 
 }

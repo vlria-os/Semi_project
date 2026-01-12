@@ -354,4 +354,10 @@
     <select id="outboundAppList" parameterType="int" resultType="Outbound_detailDto">
         select * from outbound_detail where outbound_id=#{value} and approval_status='APPROVED'
     </select>
+    <select id="getProductName" parameterType="int" resultType="String">
+        select product_name
+        from product
+        where product_id = #{productId}
+    </select>
+
 </mapper>

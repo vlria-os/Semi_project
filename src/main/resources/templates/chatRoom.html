@@ -2,292 +2,276 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>chatRoom.html</title>
-    <style>
-      .chat-container {
-        width: 400px;
-        height: 600px;
-        border: 1px solid #ddd;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .chat-messages {
-        flex: 1;
-        padding: 10px;
-        overflow-y: auto;
-        background: #f9f9f9;
-      }
-
-      .message {
-          position: relative;
-          display: flex;
-          align-items: flex-end;
-          margin-bottom: 10px;
-          flex-direction: column;
-      }
-
-      .message.me {
-          align-items: flex-end;
-      }
-
-      .message.other {
-          align-items: flex-start;
-      }
-
-      .meta {
-          font-size: 10px;
-          color: gray;
-          margin-top: 2px;
-      }
-
-      .my-row{
-          display:flex;
-          align-items:flex-end;
-          justify-content:flex-end;
-          gap:6px;
-      }
-
-      /* 내 메시지 옆 숫자 */
-      .my-row .meta{
-          position: static !important;
-          margin: 0;
-          font-size: 10px;
-          color: gray;
-      }
-
-
-      .sender-name {
-          font-size: 12px;
-          color: #666;
-          margin-bottom: 2px;
-      }
-
-
-      .bubble {
-        max-width: 70%;
-        padding: 8px 12px;
-        border-radius: 16px;
-        font-size: 14px;
-        line-height: 1.4;
-        word-break: break-word;
-      }
-
-      .message.me .bubble {
-        background: #dcf8c6;
-        border-bottom-right-radius: 4px;
-      }
-
-      .message.other .bubble {
-        background: #fff;
-        border: 1px solid #ddd;
-        border-bottom-left-radius: 4px;
-      }
-
-      .chat-input {
-        display: flex;
-        padding: 10px;
-        border-top: 1px solid #ddd;
-        background: #fff;
-      }
-
-      .chat-input input {
-        flex: 1;
-        padding: 8px 10px;
-        border-radius: 20px;
-        border: 1px solid #ccc;
-      }
-
-      .chat-input button {
-        margin-left: 5px;
-        padding: 8px 12px;
-      }
-
-
-    </style>
+    <title th:text="${displayRoomName}">chatRoom</title>
+    <link rel="stylesheet" th:href="@{/css/chat.css}">
 </head>
 <body>
 <div class="chat-container">
-    <button onclick="goToChatlist()">← 채팅 목록</button>
+    <div class="room-topbar">
+        <button class="btn btn-ghost back-btn" onclick="goToChatlist()">
+            채팅 목록
+        </button>
+
+        <div class="room-title">
+            <span class="name" th:text="${displayRoomName}">채팅방</span>
+
+            <span class="count"
+                  id="roomUserBadge"
+                  th:if="${roomUserCount != null and roomUserCount > 2}"
+                  th:text="${roomUserCount}">
+            </span>
+        </div>
+
+        <div class="room-action">
+            <button class="btn btn-ghost members-btn" onclick="openMembersModal()">
+                참가자
+            </button>
+            <button class="btn btn-primary invite-btn" type="button" onclick="openInviteModal()">
+                초대
+            </button>
+            <button class="btn btn-danger leave-btn" type="button" onclick="leaveRoom()">
+                퇴장
+            </button>
+        </div>
+    </div>
+
     <!-- 접속 상태 표시 -->
-    <div id="presence" style="font-size:12px;color:gray; padding:5px;">
+    <div id="presence" class="presence">
         연결 중...
     </div>
 
     <!-- 메시지 영역 -->
-  <div class="chat-messages" id="chatMessages">
-      <div th:each="msg:${messages}"
-           th:class="${msg.sender_id == user_id} ? 'message me' : 'message other'">
+    <div class="chat-messages" id="chatMessages">
+        <div th:each="msg:${messages}"
+             th:class="${msg.sender_id == 9999} ? 'message system'
+                : (${msg.sender_id == user_id} ? 'message me' : 'message other')"
+             th:attr="data-message-id=${msg.message_id}">
 
-          <!-- 상대 이름 (말풍선 위) -->
-          <div class="sender-name"
-               th:if="${msg.sender_id != user_id}"
-               th:text="${msg.senderName}">
-          </div>
+            <!-- 상대 이름 (말풍선 위) -->
+            <div class="sender-name"
+                 th:if="${msg.sender_id != user_id and msg.sender_id != 9999}"
+                 th:text="${msg.senderName}">
+            </div>
 
-          <!-- 말풍선 -->
-          <div class="bubble" th:text="${msg.content}"></div>
+            <!-- 시스템 메시지는 캡슐, 나머지는 bubble -->
+            <div th:if="${msg.sender_id == 9999}" class="system-line" th:text="${msg.content}"></div>
+            <div th:if="${msg.sender_id != 9999}" class="bubble" th:text="${msg.content}"></div>
 
-          <!-- 읽음 표시 (내 메시지) -->
-          <div class="meta"
-               th:if="${msg.sender_id == user_id and msg.read_count > 0}">
-              <span class="read" th:text="${msg.read_count}"></span>
-          </div>
-      </div>
-  </div>
-
-  <!-- 입력 영역 -->
-  <div>
-    <div class="chat-input">
-      <input type="hidden" name="room_id" th:value="${room_id}">
-      <input type="hidden" name="sender_id" th:value="${user_id}">
-
-      <input type="text" id="messageInput" name="content" placeholder="메시지를 입력하세요."
-             autocomplete="off">
-      <button type="button" onclick="handleSend()">전송</button>
+            <!-- 읽음 표시 (내 메시지) -->
+            <div class="meta"
+                 th:if="${msg.sender_id == user_id and msg.read_count > 0}">
+                <span class="read" th:text="${msg.read_count}"></span>
+            </div>
+        </div>
     </div>
-  </div>
+
+    <!-- 입력 영역 -->
+    <div class="chat-input">
+        <input type="hidden" name="room_id" th:value="${room_id}">
+        <input type="hidden" name="sender_id" th:value="${user_id}">
+
+        <input type="text" id="messageInput" name="content"
+               placeholder="메시지를 입력하세요." autocomplete="off">
+        <button type="button" id="sendBtn" onclick="handleSend()">전송</button>
+    </div>
+
+    <!-- 초대 모달 -->
+    <div id="inviteModal" class="modal-overlay" style="display:none;">
+        <div class="modal-card">
+            <div class="modal-head">
+                <div class="modal-title">초대하기</div>
+                <button class="modal-x" type="button" onclick="closeInviteModal()">✕</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-hint">초대할 사람을 선택하세요.</div>
+                <div id="inviteList" class="invite-list"></div>
+            </div>
+
+            <div class="modal-foot">
+                <button class="btn btn-ghost" type="button" onclick="closeInviteModal()">취소</button>
+                <button class="btn btn-primary" type="button" onclick="submitInvite()">초대</button>
+            </div>
+        </div>
+    </div>
+    <!-- 참가자 모달 -->
+    <div id="membersModal" class="modal-overlay" style="display:none;">
+        <div class="modal-card">
+            <div class="modal-head">
+                <div class="modal-title">참가자</div>
+                <button class="modal-x" onclick="closeMembersModal()">✕</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-hint">현재 채팅방 참가자 목록</div>
+                <div id="membersList" class="members-list"></div>
+            </div>
+
+            <div class="modal-foot">
+                <button class="btn btn-primary" onclick="closeMembersModal()">확인</button>
+            </div>
+        </div>
+    </div>
+
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
 
 <script th:inline="javascript">
     const chatBox = document.getElementById("chatMessages");
-    const room_id = /*[[${room_id}]]*/ 0; // Thymeleaf에서 방 번호 넣기
-    const user_id = /*[[${user_id}]]*/ 0;       // 내 ID
+    const room_id = /*[[${room_id}]]*/ 0;
+    const user_id = /*[[${user_id}]]*/ 0;
+    const SYSTEM_ID = 9999;
 
-    console.log("room_id: " + room_id + ", user_id: " + user_id);
+    let stompClient = null;
+    const readerProgress = {}; // {userId: lastReadId}
+    let currentPresenceCount = 0;
 
-    // 스크롤 내려주는 함수
     function scrollToBottom() {
         chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    // 메시지 화면에 추가하는 함수
     function addMessage(data) {
-        const sid = (data.sender_id ?? data.senderId);
+        const sid = Number(data.sender_id ?? data.senderId);
         const unread = (data.read_count ?? data.readCount ?? 0);
         const mid = (data.message_id ?? data.messageId ?? 0);
 
         const div = document.createElement("div");
-        div.className = (sid == user_id) ? "message me" : "message other";
         div.dataset.messageId = mid;
 
-        // 상대 메시지
-        if (sid != user_id) {
+        if (sid === SYSTEM_ID) {
+            div.className = "message system";
+            div.innerHTML = `<div class="system-line">${data.content}</div>`;
+            chatBox.appendChild(div);
+            scrollToBottom();
+            return;
+        }
+
+        div.className = (sid === user_id) ? "message me" : "message other";
+
+        if (sid !== user_id) {
             const name = data.senderName ?? data.sender_name ?? "";
             div.innerHTML = `
-      <div class="sender-name">${name}</div>
-      <div class="bubble">${data.content}</div>
-    `;
-        }
-        // 내 메시지
-        else {
+              <div class="sender-name">${name}</div>
+              <div class="bubble">${data.content}</div>
+            `;
+        } else {
             div.innerHTML = `
-      <div class="my-row">
-        ${unread > 0 ? `<div class="meta"><span class="read">${unread}</span></div>` : ``}
-        <div class="bubble">${data.content}</div>
-      </div>
-    `;
+              <div class="my-row">
+                ${unread > 0 ? `<div class="meta"><span class="read">${unread}</span></div>` : ``}
+                <div class="bubble">${data.content}</div>
+              </div>
+            `;
         }
 
         chatBox.appendChild(div);
         scrollToBottom();
     }
 
-
-    // STOMP 웹소켓 연결
-    let stompClient = null;
-    let currentPresenceCount = 0;
-
-    const readerProgress = {}; // {userId: lastReadId}
-
     function connect() {
         const socket = new SockJS('/ws');
         stompClient = Stomp.over(socket);
 
-        stompClient.connect({
-            roomId: room_id,
-            userId: user_id
-        },
-            function(frame) {
-            console.log("웹소켓 연결됨");
+        stompClient.connect({ roomId: room_id, userId: user_id }, function(frame) {
+            console.log("✅ 웹소켓 연결됨");
 
-            //presence 구독
+            // ✅ presence (접속자 수)
             stompClient.subscribe('/topic/presence/' + room_id, function(message) {
-                currentPresenceCount = parseInt(message.body);
+                currentPresenceCount = parseInt(message.body || "0");
                 const el = document.getElementById("presence");
-
-                el.innerText=`현재 접속자 ${currentPresenceCount}명`;
+                if (el) el.innerText = `현재 접속자 ${currentPresenceCount}명`;
             });
 
-            // 채팅방 구독
-            stompClient.subscribe('/topic/chat/' + room_id, function(message) {
-                console.log("✅ chat topic 수신 raw:", message.body);
-                const data = JSON.parse(message.body);
-                console.log("수신된 메시지 전체: ", data);
-                console.log("받은 data keys:", Object.keys(data));
-                console.log("sender 비교:", data.sender_id, data.senderId, "vs", user_id);
-                console.log("read_count 확인:", data.read_count, data.readCount);
+            // ✅ member-count (방 멤버 수)
+            stompClient.subscribe('/topic/member-count/' + room_id, function(message) {
+                const memberCount = parseInt(message.body || "0");
+                const badge = document.getElementById("roomUserBadge");
+                if (badge) badge.innerText = memberCount;
 
+                // 2️⃣ 참가자 모달이 열려 있으면 목록 다시 불러오기
+                if (isMembersModalOpen()) {
+                    openMembersModal(); // ← 여기서 사용
+                }
+            });
+
+            // ✅ chat message
+            stompClient.subscribe('/topic/chat/' + room_id, function(message) {
+                const data = JSON.parse(message.body);
                 addMessage(data);
 
+                // ✅ 방을 보고 있으면 받은 메시지까지 읽음 처리
+                const mid = (data.message_id ?? data.messageId ?? 0);
+                if (mid > 0 && stompClient && stompClient.connected) {
+                    stompClient.send("/app/chat/read", {}, JSON.stringify({
+                        roomId: room_id,
+                        userId: user_id,
+                        lastReadId: mid
+                    }));
+                }
             });
 
-                //채팅방 입장 알림
-                stompClient.send("/app/chat/enter", {}, JSON.stringify({
-                    roomId: room_id,
-                    userId: user_id
-                }));
+            // ✅ read broadcast (내 메시지 read_count 감소용)
+            stompClient.subscribe('/topic/read/' + room_id, function(message) {
+                const data = JSON.parse(message.body);
+                const readerId = data.userId;
+                const newLastRead = data.lastReadId;
 
-                stompClient.subscribe('/topic/read/' + room_id, function (message){
-                   const data = JSON.parse(message.body);
-                   const readerId = data.userId;
-                   const newLastRead = data.lastReadId;
+                if (readerId == user_id) return;
 
-                   if(readerId == user_id) return;
+                const prev = readerProgress[readerId] || 0;
+                if (newLastRead <= prev) return;
 
-                   const prev = readerProgress[readerId] || 0;
-                   if(newLastRead <= prev) return;
+                readerProgress[readerId] = newLastRead;
 
-                   readerProgress[readerId] = newLastRead;
+                document.querySelectorAll(".message.me").forEach(el => {
+                    const mid = parseInt(el.dataset.messageId || "0");
+                    if (mid > prev && mid <= newLastRead) {
+                        const readSpan = el.querySelector(".read");
+                        if (!readSpan) return;
 
-                   document.querySelectorAll(".message.me").forEach(el => {
-                       const mid = parseInt(el.dataset.messageId || "0");
-                       if(mid > prev && mid <= newLastRead){
-                           const readSpan = el.querySelector(".read");
-                           if(!readSpan) return;
+                        let cnt = parseInt(readSpan.innerText || "0");
+                        cnt--;
 
-                           let cnt = parseInt(readSpan.innerText || "0");
-                           cnt --;
-
-                           if(cnt <= 0){
-                               readSpan.closest(".meta").remove();
-                           }else {
-                               readSpan.innerText = cnt;
-                           }
-                       }
-                   })
+                        if (cnt <= 0) {
+                            const meta = readSpan.closest(".meta");
+                            if (meta) meta.remove();
+                        } else {
+                            readSpan.innerText = cnt;
+                        }
+                    }
                 });
+            });
+
+            // ✅ enter notify
+            stompClient.send("/app/chat/enter", {}, JSON.stringify({
+                roomId: room_id,
+                userId: user_id
+            }));
+
+            // ✅ 안전장치: 초기 화면 마지막 메시지까지 read 한번 더
+            setTimeout(() => {
+                const last = document.querySelector("#chatMessages [data-message-id]:last-child");
+                const lastId = last ? parseInt(last.dataset.messageId || "0") : 0;
+                if (lastId > 0 && stompClient && stompClient.connected) {
+                    stompClient.send("/app/chat/read", {}, JSON.stringify({
+                        roomId: room_id,
+                        userId: user_id,
+                        lastReadId: lastId
+                    }));
+                }
+            }, 150);
+
+            scrollToBottom();
         });
-
     }
 
-    connect(); //웹소켓 연결 시작
-
-    window.onload = function (){
-        scrollToBottom();
-    }
-
-    const input = document.getElementById("messageInput");
-
-    // 메시지 보내기
+    // ✅ 전송 로직 (onclick + addEventListener 둘 다 지원)
     function sendMessage(content) {
         if(!stompClient || !stompClient.connected){
             console.log("❌ stomp 연결 안됨");
             return;
         }
-
         if(!content || content.trim() === "") return;
 
         const msg = {
@@ -295,42 +279,238 @@
             sender_id: user_id,
             content: content
         };
-
-        console.log("📤 send", msg);
         stompClient.send("/app/chat/message", {}, JSON.stringify(msg));
     }
 
     function handleSend() {
-        console.log("handleSend 클릭됨");
+        const input = document.getElementById("messageInput");
+        if(!input) return;
+
         const content = input.value.trim();
         if(content === "") return;
 
-        //서버에 전송
         sendMessage(content);
-
-        input.value="";
+        input.value = "";
+        input.focus();
     }
 
-    input.addEventListener("keydown", function(e){
-        if(e.key === "Enter"){
-            e.preventDefault(); // ⭐ 중요
-            handleSend();
+    // ✅ 엔터/버튼이 “무조건” 먹게 강제 바인딩
+    document.addEventListener("DOMContentLoaded", () => {
+        const input = document.getElementById("messageInput");
+        const sendBtn = document.getElementById("sendBtn");
+
+        if (sendBtn) {
+            sendBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                handleSend();
+            });
+        }
+
+        if (input) {
+            input.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleSend();
+                }
+            });
         }
     });
 
-    // 페이지 떠날 때 채팅방 퇴장 처리
+    // 페이지 떠날 때 퇴장 처리
     window.addEventListener("beforeunload", function () {
-        if (stompClient && stompClient.connected) {
-            stompClient.send("/app/chat/leave", {}, JSON.stringify({
-                roomId: room_id,
-                userId: user_id
-            }));
-        }
+        try{
+            if (stompClient && stompClient.connected) {
+                stompClient.send("/app/chat/leave", {}, JSON.stringify({
+                    roomId: room_id,
+                    userId: user_id
+                }));
+            }
+        }catch(e){}
     });
+
+    async function leaveRoom() {
+        const ok = confirm("이 단체 채팅방에서 퇴장할까요?");
+        if (!ok) return;
+
+        try {
+            const res = await fetch(`/chat/room/${room_id}/leave`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" }
+            });
+
+            if (!res.ok) {
+                alert("퇴장 실패");
+                return;
+            }
+
+            try {
+                if (stompClient && stompClient.connected) {
+                    stompClient.send("/app/chat/leave", {}, JSON.stringify({
+                        roomId: room_id,
+                        userId: user_id
+                    }));
+                    stompClient.disconnect(() => {});
+                }
+            } catch (e) {}
+
+            if (window.opener) {
+                window.opener.postMessage(
+                    { type: "CHAT_ROOM_LEFT", roomId: room_id },
+                    window.location.origin
+                );
+                window.close();
+            } else {
+                location.href = "/chat/list";
+            }
+
+        } catch (e) {
+            console.error(e);
+            alert("퇴장 중 오류 발생");
+        }
+    }
 
     function goToChatlist(){
-        location.href="/chat/list";
+        if(window.opener){
+            window.close();
+        }else{
+            location.href="/chat/list";
+        }
     }
+
+    // ===== 초대 모달 =====
+    let inviteCandidatesCache = [];
+
+    async function openInviteModal(){
+        const modal = document.getElementById("inviteModal");
+        modal.style.display = "flex";
+
+        try{
+            const res = await fetch(`/chat/room/${room_id}/invite/candidates`);
+            const users = await res.json();
+            inviteCandidatesCache = users || [];
+            renderInviteList(inviteCandidatesCache);
+        }catch(e){
+            console.error(e);
+            alert("초대 목록 불러오기 실패");
+        }
+    }
+
+    function closeInviteModal(){
+        document.getElementById("inviteModal").style.display = "none";
+    }
+
+    function renderInviteList(users){
+        const wrap = document.getElementById("inviteList");
+        wrap.innerHTML = "";
+
+        if(!users || users.length === 0){
+            wrap.innerHTML = `<div class="invite-empty">초대할 수 있는 사용자가 없어요.</div>`;
+            return;
+        }
+
+        users.forEach(u => {
+            const id = u.webuser_id ?? u.webuserId;
+            const name = u.webuser_name ?? u.webuserName;
+
+            const row = document.createElement("label");
+            row.className = "invite-item";
+            row.innerHTML = `
+              <input type="checkbox" value="${id}">
+              <div class="invite-name">${name}</div>
+            `;
+            wrap.appendChild(row);
+        });
+    }
+
+    async function submitInvite(){
+        const checked = Array.from(document.querySelectorAll("#inviteList input[type='checkbox']:checked"))
+            .map(el => parseInt(el.value))
+            .filter(n => !isNaN(n));
+
+        if(checked.length === 0){
+            alert("초대할 사람을 선택하세요.");
+            return;
+        }
+
+        try{
+            const res = await fetch(`/chat/room/${room_id}/invite`, {
+                method: "POST",
+                headers: {"Content-Type":"application/json"},
+                body: JSON.stringify({ userIds: checked })
+            });
+
+            const data = await res.json();
+            if(!data.ok){
+                alert(data.message || "초대 실패");
+                return;
+            }
+
+            closeInviteModal();
+        }catch(e){
+            console.error(e);
+            alert("초대 중 오류");
+        }
+    }
+
+    // 모달 바깥 클릭 닫기
+    document.addEventListener("click", function(e){
+        const modal = document.getElementById("inviteModal");
+        if(modal && modal.style.display !== "none" && e.target === modal){
+            closeInviteModal();
+        }
+    });
+
+    async function openMembersModal(){
+        const modal = document.getElementById("membersModal");
+        modal.style.display = "flex";
+
+        try{
+            const res = await fetch(`/chat/room/${room_id}/members`);
+            const users = await res.json();
+            renderMembersList(users || []);
+        }catch(e){
+            console.error(e);
+            document.getElementById("membersList").innerHTML =
+                `<div class="invite-empty">목록을 불러오지 못했어요.</div>`;
+        }
+    }
+
+    function closeMembersModal(){
+        document.getElementById("membersModal").style.display = "none";
+    }
+
+    function isMembersModalOpen(){
+        const modal = document.getElementById("membersModal");
+        return modal && modal.style.display !== "none";
+    }
+
+
+    function renderMembersList(users){
+        const wrap = document.getElementById("membersList");
+        wrap.innerHTML = "";
+
+        if(users.length === 0){
+            wrap.innerHTML = `<div class="invite-empty">참가자가 없어요.</div>`;
+            return;
+        }
+
+        users.forEach(u => {
+            const id = u.webuser_id ?? u.webuserId;
+            const name = u.webuser_name ?? u.webuserName;
+
+            const row = document.createElement("div");
+            row.className = "member-item";
+            row.innerHTML = `
+      <div class="member-avatar">${(name && name.length>0) ? name.substring(0,1) : "U"}</div>
+      <div class="member-name">${name}</div>
+      ${Number(id) === Number(user_id) ? `<span class="member-me">나</span>` : ``}
+    `;
+            wrap.appendChild(row);
+        });
+    }
+
+    // 시작
+    connect();
 </script>
 </body>
 </html>

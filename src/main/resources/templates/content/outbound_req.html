@@ -1,0 +1,103 @@
+<section xmlns:th="http://www.thymeleaf.org"
+         th:fragment="content">
+
+    <h1>재고확인목록</h1>
+    <form id="outboundForm" method="post" action="/office_staff/outbound_req">
+        <table>
+            <tr>
+                <th>선택</th>
+                <th>상품번호</th>
+                <th>상품명</th>
+                <th>재고수량</th>
+                <th>출고 요청 수량</th>
+            </tr>
+
+            <tr th:each="ps, stat : ${p}">
+                <td>
+                    <input type="checkbox"
+                           class="rowCheck"
+                           onchange="toggleQty(this)">
+                </td>
+
+                <td>
+                    [[${ps.product_id}]]
+                    <input type="hidden"
+                           th:name="|outbound_reqDtos[${stat.index}].product_id|"
+                           th:value="${ps.product_id}">
+                </td>
+
+                <td>[[${ps.product_name}]]</td>
+
+                <td class="stockQty">[[${ps.quantity}]]</td>
+
+                <td>
+                    <input type="number"
+                           class="reqQty"
+                           th:name="|outbound_reqDtos[${stat.index}].quantity|"
+                           min="1"
+                           disabled>
+
+                </td>
+            </tr>
+        </table>
+
+        <button type="button" onclick="submitOutbound()">출고 요청</button>
+    </form>
+
+
+    <script>
+        function toggleQty(checkbox){
+            const tr = checkbox.closest('tr');
+            const qtyInput = tr.querySelector('.reqQty');
+
+            if(checkbox.checked){
+                qtyInput.disabled = false;
+                qtyInput.focus();
+            }else{
+                qtyInput.disabled = true;
+                qtyInput.value = '';
+            }
+        }
+
+        function submitOutbound(){
+            const rows = document.querySelectorAll('tr');
+            let checkedCount = 0;
+
+            for(const tr of rows){
+                const checkbox = tr.querySelector('.rowCheck');
+                if(!checkbox || !checkbox.checked) continue;
+
+                checkedCount++;
+
+                const stockQty = Number(tr.querySelector('.stockQty').innerText);
+                const reqInput = tr.querySelector('.reqQty');
+                const reqQty = Number(reqInput.value);
+
+                if(!reqQty || reqQty <= 0){
+                    alert('출고 요청 수량을 입력해주세요.');
+                    reqInput.focus();
+                    return;
+                }
+
+                if(reqQty > stockQty){
+                    alert(`출고 요청 수량(${reqQty})이 재고 수량(${stockQty})을 초과했습니다.`);
+                    reqInput.focus();
+                    return;
+                }
+            }
+
+            if(checkedCount === 0){
+                alert('출고할 상품을 선택하세요.');
+                return;
+            }
+
+            // 🔥 최종 확인
+            if(!confirm('출고 요청 하시겠습니까?')) return;
+
+            document.getElementById('outboundForm').submit();
+        }
+
+    </script>
+
+
+</section>
