@@ -19,7 +19,7 @@ import java.util.Map;
 @Controller
 @RequiredArgsConstructor
 public class ApprovalController {
-    private final RequestService service;
+    private final RequestService requestService;
 
     @GetMapping("/request/approvalIn")
     public String approvalIn(@RequestParam("inbound_detail_id") int inbound_detail_id,
@@ -29,11 +29,13 @@ public class ApprovalController {
         int approver_id = (int) session.getAttribute("webuser_id");
         String approval_status="approved";
 
-        ApprovalDto dto=service.selectApprovalIn(inbound_id);
+        ApprovalDto dto=requestService.selectApprovalIn(inbound_id);
         if(dto != null){
-            boolean result2=service.inboundDetailStatus(inbound_detail_id,approval_status,null);
+            boolean result2=requestService.inboundDetailStatus(inbound_detail_id,approval_status,null);
             if(result2){
-                List<Inbound_detailDto> list=service.inboundList(inbound_id);
+                Map<String,Object> map=requestService.inboundList(inbound_id);
+                List<Inbound_detailDto> list=(List<Inbound_detailDto>) map.get("list");
+
                 int count=0;
                 int a=list.size();
                 for(Inbound_detailDto d:list){
@@ -42,7 +44,7 @@ public class ApprovalController {
                     }
                 }
                 if(a > 0 && count == a){
-                    service.inboundStatus(inbound_id,approval_status);
+                    requestService.inboundStatus(inbound_id,approval_status);
                 }
 
                 r.addFlashAttribute("status","sucess");
@@ -54,11 +56,13 @@ public class ApprovalController {
                 return "redirect:/main";
             }
         }else {
-            boolean result= service.approvalIn(approver_id,inbound_id,approval_status);
+            boolean result= requestService.approvalIn(approver_id,inbound_id,approval_status);
             if(result){
-                boolean result2=service.inboundDetailStatus(inbound_detail_id,approval_status,null);
+                boolean result2=requestService.inboundDetailStatus(inbound_detail_id,approval_status,null);
                 if(result2){
-                    List<Inbound_detailDto> list=service.inboundList(inbound_id);
+                    Map<String,Object> map=requestService.inboundList(inbound_id);
+                    List<Inbound_detailDto> list=(List<Inbound_detailDto>) map.get("list");
+
                     int count=0;
                     int a=list.size();
                     for(Inbound_detailDto d:list){
@@ -67,7 +71,7 @@ public class ApprovalController {
                         }
                     }
                     if(a > 0 && count == a){
-                        service.inboundStatus(inbound_id,approval_status);
+                        requestService.inboundStatus(inbound_id,approval_status);
                     }
 
                     r.addFlashAttribute("status","sucess");
@@ -94,11 +98,13 @@ public class ApprovalController {
         int approver_id = (int) session.getAttribute("webuser_id");
         String approval_status="approved";
 
-        ApprovalDto dto=service.selectApprovalOut(outbound_id);
+        ApprovalDto dto=requestService.selectApprovalOut(outbound_id);
         if(dto != null){
-            boolean result2=service.outboundDetailStatus(outbound_detail_id,approval_status,null);
+            boolean result2=requestService.outboundDetailStatus(outbound_detail_id,approval_status,null);
             if(result2){
-                List<Outbound_detailDto> list=service.outboundList(outbound_id);
+                Map<String,Object> map=requestService.outboundList(outbound_id);
+                List<Outbound_detailDto> list=(List<Outbound_detailDto>) map.get("list");
+
                 int count=0;
                 int a=list.size();
                 for(Outbound_detailDto d:list){
@@ -107,7 +113,7 @@ public class ApprovalController {
                     }
                 }
                 if(a > 0 && count == a){
-                    service.outboundStatus(outbound_id,approval_status);
+                    requestService.outboundStatus(outbound_id,approval_status);
                 }
 
                 r.addFlashAttribute("status","sucess");
@@ -119,11 +125,13 @@ public class ApprovalController {
                 return "redirect:/main";
             }
         }else {
-            boolean result= service.approvalOut(approver_id,outbound_id,approval_status);
+            boolean result= requestService.approvalOut(approver_id,outbound_id,approval_status);
             if(result){
-                boolean result2=service.outboundDetailStatus(outbound_detail_id,approval_status,null);
+                boolean result2=requestService.outboundDetailStatus(outbound_detail_id,approval_status,null);
                 if(result2){
-                    List<Outbound_detailDto> list=service.outboundList(outbound_id);
+                    Map<String,Object> map=requestService.outboundList(outbound_id);
+                    List<Outbound_detailDto> list=(List<Outbound_detailDto>) map.get("list");
+
                     int count=0;
                     int a=list.size();
                     for(Outbound_detailDto d:list){
@@ -132,7 +140,7 @@ public class ApprovalController {
                         }
                     }
                     if(a > 0 && count == a){
-                        service.outboundStatus(outbound_id,approval_status);
+                        requestService.outboundStatus(outbound_id,approval_status);
                     }
 
                     r.addFlashAttribute("status","sucess");
@@ -160,17 +168,17 @@ public class ApprovalController {
         int approver_id = (int) session.getAttribute("webuser_id");
         String approval_status="rejected";
 
-        ApprovalDto dto=service.selectApprovalIn(inbound_id);
+        ApprovalDto dto=requestService.selectApprovalIn(inbound_id);
         if(dto != null){
 
-            boolean update=service.updateApprovalIn(inbound_id);
+            boolean update=requestService.updateApprovalIn(inbound_id);
 
             if(update){
-                boolean result2=service.inboundDetailStatus(inbound_detail_id,approval_status,reason);
+                boolean result2=requestService.inboundDetailStatus(inbound_detail_id,approval_status,reason);
                 if(result2){
-                    InboundDto d=service.selectInboundId(inbound_id);
+                    InboundDto d=requestService.selectInboundId(inbound_id);
                     if(!"rejected".equals(d.getApproval_status())){
-                        boolean result3=service.inboundStatus(inbound_id,approval_status);
+                        boolean result3=requestService.inboundStatus(inbound_id,approval_status);
                         if(result3){
                             r.addFlashAttribute("status","success");
                             r.addFlashAttribute("msg","입고 요청 반려 성공!");
@@ -196,13 +204,13 @@ public class ApprovalController {
                 return "redirect:/main";
             }
         }else {
-            boolean result=service.rejectionIn(approver_id,inbound_id,approval_status);
+            boolean result=requestService.rejectionIn(approver_id,inbound_id,approval_status);
             if(result){
-                boolean result2=service.inboundDetailStatus(inbound_detail_id,approval_status,reason);
+                boolean result2=requestService.inboundDetailStatus(inbound_detail_id,approval_status,reason);
                 if(result2){
-                    InboundDto d=service.selectInboundId(inbound_id);
+                    InboundDto d=requestService.selectInboundId(inbound_id);
                     if(!"rejected".equals(d.getApproval_status())){
-                        boolean result3=service.inboundStatus(inbound_id,approval_status);
+                        boolean result3=requestService.inboundStatus(inbound_id,approval_status);
                         if(result3){
                             r.addFlashAttribute("status","success");
                             r.addFlashAttribute("msg","입고 요청 반려 성공!");
@@ -239,16 +247,16 @@ public class ApprovalController {
         int approver_id = (int) session.getAttribute("webuser_id");
         String approval_status="rejected";
 
-        ApprovalDto dto=service.selectApprovalOut(outbound_id);
+        ApprovalDto dto=requestService.selectApprovalOut(outbound_id);
         if(dto != null){
 
-            boolean update=service.updateApprovalOut(outbound_id);
+            boolean update=requestService.updateApprovalOut(outbound_id);
             if(update){
-                boolean result2=service.outboundDetailStatus(outbound_detail_id,approval_status,reason);
+                boolean result2=requestService.outboundDetailStatus(outbound_detail_id,approval_status,reason);
                 if(result2){
-                    OutboundDto d=service.selectOutboundId(outbound_id);
+                    OutboundDto d=requestService.selectOutboundId(outbound_id);
                     if(!"rejected".equals(d.getApproval_status())){
-                        boolean result3=service.outboundStatus(outbound_id,approval_status);
+                        boolean result3=requestService.outboundStatus(outbound_id,approval_status);
                         if(result3){
                             r.addFlashAttribute("status","success");
                             r.addFlashAttribute("msg","출고 요청 반려 성공!");
@@ -274,13 +282,13 @@ public class ApprovalController {
                 return "redirect:/main";
             }
         }else {
-            boolean result=service.rejectionOut(approver_id,outbound_id,approval_status);
+            boolean result=requestService.rejectionOut(approver_id,outbound_id,approval_status);
             if(result){
-                boolean result2=service.outboundDetailStatus(outbound_detail_id,approval_status,reason);
+                boolean result2=requestService.outboundDetailStatus(outbound_detail_id,approval_status,reason);
                 if(result2){
-                    OutboundDto d=service.selectOutboundId(outbound_id);
+                    OutboundDto d=requestService.selectOutboundId(outbound_id);
                     if(!"rejected".equals(d.getApproval_status())){
-                        boolean result3=service.outboundStatus(outbound_id,approval_status);
+                        boolean result3=requestService.outboundStatus(outbound_id,approval_status);
                         if(result3){
                             r.addFlashAttribute("status","success");
                             r.addFlashAttribute("msg","출고 요청 반려 성공!");
@@ -310,7 +318,7 @@ public class ApprovalController {
 
     @GetMapping("/approval/list")
     public String approvalList(Model model){
-        List<ApprovalDto> list=service.approvalAll();
+        List<ApprovalDto> list=requestService.approvalAll();
 
         model.addAttribute("list", list);
 
@@ -325,10 +333,12 @@ public class ApprovalController {
     public Object approvalDetailList(@RequestParam String bound_type,
                                      @RequestParam int bound_id){
         if("IN".equals(bound_type)){
-            List<Inbound_detailDto> list=service.inboundList(bound_id);
+            Map<String,Object> map=requestService.inboundList(bound_id);
+            List<Inbound_detailDto> list=(List<Inbound_detailDto>) map.get("list");
             return list;
         }else {
-            List<Outbound_detailDto> list=service.outboundList(bound_id);
+            Map<String,Object> map=requestService.outboundList(bound_id);
+            List<Outbound_detailDto> list=(List<Outbound_detailDto>) map.get("list");
             return list;
         }
     }
@@ -338,11 +348,11 @@ public class ApprovalController {
     public String showReason(@RequestParam String bound_type,
                              @RequestParam int detail_id){
         if("IN".equals(bound_type)){
-            Inbound_detailDto dto=service.selectDetailIn(detail_id);
+            Inbound_detailDto dto=requestService.selectDetailIn(detail_id);
             String reason=dto.getReason();
             return reason;
         }else {
-            Outbound_detailDto dto=service.selectDetailOut(detail_id);
+            Outbound_detailDto dto=requestService.selectDetailOut(detail_id);
             String reason=dto.getReason();
             return reason;
         }
