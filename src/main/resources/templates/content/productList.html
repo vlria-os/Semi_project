@@ -64,7 +64,8 @@
 
             fetch(`/common/product_search?keyword=${encodeURIComponent(keyword)}`)
                 .then(res => res.json())
-                .then(list => {
+                .then(data => {
+                    const list=data["productDtos"];
                     const tbody = document.getElementById('productBody');
                     tbody.innerHTML = '';
 

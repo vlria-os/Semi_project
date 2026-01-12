@@ -51,7 +51,7 @@
             OR c.category_path LIKE '%' || #{value} || '%'
         )
         <![CDATA[
-        WHERE rn >= {startRow} and rn <= {endRow}
+        WHERE rn >= #{startRow} and rn <= #{endRow}
         ]]>
     </select>
     <select id="count" resultType="int">
