@@ -73,26 +73,34 @@ public class InboundService {
 
         if(inbound_detailDto.getApproval_status().equals("REJECTED")){
             int b=inbound_detailMapper.update_inbStatus_rej(inbound_detailDto.getInbound_detail_id());
-            int c=inbound_detailMapper.update_reason(inbound_detailDto.getReason());
+            int c=inbound_detailMapper.update_reason(inbound_detailDto);
         }
         return 1;
     }
 
     @Transactional
     public int insert_confirm(List<Lot_inDto> lot_inDtos,
+                              String status,
+                              String reason,
                               int confirmer_id){
 
         for (Lot_inDto l : lot_inDtos){
-            if(l.getInbound_status().equals("REJECTED")){
+            l.setConfirmer_id(confirmer_id);
+            if(status.equals("REJECTED")){
                 int m=inbound_detailMapper.update_inbStatus_rej(l.getInbound_detail_id());
+                Inbound_detailDto inbound_detailDto=new Inbound_detailDto();
+                inbound_detailDto.setInbound_detail_id(l.getInbound_detail_id());
+                inbound_detailDto.setReason(reason);
+                int a=inbound_detailMapper.update_reason(inbound_detailDto);
             }
             else {
                 int n = lot_inMapper.insert(l);
-                int q = stockMapper.insert(new StockDto(0, l.getLot_in_id(), l.getQuantity()));
+                int q = stockMapper.insert(new StockDto(0, l.getLot_in_id(), l.getQuantity(), l.getProduct_id()));
+                Inbound_detailDto inbound_detailDto=new Inbound_detailDto();
+                inbound_detailDto.setInbound_detail_id(l.getInbound_detail_id());
+                int a=inbound_detailMapper.update_inbStatus_conf(l.getInbound_detail_id());
             }
-            int m = inbound_detailMapper.update_inbStatus_conf(l.getInbound_detail_id());
         }
-        //확인자 아이디 추가 해야하는데.............
 
         return 1;
     }

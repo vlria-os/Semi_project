@@ -301,6 +301,10 @@
         select * from approval order by approval_id desc
     </select>
 
+    <select id="approvalconfAll" resultType="ApprovalDto">
+        select * from approval order by approval_id desc
+    </select>
+
     <!-- 입고 번호로 승인 내역 조회 -->
     <select id="selectApprovalIn" parameterType="int" resultType="ApprovalDto">
         select * from approval
@@ -343,10 +347,17 @@
         select * from outbound where outbound_id=#{value}
     </select>
 
-    <!-- 입출고 요청 상품 이름 -->
-    <select id="getProductName" resultType="String">
+    <select id="inboundAppList" parameterType="int" resultType="Inbound_detailDto">
+        select * from inbound_detail where inbound_id=#{value} and approval_status='APPROVED'
+    </select>
+
+    <select id="outboundAppList" parameterType="int" resultType="Outbound_detailDto">
+        select * from outbound_detail where outbound_id=#{value} and approval_status='APPROVED'
+    </select>
+    <select id="getProductName" parameterType="int" resultType="String">
         select product_name
         from product
         where product_id = #{productId}
     </select>
+
 </mapper>

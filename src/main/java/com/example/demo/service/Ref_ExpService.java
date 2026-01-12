@@ -32,11 +32,9 @@ public class Ref_ExpService {
             Outbound_detailDto outbound_detailDto=new Outbound_detailDto(0,outboundDto.getOutbound_id(), s.getProduct_id(),"APPROVED",null,"REQUEST",s.getQuantity());
             outbound_detailMapper.insert(outbound_detailDto);
 
-            System.out.println(outbound_detailDto.getOutbound_detail_id());
-
             lot_outMapper.insert_exp(new Lot_outDto(0,outbound_detailDto.getOutbound_detail_id(),s.getWarehouse_id(),"Y",s.getLot_in_id(),
                                 s.getQuantity(),s.getStock_id(),null));
-            stockMapper.update_out(new StockDto(s.getStock_id(),0, s.getQuantity()));
+            stockMapper.update_out(new StockDto(s.getStock_id(),0, s.getQuantity(), s.getProduct_id()));
         }
 
         System.out.println("스케줄러 실행중...");

@@ -1,0 +1,291 @@
+<section xmlns:th="http://www.thymeleaf.org"
+         th:fragment="content">
+  <div class="main">
+    <table>
+      <tr>
+        <th>승인 번호</th><th>승인자</th><th>입출고</th><th>입출고 번호</th><th>승인 상태</th><th>승인일</th>
+      </tr>
+      <tr th:each="l:${list}" onclick="showDetail(this)">
+        <td th:text="${l.approval_id}"></td>
+        <td th:text="${l.approver_id}"></td>
+        <td th:text="${l.bound_type}"></td>
+        <td th:text="${l.bound_type == 'IN' ? l.inbound_id : l.outbound_id}"></td>
+        <td th:text="${l.approval_status}"></td>
+        <td th:text="${l.created_at}"></td>
+      </tr>
+    </table>
+  </div>
+  <script>
+
+    function showDetail(btn){
+      const currentTr=btn.closest("tr");
+      const colCount = currentTr.children.length;
+
+      // 이미 상세 row 있으면 토글
+      if(currentTr.nextElementSibling &&
+              currentTr.nextElementSibling.classList.contains("detailRow")){
+        currentTr.nextElementSibling.remove();
+        return;
+      }
+
+      const bound_type=currentTr.children[2].innerText.trim();
+      const bound_id=currentTr.children[3].innerText.trim();
+
+      fetch(`/field_staff/inbound_conf/detailList?bound_type=${bound_type}&bound_id=${bound_id}`)
+              .then(resp=>resp.json())
+              .then(data=>{
+                const tr = document.createElement("tr");
+                tr.className = "detailRow";
+                let rows = "";
+                data.forEach(l=>{
+                  rows += `
+    <tr class="detailItem"
+      data-bound-detail-id="${bound_type == 'IN' ? l.inbound_detail_id : l.outbound_detail_id}" data-bound-type="${bound_type}">
+      <td>${l.product_id}</td>
+      <td class="originQty">${l.quantity}</td>
+      <td>${bound_type == 'IN' ? l.inbound_status : l.outbound_status}</td>
+      <td>
+        <div class="lotBox">
+          <div class="lotRow">
+            <input type="date" class="expireDate">
+            <input type="number" class="lotQty" min="1" placeholder="수량">
+          </div>
+        </div>
+        <button type="button" onclick="addLotRow(this)">+</button>
+      </td>
+      <td>
+        <button type="button"
+                onclick="confirmApprove(event,this)">승인</button>
+        <button type="button"
+                onclick="showRejectBox(event,this)">반려</button>
+      </td>
+    </tr>
+  `;
+                });
+
+
+                tr.innerHTML=`
+                  <td colspan="${colCount}">
+                     <table>
+                     <tr>
+                        <th>상품 번호</th><th>수량</th><th>승인 상태</th><th>유통기한 / 수량</th><th>처리</th>
+                     </tr>
+                     ${rows}
+                     </table>
+                  </td>
+                  `;
+
+                currentTr.after(tr);
+              });
+    }
+
+
+    function showRejectBox(e, btn) {
+      e.stopPropagation();
+
+      const detailTr = btn.closest('tr');
+
+      // 이미 반려 박스가 있으면 토글
+      if (detailTr.nextElementSibling &&
+              detailTr.nextElementSibling.classList.contains('rejectRow')) {
+        detailTr.nextElementSibling.remove();
+        return;
+      }
+
+      // 다른 열려 있는 반려 박스 닫기
+      document.querySelectorAll('.rejectRow').forEach(r => r.remove());
+
+      const colCount = detailTr.children.length;
+
+      const rejectTr = document.createElement('tr');
+      rejectTr.className = 'rejectRow';
+
+      rejectTr.innerHTML = `
+    <td colspan="${colCount}">
+      <textarea id="rejectReason" rows="3" style="width: 90%;"></textarea>
+      <br/>
+      <button onclick="submitReject(event, this)">확인</button>
+      <button onclick="cancelReject(event, this)">취소</button>
+    </td>
+  `;
+
+      detailTr.after(rejectTr);
+    }
+
+
+    function addLotRow(btn) {
+      event.stopPropagation();
+
+      const detailTr = btn.closest('.detailItem');
+      const lotBox = detailTr.querySelector('.lotBox');
+      const originQty = Number(detailTr.querySelector('.originQty').innerText);
+
+      // 현재 입력된 수량 합계
+      let sum = 0;
+      lotBox.querySelectorAll('.lotQty').forEach(i => {
+        sum += Number(i.value || 0);
+      });
+
+      if (sum >= originQty) {
+        alert('총 수량을 초과할 수 없습니다.');
+        return;
+      }
+
+      const row = document.createElement('div');
+      row.className = 'lotRow';
+      row.innerHTML = `
+    <input type="date" class="expireDate">
+    <input type="number"
+       class="lotQty"
+       min="1"
+       placeholder="수량"
+       oninput="validateLotQty(this)">
+    <button type="button" onclick="removeLotRow(this)">-</button>
+  `;
+
+      lotBox.appendChild(row);
+    }
+
+    function removeLotRow(btn){
+      event.stopPropagation();
+      btn.closest('.lotRow').remove();
+    }
+
+    function validateLotQty(input){
+      const detailTr = input.closest('.detailItem');
+      const originQty = Number(detailTr.querySelector('.originQty').innerText);
+
+      let sum = 0;
+      detailTr.querySelectorAll('.lotQty').forEach(i=>{
+        sum += Number(i.value || 0);
+      });
+
+      if(sum > originQty){
+        alert('총 수량을 초과할 수 없습니다.');
+        input.value = '';
+      }
+    }
+
+    function confirmApprove(e, btn){
+      e.stopPropagation();
+
+      if(!confirm('승인하시겠습니까?')) return;
+
+      submitApprove(e, btn);
+    }
+
+    function submitApprove(e, btn){
+      e.stopPropagation();
+
+      const detailTr = btn.closest('.detailItem');
+      const lotRows = detailTr.querySelectorAll('.lotRow');
+
+      if(lotRows.length === 0){
+        alert('유통기한과 수량을 입력해주세요.');
+        return;
+      }
+
+      // 🔹 detail 정보
+      const boundDetailId = detailTr.dataset.boundDetailId;
+      const boundType = detailTr.dataset.boundType; // "IN" or "OUT"
+
+      if(!boundDetailId || !boundType){
+        alert('상세 정보가 없습니다.');
+        return;
+      }
+
+      // 🔹 form 생성
+      const form = document.createElement('form');
+      form.method = 'post';
+      form.action = '/field_staff/inbound_conf_app';
+
+      let idx = 0;
+
+      lotRows.forEach(row => {
+        const expireDate = row.querySelector('.expireDate').value;
+        const qty = row.querySelector('.lotQty').value;
+
+        if(!expireDate || !qty) return;
+
+        form.appendChild(hidden(`lot_inDtos[${idx}].expiration_date`, expireDate));
+        form.appendChild(hidden(`lot_inDtos[${idx}].quantity`, qty));
+        form.appendChild(hidden(`lot_inDtos[${idx}].product_id`,
+                detailTr.children[0].innerText));
+
+        // 🔥 핵심: IN/OUT 공통 상세 ID + 타입
+        const isIn = boundType === 'IN'; // 너가 쓰는 값에 맞춰
+
+        const detailFieldName = isIn
+                ? `lot_inDtos[${idx}].inbound_detail_id`
+                : `lot_inDtos[${idx}].outbound_detail_id`;
+
+        form.appendChild(hidden(detailFieldName, boundDetailId));
+        form.appendChild(hidden(`lot_inDtos[${idx}].bound_type`, boundType));
+
+        idx++;
+      });
+
+      if(idx === 0){
+        alert('입력값이 없습니다.');
+        return;
+      }
+
+      document.body.appendChild(form);
+      form.submit();
+    }
+
+    function hidden(name, value){
+      const input = document.createElement('input');
+      input.type = 'hidden';
+      input.name = name;
+      input.value = value;
+      return input;
+    }
+
+    function submitReject(e, btn){
+      e.stopPropagation();
+
+      const rejectTr = btn.closest('.rejectRow');
+      const detailTr = rejectTr.previousElementSibling;
+
+      const reason = rejectTr.querySelector('.rejectReason').value;
+      if(!reason){
+        alert('반려 사유를 입력하세요.');
+        return;
+      }
+
+      const boundDetailId = detailTr.dataset.boundDetailId;
+      const boundType = detailTr.dataset.boundType;
+
+      const form = document.createElement('form');
+      form.method = 'post';
+      form.action = '/field_staff/inbound_conf_rej';
+
+      form.appendChild(hidden('reason', reason));
+
+      // 🔥 핵심: List 바인딩 가능하게
+      form.appendChild(hidden('lot_inDtos[0].product_id',
+              detailTr.children[0].innerText));
+
+      if(boundType === 'IN'){
+        form.appendChild(hidden(
+                'lot_inDtos[0].inbound_detail_id',
+                boundDetailId
+        ));
+      }else{
+        form.appendChild(hidden(
+                'lot_inDtos[0].outbound_detail_id',
+                boundDetailId
+        ));
+      }
+
+      form.appendChild(hidden('lot_inDtos[0].bound_type', boundType));
+
+      document.body.appendChild(form);
+      form.submit();
+    }
+
+
+
+  </script>
+</section>

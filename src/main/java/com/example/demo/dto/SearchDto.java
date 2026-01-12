@@ -4,12 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
+import java.util.List;
+
 @AllArgsConstructor
 @NoArgsConstructor
-public class StockDto {
-    private int stock_id;
-    private int lot_in_id;
-    private int quantity;
-    private int product_id;
+@Data
+public class SearchDto {
+    private String field;
+    private String keyword;
+    private List<String> search;
 }
