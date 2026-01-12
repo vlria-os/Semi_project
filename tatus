@@ -1,0 +1,398 @@
+[33mcommit 8fcb235a57ab99e42559a8783d012b2a80a70524[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mdev[m[33m)[m
+Author: Parse-Edward <epislotus@gmail.com>
+Date:   Mon Jan 12 11:54:49 2026 +0900
+
+    temp warehouse added
+
+[33mcommit 23ef94697ddbcbf9347061f411878ac28d8cc59c[m[33m ([m[1;31morigin/temp[m[33m)[m
+Merge: d9385be bd11bf9
+Author: vlria <shslvllria540@gmail.com>
+Date:   Mon Jan 12 10:31:31 2026 +0900
+
+    Merge branch 'temp' of https://github.com/vlria-os/Semi_project into temp
+
+[33mcommit d9385be35fdea9f3f2f9a98f63ce8f1b115b7276[m
+Author: vlria <shslvllria540@gmail.com>
+Date:   Mon Jan 12 10:30:52 2026 +0900
+
+    day6
+
+[33mcommit bd11bf9be42131d47502e6600efbc50c43905510[m
+Merge: 22eaffd bb63613
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Fri Jan 9 18:27:34 2026 +0900
+
+    읽음 기능 완성
+
+[33mcommit 22eaffd1ddd4c1150513af48a3cf999db21e3edf[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Fri Jan 9 18:21:35 2026 +0900
+
+    단톡방이랑 읽음 기능 완성
+
+[33mcommit bb63613da5090c0a526be882e4a2f610ba88d2f2[m
+Author: vlria <shslvllria540@gmail.com>
+Date:   Fri Jan 9 18:21:06 2026 +0900
+
+    day5
+
+[33mcommit 7430b3296099975b4a04b028b93cb4d6543e1107[m
+Author: vlria <shslvllria540@gmail.com>
+Date:   Fri Jan 9 18:01:18 2026 +0900
+
+    day5
+
+[33mcommit c46ef6879fbdcc942fd4ef7603ff132f104fce3d[m
+Author: vlria <shslvllria540@gmail.com>
+Date:   Fri Jan 9 17:23:56 2026 +0900
+
+    입고 요청, 입고 승인/반려
+
+[33mcommit 453a1b3f2927a5ee631c924a6053684565e17b8b[m
+Merge: a5d1f34 64594f2
+Author: vlria <shslvllria540@gmail.com>
+Date:   Fri Jan 9 14:31:47 2026 +0900
+
+    YUNJIN
+
+[33mcommit a5d1f3465fad520ef37549dc180bb0aa131c3c33[m
+Author: vlria <shslvllria540@gmail.com>
+Date:   Fri Jan 9 14:23:41 2026 +0900
+
+    Day5-3
+
+[33mcommit 596d0d217b5e086779076e266aaa324baad24677[m
+Merge: 5aaaa4d fa241db
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Fri Jan 9 12:39:49 2026 +0900
+
+    Merge branch 'temp' of https://github.com/vlria-os/Semi_project into temp
+
+[33mcommit 5aaaa4d0fbf416253d182078a98d1335b8e5b40e[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Fri Jan 9 12:39:35 2026 +0900
+
+    채팅 유점저 목록 페이ì지
+
+[33mcommit fa241dbb2839d7a3a0dba387e198946c3cc3262f[m
+Author: vlria <shslvllria540@gmail.com>
+Date:   Fri Jan 9 12:38:50 2026 +0900
+
+    chat
+
+[33mcommit 6f57554344932e8c571d77a38cfff70b6cc87d81[m
+Merge: 8ea8e2c c3bb0a7
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Fri Jan 9 11:24:49 2026 +0900
+
+    Merge branch 'temp' of https://github.com/vlria-os/Semi_project into temp
+
+[33mcommit 8ea8e2caa6083b99169a86b4558d77bda4e47e0c[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Fri Jan 9 11:23:22 2026 +0900
+
+    새채팅 만드는 ã중
+
+[33mcommit c3bb0a7810d7cceffd5fa909a5e6c6f2e9c0d8dd[m
+Author: vlria <shslvllria540@gmail.com>
+Date:   Fri Jan 9 11:20:01 2026 +0900
+
+    day 5-2
+
+[33mcommit b6f29fc01bb42d09df96149ab36a7d301a34d36f[m
+Author: vlria <shslvllria540@gmail.com>
+Date:   Fri Jan 9 09:26:56 2026 +0900
+
+    Day 5-1
+
+[33mcommit 18409337439e158f71c6bf58351a5f02d6ce9448[m
+Author: vlria <shslvllria540@gmail.com>
+Date:   Thu Jan 8 21:43:03 2026 +0900
+
+    260108
+
+[33mcommit 4cf07d54685efa9b81736aaeec524666c6d72912[m
+Author: vlria <shslvllria540@gmail.com>
+Date:   Thu Jan 8 21:39:22 2026 +0900
+
+    MERGING
+
+[33mcommit b844484176f4e6e900c2639c9491e2eac58f6e52[m
+Merge: d7c1f13 6415138
+Author: vlria <shslvllria540@gmail.com>
+Date:   Thu Jan 8 20:40:12 2026 +0900
+
+    HANSOL&JIWON MERGE
+
+[33mcommit 64151380ca07c73a2f3d5bea0a00bda2f724616b[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Thu Jan 8 18:20:36 2026 +0900
+
+    입출고 요청 내역 수정 중
+
+[33mcommit d7c1f13fa30cee41e2b29ad6c337eca828ebb1a0[m[33m ([m[1;31morigin/HANSOL[m[33m)[m
+Author: vlria <shslvllria540@gmail.com>
+Date:   Thu Jan 8 17:18:59 2026 +0900
+
+    Day4-3
+
+[33mcommit 7f4374e87db1b307506bade49cf07283b17b3fe0[m
+Author: vlria <shslvllria540@gmail.com>
+Date:   Thu Jan 8 17:10:48 2026 +0900
+
+    Day 4-2
+
+[33mcommit 5101879634c60c017a0bba10a819a834e3b53181[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Thu Jan 8 16:14:10 2026 +0900
+
+    채팅방 리스트에서 마지막 메시지 ë¯ 미리보기
+
+[33mcommit 107dec5fc34c5202b93819fedd108b1fed894d7d[m
+Author: vlria <shslvllria540@gmail.com>
+Date:   Thu Jan 8 14:08:51 2026 +0900
+
+    day 4-1
+
+[33mcommit 64594f2572e189d54fc348aee0a40dad38844f53[m
+Merge: 7e27359 9adce41
+Author: greathera <leejy3658@gmail.com>
+Date:   Thu Jan 8 10:05:46 2026 +0900
+
+    Merge branch 'main' into YUNJIN
+
+[33mcommit 9adce41568284190be8ddbc9186a5b8e453be59a[m
+Author: greathera <leejy3658@gmail.com>
+Date:   Thu Jan 8 09:53:48 2026 +0900
+
+    initial spring project
+
+[33mcommit ff8ea0ddb52a17b7170ba0e937e2bcde3df29802[m
+Merge: 7e27359 c8dc730
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Thu Jan 8 09:44:05 2026 +0900
+
+    Merge remote-tracking branch 'mine/main' into JIWON
+
+[33mcommit c8dc730bd4487b1a4f3910f6dead1bba9f0a2de5[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Thu Jan 8 00:06:22 2026 +0900
+
+    읽음 기능 수정 후 테스트 전
+
+[33mcommit cf4dff6fbbf18b01b9dd522a30bc45bae2cf051c[m
+Merge: 98ab8a6 7e27359
+Author: vlria <shslvllria540@gmail.com>
+Date:   Wed Jan 7 18:20:56 2026 +0900
+
+    Merge remote-tracking branch 'origin/HANSOL' into HANSOL
+
+[33mcommit 98ab8a65cf05268224d0576acaf1cf48c39051e5[m
+Author: vlria <shslvllria540@gmail.com>
+Date:   Wed Jan 7 17:15:40 2026 +0900
+
+    third Day final
+
+[33mcommit 400e3885aaff5ae7b3f401ab500113111dc65f39[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Wed Jan 7 17:14:01 2026 +0900
+
+    읽음 기능 수정 중
+
+[33mcommit 3515975355184331863a60d4dc8a6beb1fc1cc00[m
+Author: vlria <shslvllria540@gmail.com>
+Date:   Wed Jan 7 17:02:20 2026 +0900
+
+    third Day(in,out,exp,ref,exc)
+
+[33mcommit 0c40ea369ad08a1f291be21bf6a71573a034e899[m
+Author: vlria <shslvllria540@gmail.com>
+Date:   Wed Jan 7 16:04:35 2026 +0900
+
+    third Day(in,out,exp,ref)
+
+[33mcommit 06eccc79c34881b057e2b1e46acd03a349a3f2db[m
+Author: vlria <shslvllria540@gmail.com>
+Date:   Wed Jan 7 15:17:55 2026 +0900
+
+    third Day(in,out,exp)
+
+[33mcommit ae2653a663114a68fab994db2c0a286a27e2311d[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Wed Jan 7 11:31:10 2026 +0900
+
+    채실시간 채팅 & 채팅방 접속 확인 기능 완성
+
+[33mcommit a9f1e975990415b5372f6c42afb2ec87abe79560[m
+Author: vlria <shslvllria540@gmail.com>
+Date:   Wed Jan 7 09:19:50 2026 +0900
+
+    second Day 2
+
+[33mcommit 07a3dfe047134c52bca1c504bd1053f05c95e338[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Tue Jan 6 18:25:49 2026 +0900
+
+    웹소켓 연결 성공
+
+[33mcommit 0b17630a4d38382ee6cdbe595fed218a4a006d79[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Tue Jan 6 14:59:21 2026 +0900
+
+    페이징 및 아이디 ì¥중복 체크 완성
+
+[33mcommit e3e6be4bc07dfb2dc8211162cd3d906e893dd19c[m
+Author: vlria <shslvllria540@gmail.com>
+Date:   Mon Jan 5 18:19:35 2026 +0900
+
+    second Day
+
+[33mcommit e22a3e0f4845377d4a01caf39a3898baee763800[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Mon Jan 5 18:18:20 2026 +0900
+
+    입출고 요청 페이징 처리 중
+
+[33mcommit 3afe3a83945421e07d7f268f31c7618d2a7c07ca[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Mon Jan 5 15:14:57 2026 +0900
+
+    입출고 승인 내역 확인 기능 완성
+
+[33mcommit ea23a41c1a392519274c33f04c8ad9b560a782ce[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Mon Jan 5 14:13:03 2026 +0900
+
+    승인 내역 페이지 승인 상태 수정
+
+[33mcommit 3be9a5a1978ae9f8ebcfda3f41112a784ec7e4ab[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Mon Jan 5 14:12:21 2026 +0900
+
+    승인 내역 페이지 보완
+
+[33mcommit 693e2b6619f919ed58e5b7ce0d0f8bff7b0a9b9d[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Sun Jan 4 23:41:40 2026 +0900
+
+    반려 기능 완성
+
+[33mcommit ea1c2b4cf77d242755d355e0b18a9a5fbcab269d[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Sun Jan 4 17:28:02 2026 +0900
+
+    승인 내역 페이지 추가(반려 ì¶
+
+[33mcommit 702196baf39a516647006dbb42d9ca8fd040d005[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Sun Jan 4 17:05:50 2026 +0900
+
+    입입고 요청 승인 기능 추가
+
+[33mcommit 702e5e5df8371c6161944cab3354ffd31bad73d3[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Sat Jan 3 18:51:58 2026 +0900
+
+    계정 관ì삭제 기능 ì완성
+
+[33mcommit 66149c76d7c6cbfe4773a048fd91223bcef2dab7[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Sat Jan 3 18:43:09 2026 +0900
+
+    계정 정보 수정 기능 완성
+
+[33mcommit bead567c878c943745b6bdc5acd716d9d843566f[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Sat Jan 3 17:53:24 2026 +0900
+
+    계정 추가 기능 완성
+
+[33mcommit 7addf4e5f7601002b263f9bef6c2681d1180ef06[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Sat Jan 3 16:44:52 2026 +0900
+
+    계정 관리 검색 기능 완성
+
+[33mcommit 7b30c3e7e1ae60bacc197f6701b45b07088baca5[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Sat Jan 3 14:22:54 2026 +0900
+
+    콘트롤러 매핑 주소 정리
+
+[33mcommit 7d37b63e0c52ecba9a4bf63e86e36f908f634129[m
+Author: vlria <shslvllria540@gmail.com>
+Date:   Fri Jan 2 17:38:55 2026 +0900
+
+    firstDay
+
+[33mcommit 70cd2120d428cf787008c7673627ea73d1af4cc4[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Fri Jan 2 17:37:23 2026 +0900
+
+    상세보기 추가
+
+[33mcommit 7e27359c2d04221665b186109c0b32677a0cef5d[m[33m ([m[1;31morigin/dev[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Parse-Edward <epislotus@gmail.com>
+Date:   Fri Jan 2 14:14:17 2026 +0900
+
+    Delete src/main/resources/static/css directory
+
+[33mcommit 583daa554c85019a3875c23b74839d6e8e2052a7[m
+Author: Parse-Edward <epislotus@gmail.com>
+Date:   Fri Jan 2 14:14:02 2026 +0900
+
+    Delete src/main/resources/templates directory
+
+[33mcommit 87c564818cbca30a22da2ba59356e7261ad51b97[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Fri Jan 2 13:19:49 2026 +0900
+
+    관리자 입출고 요청 상세보기까지 완성
+
+[33mcommit 3dbb19996a86e8e95df9cc9b719ad557eee0716f[m
+Author: Parse-Edward <epislotus@gmail.com>
+Date:   Fri Jan 2 10:56:33 2026 +0900
+
+    1_html
+
+[33mcommit 9ded0f9c02ea1dce27128c92e4507d0e30d288fb[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Thu Jan 1 22:32:05 2026 +0900
+
+    반려 사유 입력창 추가
+
+[33mcommit aae1ea593b97aef6396f0971725c063ba729670a[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Thu Jan 1 21:56:21 2026 +0900
+
+    메인 페이지 수정
+
+[33mcommit 7b7f034662380ea080d1736d5d17291e7e849d3e[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Wed Dec 31 17:59:10 2025 +0900
+
+    마이 페이지 수정
+
+[33mcommit 25d8a650d2fb245827dbaf5791a6f03266598a33[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Wed Dec 31 16:05:39 2025 +0900
+
+    입고 요청 확인 페이지
+
+[33mcommit 9e371c64573701ce94b33eda75bfe3e6a3b6b0ed[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Wed Dec 31 12:32:16 2025 +0900
+
+    마이페이지 이동
+
+[33mcommit 364e2bebbd0e4576128ee07535cb3a076e3ae8b7[m
+Author: novolunteeer <novolunteeer@gmail.com>
+Date:   Wed Dec 31 12:16:07 2025 +0900
+
+    로그인 기능 완성
+
+[33mcommit c0e850c49105573815a2dd51c1f84ddce2ba5a45[m
+Author: vlria <shslvllria540@gmail.com>
+Date:   Wed Dec 31 09:46:18 2025 +0900
+
+    start
