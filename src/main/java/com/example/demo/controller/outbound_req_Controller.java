@@ -37,8 +37,7 @@ public class outbound_req_Controller {
                                HttpSession session,
                                Model model){
         List<Outbound_reqDto> outbound_reqDtos=outbound_reqListDto.getOutbound_reqDtos();
-        //int webuser_id=(int)session.getAttribute("webuser_id");
-        int webuser_id=1000; //테스트 데이터
+        int webuser_id=(int)session.getAttribute("webuser_id");
         int n=outboundService.insert_request(outbound_reqDtos, webuser_id);
 
         if(n==1){
@@ -48,6 +47,6 @@ public class outbound_req_Controller {
             model.addAttribute("result","failure");
         }
 
-        return "redirect:/office_staff/outbound_req";
+        return "redirect:/content/outbound_req";
     }
 }
