@@ -89,11 +89,14 @@ public class inbound_app_Controller {
 
         int approver_id=(int)session.getAttribute("webuser_id");
         int n=inboundService.update_approval(inbound_id,inbound_detailDto,approver_id);
-        List<Inbound_detailDto> detailList = requestService.inboundList(inbound_id);
+        Map<String,Object> map=requestService.inboundList(inbound_id);
+        List<Inbound_detailDto> detailList=(List<Inbound_detailDto>) map.get("list");
+        List<String> names=(List<String>) map.get("names");
 
         Map<String,Object> result = new HashMap<>();
         result.put("success", n>0);
         result.put("detailList", detailList); // 최신 상세 리스트 반환
+        result.put("names",names);
         return result;
     }
 }

@@ -342,4 +342,11 @@
     <select id="selectOutboundId" parameterType="int" resultType="OutboundDto">
         select * from outbound where outbound_id=#{value}
     </select>
+
+    <!-- 입출고 요청 상품 이름 -->
+    <select id="getProductName" resultType="String">
+        select product_name
+        from product
+        where product_id = #{productId}
+    </select>
 </mapper>

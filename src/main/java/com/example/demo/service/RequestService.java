@@ -185,8 +185,21 @@ public class RequestService {
        =============================== */
 
     // 입고 번호로 입고 상세 조회
-    public List<Inbound_detailDto> inboundList(int inbound_id){
-        return mapper.inboundList(inbound_id);
+    public Map<String,Object> inboundList(int inbound_id){
+        List<Inbound_detailDto> list=mapper.inboundList(inbound_id);
+
+        Map<String,Object> map=new HashMap<>();
+        map.put("list",list);
+
+        Map<Integer,String> names=new HashMap<>();
+        for(Inbound_detailDto d:list){
+            String name=mapper.getProductName(d.getProduct_id());
+            names.put(d.getInbound_detail_id(),name);
+        }
+
+        map.put("names",names);
+
+        return map;
     }
 
     public String product_name(int product_id){
@@ -194,8 +207,21 @@ public class RequestService {
     }
 
     // 출고 번호로 출고 상세 조회
-    public List<Outbound_detailDto> outboundList(int outbound_id){
-        return mapper.outboundList(outbound_id);
+    public Map<String,Object> outboundList(int outbound_id){
+        List<Outbound_detailDto> list=mapper.outboundList(outbound_id);
+
+        Map<String,Object> map=new HashMap<>();
+        map.put("list",list);
+
+        Map<Integer,String> names=new HashMap<>();
+        for(Outbound_detailDto d:list){
+            String name=mapper.getProductName(d.getProduct_id());
+            names.put(d.getOutbound_detail_id(),name);
+        }
+
+        map.put("names",names);
+
+        return map;
     }
 
     // 입고 상세 번호로 상세 상품 조회

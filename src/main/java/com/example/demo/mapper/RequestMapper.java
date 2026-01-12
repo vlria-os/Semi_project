@@ -2,6 +2,7 @@ package com.example.demo.mapper;
 
 import com.example.demo.dto.*;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -64,6 +65,8 @@ public interface RequestMapper {
 
     /** 출고 상세 번호로 단일 출고 상품 조회 */
     Outbound_detailDto selectDetailOut(int outbound_detail_id);
+
+    String getProductName(@Param("productId") int productId);
 
 
     /* =========================

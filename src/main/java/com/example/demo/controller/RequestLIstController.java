@@ -14,9 +14,9 @@ import java.util.Map;
 @Controller
 @RequiredArgsConstructor
 public class RequestLIstController {
-    private final RequestService service;
+    private final RequestService requestService;
 
-    @GetMapping("/content/requsetList")
+    @GetMapping("/content/requestList")
     public String main(HttpSession session,
                        Model model,
                        @RequestParam(name = "pageNum",defaultValue = "1") int pageNum){
@@ -26,7 +26,7 @@ public class RequestLIstController {
         if (role_id == null) {
             return "redirect:/";
         }else if(role_id == 1){
-            Map<String,Object> map=service.adminBound(pageNum);
+            Map<String,Object> map=requestService.adminBound(pageNum);
 
             model.addAttribute("list",map.get("list"));
             model.addAttribute("pageInfo",map.get("pageInfo"));
@@ -37,7 +37,7 @@ public class RequestLIstController {
                 return "redirect:/";
             }
 
-            Map<String,Object> map=service.userBound(pageNum,webuser_id);
+            Map<String,Object> map=requestService.userBound(pageNum,webuser_id);
 
             model.addAttribute("list",map.get("list"));
             model.addAttribute("pageInfo",map.get("pageInfo"));
@@ -52,15 +52,14 @@ public class RequestLIstController {
     @GetMapping("/goinbound")
     @ResponseBody
     public Map<String,Object> goinbound(HttpSession session,
-                                      Model model,
                                       @RequestParam(name = "pageNum",defaultValue = "1") int pageNum){
         int role_id = (int) session.getAttribute("role_id");
         int webuser_id = (int) session.getAttribute("webuser_id");
         if(role_id == 1){
-            Map<String,Object> map=service.inboundAll(pageNum);
+            Map<String,Object> map=requestService.inboundAll(pageNum);
             return map;
         }else {
-            Map<String,Object> map=service.selectInbound(pageNum,webuser_id);
+            Map<String,Object> map=requestService.selectInbound(pageNum,webuser_id);
             return map;
         }
 
@@ -73,10 +72,10 @@ public class RequestLIstController {
         int role_id = (int) session.getAttribute("role_id");
         int webuser_id = (int) session.getAttribute("webuser_id");
         if(role_id == 1){
-            Map<String,Object> map=service.outboundAll(pageNum);
+            Map<String,Object> map=requestService.outboundAll(pageNum);
             return map;
         }else {
-            Map<String,Object> map=service.selectOutbound(pageNum,webuser_id);
+            Map<String,Object> map=requestService.selectOutbound(pageNum,webuser_id);
             return map;
         }
     }

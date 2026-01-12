@@ -9,31 +9,30 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
 public class DetailController {
-    private final RequestService service;
+    private final RequestService requestService;
 
     // ===== 관리자 =====
 
     @GetMapping("/request/admin/inbound")
     @ResponseBody
-    public List<Inbound_detailDto> adminInbound(
-            @RequestParam int inbound_id,
-            Model model) {
+    public Map<String, Object> adminInbound(
+            @RequestParam int inbound_id) {
 
-        return service.inboundList(inbound_id);
+        return requestService.inboundList(inbound_id);
     }
 
     @GetMapping("/request/admin/outbound")
-    public String adminOutbound(
-            @RequestParam int outbound_id,
-            Model model) {
-
-        model.addAttribute("list", service.outboundList(outbound_id));
-        return "request/Outdetail";
+    @ResponseBody
+    public Map<String,Object> adminOutbound(
+            @RequestParam int outbound_id) {
+        return requestService.outboundList(outbound_id);
     }
 
     // ===== 사용자 =====
@@ -43,7 +42,7 @@ public class DetailController {
             @RequestParam int inbound_id,
             Model model) {
 
-        model.addAttribute("list", service.inboundList(inbound_id));
+        model.addAttribute("list", requestService.inboundList(inbound_id));
         return "request/Indetail1";
     }
 
@@ -52,7 +51,7 @@ public class DetailController {
             @RequestParam int outbound_id,
             Model model) {
 
-        model.addAttribute("list", service.outboundList(outbound_id));
+        model.addAttribute("list", requestService.outboundList(outbound_id));
         return "request/Outdetail1";
     }
 }
