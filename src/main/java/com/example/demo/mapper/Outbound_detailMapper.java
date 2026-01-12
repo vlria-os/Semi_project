@@ -12,4 +12,5 @@ public interface Outbound_detailMapper {
     int update_appStatus(Outbound_detailDto outbound_detailDto);
     int update_appStatus_rej(int outbound_detail_id);
     int update_appStatus_conf(int outbound_detail_id);
+    int select_product(int outbound_detail);
 }

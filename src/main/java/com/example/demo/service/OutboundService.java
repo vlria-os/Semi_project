@@ -84,12 +84,14 @@ public class OutboundService {
                 int quantity=outbound_detailDto.getQuantity()-(sum-s.getQuantity());
                 lot_outMapper.insert(new Lot_outDto(0,outbound_detailDto.getOutbound_detail_id(),
                                                     s.getWarehouse_id(),null,s.getLot_in_id(),quantity,s.getStock_id(),null));
-                stockMapper.update_out(new StockDto(s.getStock_id(),s.getLot_in_id(),quantity));
+                int product_id=outbound_detailMapper.select_product(outbound_detailDto.getOutbound_detail_id());
+                stockMapper.update_out(new StockDto(s.getStock_id(),s.getLot_in_id(),quantity, product_id));
                 break;
             }else {
                 lot_outMapper.insert(new Lot_outDto(0, outbound_detailDto.getOutbound_detail_id(),
                         s.getWarehouse_id(), null, s.getLot_in_id(), s.getQuantity(), s.getStock_id(), null));
-                stockMapper.update_out(new StockDto(s.getStock_id(), s.getLot_in_id(), s.getQuantity()));
+                int product_id=outbound_detailMapper.select_product(outbound_detailDto.getOutbound_detail_id());
+                stockMapper.update_out(new StockDto(s.getStock_id(), s.getLot_in_id(), s.getQuantity(),product_id));
             }
         }
         return 1;
@@ -105,7 +107,8 @@ public class OutboundService {
         if(status.equals("REJECTED")){
             int m=outbound_detailMapper.update_outStatus_rej(outbound_detail_id);
             for (Lot_outDto l : lot_outDtos) {
-                stockMapper.update_in(new StockDto(l.getStock_id(),0,l.getQuantity()));
+                int product_id=outbound_detailMapper.select_product(outbound_detail_id);
+                stockMapper.update_in(new StockDto(l.getStock_id(),0,l.getQuantity(), product_id));
                 int q=lot_outMapper.delete(l.getLot_out_id());
             }
         } else {

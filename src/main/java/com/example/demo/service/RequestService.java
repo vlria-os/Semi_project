@@ -1,12 +1,14 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.*;
+import com.example.demo.mapper.Inbound_detailMapper;
 import com.example.demo.mapper.ProductMapper;
 import com.example.demo.mapper.RequestMapper;
 import com.example.demo.pagination.PageInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +18,7 @@ import java.util.Map;
 public class RequestService {
     private final RequestMapper mapper;
     private final ProductMapper productMapper;
+    private final Inbound_detailMapper inbound_detailMapper;
 
    /* ===============================
        1. 입출고 요청 조회
@@ -189,6 +192,10 @@ public class RequestService {
         return mapper.inboundList(inbound_id);
     }
 
+    public List<Inbound_detailDto> inboundAppList(int inbound_id){
+        return mapper.inboundAppList(inbound_id);
+    }
+
     public String product_name(int product_id){
         return productMapper.select_product(product_id);
     }
@@ -196,6 +203,10 @@ public class RequestService {
     // 출고 번호로 출고 상세 조회
     public List<Outbound_detailDto> outboundList(int outbound_id){
         return mapper.outboundList(outbound_id);
+    }
+
+    public List<Outbound_detailDto> outboundAppList(int outbound_id){
+        return mapper.outboundAppList(outbound_id);
     }
 
     // 입고 상세 번호로 상세 상품 조회
@@ -296,7 +307,33 @@ public class RequestService {
 
     // 승인 내역 전체 조회
     public List<ApprovalDto> approvalAll(){
+
         return mapper.approvalAll();
+    }
+
+    public List<ApprovalDto> approvalconfAll(){
+        List<ApprovalDto> approvalDtos=mapper.approvalAll();
+        List<ApprovalDto> result = new ArrayList<>();
+
+        for(ApprovalDto a:approvalDtos){
+            boolean hasRequest = false;
+            if(a.getBound_type().equals("IN")){
+                List<String> list=inbound_detailMapper.select_detail_status(a.getInbound_id());
+                for(String s:list){
+                    if ("REQUEST".equals(s)) {
+                        hasRequest = true;
+                        break;
+                    }
+                }
+            }else{
+                //
+            }
+            if (hasRequest) {
+                result.add(a);
+            }
+        }
+        System.out.println(result);
+        return result;
     }
 
     // 입고 번호로 승인 내역 조회

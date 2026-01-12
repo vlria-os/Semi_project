@@ -38,8 +38,8 @@
     <update id="update_inbStatus_rej" parameterType="int">
         update inbound_detail set inbound_status='REJECTED' where inbound_detail_id=#{inbound_detail_id}
     </update>
-    <update id="update_reason" parameterType="String">
-        update inbound_detail set reason=#{value} where inbound_detail_id=#{inbound_detail_id}
+    <update id="update_reason" parameterType="Inbound_detailDto">
+        update inbound_detail set reason=#{reason} where inbound_detail_id=#{inbound_detail_id}
     </update>
     <update id="update_inbStatus_conf" parameterType="int">
         update inbound_detail set inbound_status='CONFIRMED' where inbound_detail_id=#{inbound_detail_id}
@@ -55,4 +55,7 @@
     <update id="update_appStatus_conf" parameterType="int">
         update inbound_detail set approval_status='CONFIRMED' where inbound_detail_id=#{inbound_detail_id}
     </update>
+    <select id="select_detail_status" parameterType="int" resultType="String">
+        select inbound_status from inbound_detail where inbound_id=#{value}
+    </select>
 </mapper>

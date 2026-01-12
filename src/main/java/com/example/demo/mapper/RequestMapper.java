@@ -130,4 +130,7 @@ public interface RequestMapper {
     /** 출고 번호로 출고 요청 단건 조회 */
     OutboundDto selectOutboundId(int outbound_id);
 
+
+    List<Inbound_detailDto> inboundAppList(int inbound_id);
+    List<Outbound_detailDto> outboundAppList(int outbound_id);
 }

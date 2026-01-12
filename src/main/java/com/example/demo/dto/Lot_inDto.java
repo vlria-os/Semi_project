@@ -20,4 +20,5 @@ public class Lot_inDto {
     private LocalDate expiration_date;
     private LocalDate received_date;
     private int quantity;
+    private int product_id;
 }

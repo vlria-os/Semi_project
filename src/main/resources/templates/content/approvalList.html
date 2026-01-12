@@ -16,14 +16,6 @@
         </table>
     </div>
 <script>
-    function logout(){
-        fetch('/logout')
-            .then(resp=>resp.text())
-            .then(data=>{
-                alert(data);
-                location.href="/";
-            })
-    }
 
     function showDetail(btn){
         const currentTr=btn.closest("tr");
