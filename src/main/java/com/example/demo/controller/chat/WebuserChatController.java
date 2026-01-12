@@ -198,4 +198,15 @@ public class WebuserChatController {
 
         return result;
     }
+
+    @GetMapping("/chat/room/{roomId}/members")
+    @ResponseBody
+    public List<WebuserDto> roomMembers(@PathVariable int roomId, HttpSession session){
+        int myId = (int) session.getAttribute("webuser_id");
+
+        if(!service.isParticipant(roomId,myId)){
+            return List.of();
+        }
+        return service.getRoomMembers(roomId);
+    }
 }

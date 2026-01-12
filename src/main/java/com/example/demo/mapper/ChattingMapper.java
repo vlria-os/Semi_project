@@ -78,5 +78,7 @@ public interface ChattingMapper {
 
     int insertChatRoomUserWithLastRead(Map<String,Object> map);
 
+    List<WebuserDto> selectRoomMembers(@Param("roomId") int roomId);
+
 
 }

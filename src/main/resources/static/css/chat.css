@@ -48,7 +48,7 @@ body{
     border: 1px solid var(--line);
     border-radius: 22px;
     box-shadow: var(--shadow);
-    overflow: hidden;
+    overflow: visible;
 }
 
 /* ---------- header (list) ---------- */
@@ -614,3 +614,201 @@ a.room-name:focus{
     padding: 12px 14px;
     border-top: 1px solid var(--line);
 }
+
+/* ===== modal common ===== */
+.modal-overlay{
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,0.35);
+    z-index: 9999;
+}
+.modal-card{
+    width: 340px;
+    max-width: calc(100% - 24px);
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+.modal-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line);
+}
+.modal-title{ font-weight: 900; }
+.modal-x{
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    font-size: 16px;
+    color: var(--muted);
+}
+.modal-body{ padding: 12px 14px; }
+.modal-hint{ font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+.modal-foot{
+    display:flex;
+    justify-content:flex-end;
+    gap: 10px;
+    padding: 12px 14px;
+    border-top: 1px solid var(--line);
+}
+
+/* ===== members list ===== */
+.members-list{
+    display:flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 300px;
+    overflow:auto;
+}
+.member-item{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    padding: 10px 10px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #fff;
+}
+.member-avatar{
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #f4f4f4;
+    border: 1px solid #e0e0e0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight: 900;
+    color: var(--blue);
+}
+.member-name{
+    flex: 1;
+    font-weight: 800;
+}
+.member-me{
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--blue-soft);
+    color: var(--blue);
+    border: 1px solid rgba(47,107,255,.25);
+    font-weight: 900;
+}
+
+/* topbar action spacing */
+.room-action{
+    display:flex;
+    gap: 8px;
+    align-items:center;
+}
+
+/* ✅ 새채팅 드롭다운 (버튼 바로 아래) */
+.menu-wrap{
+    position: relative;
+    display: inline-block;
+}
+
+/* 너 HTML의 class="menu-dropdown" */
+.menu-dropdown{
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+
+    min-width: 170px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 6px;
+
+    z-index: 9999; /* 위로 */
+}
+
+/* 너 HTML의 class="menu-item" */
+.menu-item{
+    display: block;
+    padding: 10px 12px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: var(--text);
+    font-weight: 800;
+    font-size: 13px;
+}
+
+.menu-item:hover{
+    background: var(--blue-soft);
+    color: var(--blue);
+}
+
+/* =========================
+   chatRoom popup fixed UI
+   ========================= */
+
+/* 팝업(채팅방) 전체 컨테이너: 위/아래 고정, 가운데만 스크롤 */
+.chat-container{
+    height: 100vh;                 /* ✅ 팝업 전체 높이 */
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+}
+
+/* 상단 바 고정 */
+.room-topbar{
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+}
+
+/* presence 라인도 상단에 붙여서 고정 */
+.presence{
+    position: sticky;
+    top: 60px;                      /* ✅ room-topbar 높이에 맞춰 조정 */
+    z-index: 40;
+    background: #fff;
+    border-bottom: 1px solid var(--line);
+
+    /* 네 html에 이미 class="presence"만 있으니 여기서 패딩/폰트 정의 */
+    padding: 8px 14px;
+    font-size: 12px;
+    color: var(--muted);
+}
+
+/* ✅ 메시지 영역만 스크롤 */
+.chat-messages{
+    flex: 1;                        /* ✅ 남는 공간 모두 차지 */
+    overflow-y: auto;               /* ✅ 여기만 스크롤 */
+    padding: 12px 12px 16px;
+    background: #fafafa;
+
+    /* 스크롤 잘리는 문제 방지 */
+    min-height: 0;
+}
+
+/* 하단 입력창 고정 */
+.chat-input{
+    position: sticky;
+    bottom: 0;
+    z-index: 50;
+    background: #fff;
+    border-top: 1px solid var(--line);
+    padding: 12px;
+}
+
+/* 팝업 전체 */
+.chat-container{
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+

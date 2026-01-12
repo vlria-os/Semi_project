@@ -350,4 +350,12 @@
         where room_id = #{roomId}
         and user_id = #{userId}
     </select>
+    <!-- 단체 채팅방 참가자 목록 -->
+    <select id="selectRoomMembers" resultType="WebuserDto">
+        select u.webuser_id, u.webuser_name
+        from chat_room_user cru join webuser u
+        on u.webuser_id = cru.user_id
+        where cru.room_id = #{roomId}
+        order by u.webuser_name
+    </select>
 </mapper>

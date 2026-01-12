@@ -23,6 +23,9 @@
         </div>
 
         <div class="room-action">
+            <button class="btn btn-ghost members-btn" onclick="openMembersModal()">
+                참가자
+            </button>
             <button class="btn btn-primary invite-btn" type="button" onclick="openInviteModal()">
                 초대
             </button>
@@ -91,6 +94,25 @@
             </div>
         </div>
     </div>
+    <!-- 참가자 모달 -->
+    <div id="membersModal" class="modal-overlay" style="display:none;">
+        <div class="modal-card">
+            <div class="modal-head">
+                <div class="modal-title">참가자</div>
+                <button class="modal-x" onclick="closeMembersModal()">✕</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="modal-hint">현재 채팅방 참가자 목록</div>
+                <div id="membersList" class="members-list"></div>
+            </div>
+
+            <div class="modal-foot">
+                <button class="btn btn-primary" onclick="closeMembersModal()">확인</button>
+            </div>
+        </div>
+    </div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
@@ -166,6 +188,11 @@
                 const memberCount = parseInt(message.body || "0");
                 const badge = document.getElementById("roomUserBadge");
                 if (badge) badge.innerText = memberCount;
+
+                // 2️⃣ 참가자 모달이 열려 있으면 목록 다시 불러오기
+                if (isMembersModalOpen()) {
+                    openMembersModal(); // ← 여기서 사용
+                }
             });
 
             // ✅ chat message
@@ -432,6 +459,55 @@
             closeInviteModal();
         }
     });
+
+    async function openMembersModal(){
+        const modal = document.getElementById("membersModal");
+        modal.style.display = "flex";
+
+        try{
+            const res = await fetch(`/chat/room/${room_id}/members`);
+            const users = await res.json();
+            renderMembersList(users || []);
+        }catch(e){
+            console.error(e);
+            document.getElementById("membersList").innerHTML =
+                `<div class="invite-empty">목록을 불러오지 못했어요.</div>`;
+        }
+    }
+
+    function closeMembersModal(){
+        document.getElementById("membersModal").style.display = "none";
+    }
+
+    function isMembersModalOpen(){
+        const modal = document.getElementById("membersModal");
+        return modal && modal.style.display !== "none";
+    }
+
+
+    function renderMembersList(users){
+        const wrap = document.getElementById("membersList");
+        wrap.innerHTML = "";
+
+        if(users.length === 0){
+            wrap.innerHTML = `<div class="invite-empty">참가자가 없어요.</div>`;
+            return;
+        }
+
+        users.forEach(u => {
+            const id = u.webuser_id ?? u.webuserId;
+            const name = u.webuser_name ?? u.webuserName;
+
+            const row = document.createElement("div");
+            row.className = "member-item";
+            row.innerHTML = `
+      <div class="member-avatar">${(name && name.length>0) ? name.substring(0,1) : "U"}</div>
+      <div class="member-name">${name}</div>
+      ${Number(id) === Number(user_id) ? `<span class="member-me">나</span>` : ``}
+    `;
+            wrap.appendChild(row);
+        });
+    }
 
     // 시작
     connect();
