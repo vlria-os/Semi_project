@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/css/warehouse/warehouseupdate.css}">
+</head>
+<body>
+<div class="container">
+
+    <!--창고 업데이트 페이지-->
+    <div class="updateWarehouse">
+        <form th:action="@{/warehouse/update}" method="post" th:object="${warehouseDto}">
+            <div>
+                <label for="warehouse_id">창고ID</label>
+                <input type="text" id="warehouse_id" th:field="*{warehouse_id}" readonly>
+            </div>
+            <div>
+                <label for="warehouse_name">창고이름</label>
+                <input type="text" id="warehouse_name" th:field="*{warehouse_name}">
+            </div>
+            <div>
+                <label for="location">창고위치</label>
+                <input type="text" id="location" th:field="*{location}" placeholder="예: 서울 강남구">
+            </div>
+            <div>
+                <label for="maxium_capacity">최대 용량</label>
+                <input type="number" id="maxium_capacity" th:field="*{maximum_capacity}" min="0">
+            </div>
+            <div>
+                <label for="warehouse_type">보관식</label>
+                <select id="warehouse_type" th:field="*{warehouse_type}">
+                    <option value="COLD">냉장</option>
+                    <option value="FROZEN">냉동</option>
+                    <option value="ROOM">상온</option>
+                </select>
+
+                <label for="is_active">보관식</label>
+                <select id="is_active" th:field="*{is_active}">
+                    <option value="FULL">Full</option>
+                    <option value="OPEN">Open</option>
+                    <option value="CLOSED">Closed</option>
+                </select>
+            </div>
+            <input type="submit" value="저장">
+        </form>
+
+        <!-- 창고 삭제-->
+        <div class="button-group">
+            <form th:action="@{/warehouse/delete}" method="post" onsubmit="return confirm('정말로 삭제하시겠습니까?')">
+                <input type="hidden" name="warehouse_id" th:value="${warehouseDto.warehouse_id}">
+                <button type="submit" class="btn-delete">삭제</button>
+            </form>
+            <!--뒤로가기 버튼-->
+            <a th:href="@{/warehouse/list}" class="btn-back">뒤로가기</a>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
