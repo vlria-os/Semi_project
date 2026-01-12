@@ -24,7 +24,7 @@ public class ProductListController {
     private final String UPLOADPATH="c:/image_Semi/";
     private final ProductService productService;
 
-    @GetMapping("content/productList")
+    @GetMapping("/content/productList")
     public String productList(Model model,
                               HttpSession session) {
         model.addAttribute("list", productService.productList());
@@ -40,13 +40,6 @@ public class ProductListController {
         }
 
         return "layout";
-    }
-
-    @GetMapping("/common/product_list")
-    public String inbound_reqForm(Model model){
-        List<ProductDto> productDtos=productService.productList("");
-        model.addAttribute("list", productDtos);
-        return "common/product_list";
     }
 
     @PostMapping("/common/product_list")
