@@ -198,7 +198,7 @@
             ) lm
             ON lm.room_id = r.room_id
 
-            -- ✅ unread (원하면 시스템메시지 제외도 가능: 아래 참고)
+            -- ✅ unread
             LEFT JOIN (
             SELECT m.room_id, COUNT(*) AS unread_count
             FROM chat_message m
