@@ -1,44 +1,73 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
 <mapper namespace="com.example.demo.mapper.NoticeMapper">
-    <insert id="insertNotice" parameterType="com.example.demo.dto.NoticeDto" keyProperty="noticeId">
-        INSERT INTO NOTICE(
-        NOTICE_ID,
+
+    <!-- 공지 목록 -->
+    <select id="selectNoticeList" resultType="com.example.demo.dto.NoticeDto">
+        SELECT
+        NOTICE_ID   AS noticeId,
         TITLE,
         CONTENT,
-        WRITER)
-        VALUES(NOTICE_SEQ.NEXTVAL,
-        #{title},#{content},#{writer})
+        WRITER,
+        VIEW_COUNT  AS viewCount,
+        CREATED_AT  AS createdAt,
+        PIN_YN      AS pinYn
+        FROM NOTICE
+        WHERE 1=1
+        <if test="startDate != null and startDate != ''">
+            AND CREATED_AT <![CDATA[>=]]> TO_DATE(#{startDate}, 'YYYY-MM-DD')
+        </if>
+        <if test="endDate != null and endDate != ''">
+            AND CREATED_AT <![CDATA[<=]]> TO_DATE(#{endDate}, 'YYYY-MM-DD')
+        </if>
+        ORDER BY NOTICE_ID DESC
+        OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+    </select>
+
+    <!-- 등록 -->
+    <insert id="insertNotice">
+        INSERT INTO NOTICE (
+            NOTICE_ID, TITLE, CONTENT, WRITER
+        ) VALUES (
+                     NOTICE_SEQ.NEXTVAL,
+                     #{title},
+                     #{content},
+                     #{writer}
+                 )
     </insert>
 
-    <!-- 공지목록 + 검색 + 페이지-->
-    <select id="selectNoticeList" resultType="NoticeDto">
-        SELECT *
+    <!-- 상세 -->
+    <select id="selectNoticeDetail" resultType="com.example.demo.dto.NoticeDto">
+        SELECT
+            NOTICE_ID   AS noticeId,
+            TITLE,
+            CONTENT,
+            WRITER,
+            VIEW_COUNT  AS viewCount,
+            CREATED_AT  AS createdAt,
+            PIN_YN      AS pinYn
         FROM NOTICE
-        WHERE TITLE LIKE '%' || #{keyword}|| '%'
-        ORDER BY PIN_YN DESC,NOTICE_ID DESC
-        OFFSET #{OFFSET}ROWS FETCH NEXT #{size} ROWS ONLY
-    </select>
-
-    <!-- 전체 개수-->
-    <select id="selectNoticeCount" resultType="int">
-        SELECT COUNT(*)
-        FROM NOTICE
-        WHERE TITLE LIKE '%' || #{keyword} || '%'
-    </select>
-
-    <!-- 공지상세-->
-    <select id="selectNoticeDetail" resultType="NoticeDto">
-        SELECT * FROM NOTICE
         WHERE NOTICE_ID = #{noticeId}
     </select>
-    <!-- 조회수 증가-->
+
+    <!-- 조회수 증가 -->
     <update id="increaseViewCount">
         UPDATE NOTICE
-        SET VIEW_COUNT=VIEW_COUNT + 1
+        SET VIEW_COUNT = VIEW_COUNT + 1
         WHERE NOTICE_ID = #{noticeId}
+    </update>
+
+    <update id="updateNotice">
+        UPDATE NOTICE
+        SET
+            TITLE = #{title},
+            CONTENT = #{content},
+            WRITER = #{writer},
+            UPDATED_AT = SYSDATE
+         WHERE NOTICE_ID = #{noticeId}
     </update>
 
 </mapper>

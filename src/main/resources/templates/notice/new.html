@@ -2,105 +2,19 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>공지사항 등록</title>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f6f8;
-            margin: 0;
-            padding: 40px;
-        }
-
-        .container {
-            max-width: 700px;
-            margin: 0 auto;
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        h2 {
-            margin-bottom: 20px;
-            border-left: 5px solid #2f6df6;
-            padding-left: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        input[type="text"],
-        textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        textarea {
-            resize: vertical;
-        }
-
-        .btn-area {
-            text-align: right;
-            margin-top: 20px;
-        }
-
-        button {
-            background-color: #2f6df6;
-            color: #fff;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #1f56d8;
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-top: 15px;
-        }
-    </style>
+    <title>공지 등록</title>
 </head>
 <body>
 
-<div class="container">
-    <h2>공지사항 등록</h2>
+<h2>공지 등록</h2>
 
-    <form method="post" action="/notice/new">
-
-        <div class="form-group">
-            <label>제목</label>
-            <input type="text" name="title" required>
-        </div>
-
-        <div class="form-group">
-            <label>작성자</label>
-            <input type="text" name="writer" required>
-        </div>
-
-        <div class="form-group">
-            <label>내용</label>
-            <textarea name="content" rows="8" required></textarea>
-        </div>
-
-        <div class="btn-area">
-            <button type="submit">등록</button>
-            <a href="/notice/list" class="back-link">목록으로</a>
-        </div>
-    </form>
-</div>
+<form method="post" action="/notice/new">
+    제목 <input type="text" name="title"><br><br>
+    작성자 <input type="text" name="writer"><br><br>
+    내용 <br>
+    <textarea name="content" rows="10" cols="50"></textarea><br><br>
+    <button type="submit">등록</button>
+</form>
 
 </body>
 </html>

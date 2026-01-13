@@ -2,29 +2,13 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Home</title>
+  <title>메인화면</title>
 </head>
 <body>
-<h1>공지사항</h1>
+<h1>회사공지사항</h1>
 
-<table border="1">
-<tr>
- <th>번호</th>
- <th>제목</th>
- <th>작성일</th>
- </tr>
-
- <tr th:each="n : ${list}">
-<td th:text="${n.noticeId}"></td>
-<td>
-  <span th:if="${n.pinYn == 'Y'}">[중요]</span>
-  <a th:href="@{/notice/{id}(id=${n.noticeId})}"
-     th:text="${n.title}"></a>
-</td>
-<td th:text="${#temporals.format(n.createdAt,'yyyy-MM-dd')}"></td>
-</tr>
-</table>
- <a href="/notice/new">공지 사항 전체보기</a>
-
+ <ul>
+ <li><a href="/notice/list">공지사항 관리 </a>
+ </ul>
 </body>
 </html>

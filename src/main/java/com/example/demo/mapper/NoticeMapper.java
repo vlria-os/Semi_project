@@ -2,15 +2,25 @@ package com.example.demo.mapper;
 
 import com.example.demo.dto.NoticeDto;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
 
 @Mapper
 public interface NoticeMapper {
-    void insertNotice(NoticeDto notice);
-    List<NoticeDto> selectNoticeList(Map<String, Object> param);
-    int selectNoticeCount(Map<String,Object>param);
-    NoticeDto selectNoteicDetail(Long noticeId);
+    List<NoticeDto> selectNoticeList(
+            @Param("offset") int offset,
+            @Param("limit") int limit,
+            @Param("startDate") String startDate,
+            @Param("endDate") String endDate
+    );
+
+    int insertNotice(NoticeDto notice);
+
+    NoticeDto selectNoticeDetail(Long noticeId);
+
     void increaseViewCount(Long noticeId);
-  }
+
+    void updateNotice(NoticeDto notice);
+}
