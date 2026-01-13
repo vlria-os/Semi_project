@@ -318,8 +318,10 @@ public class ApprovalController {
 
     @GetMapping("/approval/list")
     public String approvalList(Model model,
-                               @RequestParam(name = "pageNum", defaultValue = "1") int pageNum){
-        Map<String,Object> map=requestService.approvalAll(pageNum);
+                               @RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
+                               @RequestParam(value = "field", required = false) String field,
+                               @RequestParam(value = "keyword", required = false) String keyword){
+        Map<String,Object> map=requestService.approvalAll(pageNum, field, keyword);
 
         model.addAttribute("list", map.get("list"));
         model.addAttribute("pageInfo",map.get("pageInfo"));
@@ -327,6 +329,14 @@ public class ApprovalController {
         model.addAttribute("content", "content/approvalList");
 
         return "layout";
+    }
+
+    @GetMapping("/approval/list/btn")
+    @ResponseBody
+    public Map<String,Object> approvalBtn(@RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
+                                          @RequestParam(value = "boundType", required = false) String boundType){
+        Map<String,Object> map=requestService.approvalList(pageNum,boundType);
+        return map;
     }
 
     @GetMapping("/approval/detailList")

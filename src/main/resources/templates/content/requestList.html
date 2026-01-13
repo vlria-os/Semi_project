@@ -14,10 +14,10 @@
                 <td th:text="${l.webuser_id}"></td>
                 <td th:text="${l.approval_status}"></td>
                 <td th:text="${l.request_date}"></td>
-                <td th:if="${l.io_type=='in'}"><button type="button"
+                <td th:if="${l.io_type=='IN'}"><button type="button"
                                                        th:attr="data-io-id=${l.io_id}"
                                                        onclick="showInDetail(this)">상세보기</button></td>
-                <td th:if="${l.io_type=='out'}"><button type="button"
+                <td th:if="${l.io_type=='OUT'}"><button type="button"
                                                         th:attr="data-io-id=${l.io_id}"
                                                         onclick="showOutDetail(this)">상세보기</button></td>
             </tr>
