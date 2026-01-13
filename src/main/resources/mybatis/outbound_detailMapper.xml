@@ -65,4 +65,13 @@
     <select id="select_product" parameterType="int" resultType="int">
         select product_id from outbound_detail where outbound_detail_id=#{value}
     </select>
+    <select id="select_quantity" parameterType="int" resultType="int">
+        select quantity from outbound_detail where outbound_detail_id=#{value}
+    </select>
+    <update id="update_reason" parameterType="Outbound_detailDto">
+        update outbound_detail set reason=#{reason} where outbound_detail_id=#{outbound_detail_id}
+    </update>
+    <select id="select_detail_status" parameterType="int" resultType="String">
+        select outbound_status from outbound_detail where outbound_id=#{value}
+    </select>
 </mapper>

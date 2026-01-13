@@ -31,14 +31,15 @@
       const bound_type=currentTr.children[2].innerText.trim();
       const bound_id=currentTr.children[3].innerText.trim();
 
-      fetch(`/field_staff/inbound_conf/detailList?bound_type=${bound_type}&bound_id=${bound_id}`)
+      fetch(`/field_staff/bound_conf/detailList?bound_type=${bound_type}&bound_id=${bound_id}`)
               .then(resp=>resp.json())
               .then(data=>{
                 const tr = document.createElement("tr");
                 tr.className = "detailRow";
                 let rows = "";
                 data.forEach(l=>{
-                  rows += `
+                  if (bound_type === 'IN') {
+                    rows += `
     <tr class="detailItem"
       data-bound-detail-id="${bound_type == 'IN' ? l.inbound_detail_id : l.outbound_detail_id}" data-bound-type="${bound_type}">
       <td>${l.product_id}</td>
@@ -51,7 +52,7 @@
             <input type="number" class="lotQty" min="1" placeholder="수량">
           </div>
         </div>
-        <button type="button" onclick="addLotRow(this)">+</button>
+        <button type="button" onclick="addLotRow(event, this)">+</button>
       </td>
       <td>
         <button type="button"
@@ -61,6 +62,26 @@
       </td>
     </tr>
   `;
+                  }
+
+                  else{
+                    rows += `
+      <tr class="detailItem"
+          data-bound-detail-id="${l.outbound_detail_id}"
+          data-bound-type="OUT">
+        <td>${l.product_id}</td>
+        <td>${l.quantity}</td>
+        <td>${l.outbound_status}</td>
+        <td>—</td>
+        <td>
+          <button type="button"
+                  onclick="confirmApprove(event,this)">승인</button>
+          <button type="button"
+                  onclick="showRejectBox(event,this)">반려</button>
+        </td>
+      </tr>
+    `;
+                  }
                 });
 
 
@@ -102,7 +123,7 @@
 
       rejectTr.innerHTML = `
     <td colspan="${colCount}">
-      <textarea id="rejectReason" rows="3" style="width: 90%;"></textarea>
+      <textarea class="rejectReason" rows="3" style="width: 90%;"></textarea>
       <br/>
       <button onclick="submitReject(event, this)">확인</button>
       <button onclick="cancelReject(event, this)">취소</button>
@@ -113,8 +134,8 @@
     }
 
 
-    function addLotRow(btn) {
-      event.stopPropagation();
+    function addLotRow(e, btn) {
+      e.stopPropagation();
 
       const detailTr = btn.closest('.detailItem');
       const lotBox = detailTr.querySelector('.lotBox');
@@ -179,15 +200,28 @@
 
       const detailTr = btn.closest('.detailItem');
       const lotRows = detailTr.querySelectorAll('.lotRow');
+      const boundType = detailTr.dataset.boundType;
+      const boundDetailId = detailTr.dataset.boundDetailId; // "IN" | "OUT" // "IN" or "OUT"
+
+      const form = document.createElement('form');
+      form.method = 'post';
+
+      if(boundType === 'OUT'){
+        form.action = '/field_staff/outbound_conf_app';
+
+        form.appendChild(hidden('outbound_detail_id', boundDetailId));
+        form.appendChild(hidden('product_id', detailTr.children[0].innerText));
+        form.appendChild(hidden('quantity', detailTr.children[1].innerText));
+
+        document.body.appendChild(form);
+        form.submit();
+        return;
+      }
 
       if(lotRows.length === 0){
         alert('유통기한과 수량을 입력해주세요.');
         return;
       }
-
-      // 🔹 detail 정보
-      const boundDetailId = detailTr.dataset.boundDetailId;
-      const boundType = detailTr.dataset.boundType; // "IN" or "OUT"
 
       if(!boundDetailId || !boundType){
         alert('상세 정보가 없습니다.');
@@ -195,7 +229,6 @@
       }
 
       // 🔹 form 생성
-      const form = document.createElement('form');
       form.method = 'post';
       form.action = '/field_staff/inbound_conf_app';
 
@@ -247,8 +280,8 @@
 
       const rejectTr = btn.closest('.rejectRow');
       const detailTr = rejectTr.previousElementSibling;
-
       const reason = rejectTr.querySelector('.rejectReason').value;
+
       if(!reason){
         alert('반려 사유를 입력하세요.');
         return;
@@ -259,33 +292,35 @@
 
       const form = document.createElement('form');
       form.method = 'post';
-      form.action = '/field_staff/inbound_conf_rej';
 
       form.appendChild(hidden('reason', reason));
 
       // 🔥 핵심: List 바인딩 가능하게
-      form.appendChild(hidden('lot_inDtos[0].product_id',
+      form.appendChild(hidden('product_id',
               detailTr.children[0].innerText));
 
       if(boundType === 'IN'){
+        form.action = '/field_staff/inbound_conf_rej';
         form.appendChild(hidden(
-                'lot_inDtos[0].inbound_detail_id',
+                'inbound_detail_id',
                 boundDetailId
         ));
       }else{
+        form.action = '/field_staff/outbound_conf_rej';
         form.appendChild(hidden(
-                'lot_inDtos[0].outbound_detail_id',
+                'outbound_detail_id',
                 boundDetailId
         ));
       }
 
-      form.appendChild(hidden('lot_inDtos[0].bound_type', boundType));
+      form.appendChild(hidden('bound_type', boundType));
+
+      console.log('boundDetailId=', boundDetailId);
+      console.log('boundType=', boundType);
 
       document.body.appendChild(form);
       form.submit();
     }
-
-
 
   </script>
 </section>

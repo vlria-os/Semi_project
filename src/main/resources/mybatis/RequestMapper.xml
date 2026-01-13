@@ -12,7 +12,7 @@
         select * from
         (select rownum rn,m.* from
             (select
-                'in' as io_type,
+                'IN' as io_type,
                 i.inbound_id as io_id,
                 i.webuser_id,
                 i.request_date,
@@ -23,7 +23,7 @@
             union all
 
             select
-                'out' as io_type,
+                'OUT' as io_type,
                 o.outbound_id as io_id,
                 o.webuser_id,
                 o.request_date,
