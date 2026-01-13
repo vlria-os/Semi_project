@@ -2,8 +2,40 @@
          th:fragment="content">
     <div class="main">
         <div>
-            <button onclick="insertWebuser()">계정 추가</button>
+            <button onclick="insertWebuser()">계정 추가</button> <span id="span" style="color: red;font-size: 11px;"></span>
         </div>
+        <form th:action="@{/webuser/insert}" method="post" style="display: none;" id="insertForm">
+            <table>
+                <tr>
+                    <th>ID</th><td><input type="text" name="id" id="id">
+                        <button type="button" onclick="idcheck()">중복 체크</button>
+                    </td>
+                </tr>
+                <tr>
+                    <th>PASSWORD</th><td><input type="password" name="password"></td>
+                </tr>
+                <tr>
+                    <th>이름</th><td><input type="text"
+                                          name="webuser_name">
+                </td>
+                </tr>
+                <tr>
+                    <th>역할</th>
+                    <td>
+                        <input type="radio" name="role_id"
+                               value="1">관리자
+                        <input type="radio" name="role_id"
+                               value="2">사무 직원
+                        <input type="radio" name="role_id"
+                               value="3">현장 직원
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="2"><button type="button" onclick="no()">취소</button>
+                        <input type="submit" value="확인"></th>
+                </tr>
+            </table>
+        </form>
         <div>
             <form th:action="@{/webuser/list}" method="get">
             <select name="field">
@@ -21,25 +53,82 @@
         </div>
         <div>
             <table id="webuserTable">
-                <tr>
-                    <th>사원 번호</th><th>이름</th><th>아이디</th>
-                    <th>역할</th><th>가입일</th><th>상태</th>
-                    <th>수정</th><th>삭제</th>
+                <thead>
+                    <tr>
+                        <th>사원 번호</th><th>이름</th><th>아이디</th>
+                        <th>역할</th><th>가입일</th><th>상태</th>
+                        <th>수정</th><th>삭제</th>
+                    </tr>
+                </thead>
+                <tbody th:each="webuser:${list}">
+                    <tr>
+                        <td th:text="${webuser.webuser_id}"></td>
+                        <td th:text="${webuser.webuser_name}"></td>
+                        <td th:text="${webuser.id}"></td>
+                        <td th:switch="${webuser.role_id}">
+                            <span th:case="1">관리자</span>
+                            <span th:case="2">사무 직원</span>
+                            <span th:case="3">현장 직원</span>
+                        </td>
+                        <td th:text="${webuser.created_at}"></td>
+                        <td th:text="${webuser.is_active == 'y' ? '활성':'비활성'}"></td>
+                        <td><button type="button" onclick="updateForm(this)">수정</button></td>
+                        <td><button>삭제</button></td>
+                    <!--                    <td><a th:href="@{/webuser/update(webuser_id=${webuser.webuser_id})}">수정</a></td>-->
+                    <!--                    <td><a th:href="@{/webuser/delete(webuser_id=${webuser.webuser_id})}">삭제</a></td>-->
                 </tr>
-                <tr th:each="webuser:${list}">
-                    <td th:text="${webuser.webuser_id}"></td>
-                    <td th:text="${webuser.webuser_name}"></td>
-                    <td th:text="${webuser.id}"></td>
-                    <td th:switch="${webuser.role_id}">
-                        <span th:case="1">관리자</span>
-                        <span th:case="2">사무 직원</span>
-                        <span th:case="3">현장 직원</span>
+                <tr class="updateTr" style="display: none;">
+                    <td colspan="8">
+                        <form th:action="@{/webuser/update}" method="post">
+                            <table>
+                                <tr>
+                                    <th>사원 번호</th><td><input type="text"
+                                                             name="webuser_id"
+                                                             th:value="${webuser.webuser_id}" readonly></td>
+                                </tr>
+                                <tr>
+                                    <th>ID</th><td><input type="text" name="id"
+                                                          th:value="${webuser.id}"></td>
+                                </tr>
+                                <tr>
+                                    <th>PASSWORD</th><td><input type="password"
+                                                                name="password" th:value="${webuser.password}"></td>
+                                </tr>
+                                <tr>
+                                    <th>이름</th><td><input type="text"
+                                                          name="webuser_name" th:value="${webuser.webuser_name}"></td>
+                                </tr>
+                                <tr>
+                                    <th>역할</th>
+                                    <td>
+                                        <input type="radio" name="role_id"
+                                               value="1">관리자
+                                        <input type="radio" name="role_id"
+                                               value="2">사무 직원
+                                        <input type="radio" name="role_id"
+                                               value="3">현장 직원
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>상태</th>
+                                    <td>
+                                        <input type="radio" name="is_active"
+                                               th:value="${webuser.is_active}">활성
+                                        <input type="radio" name="is_active"
+                                               th:value="${webuser.is_active}">비활성
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th colspan="2">
+                                        <input type="submit" value="확인">
+                                    </th>
+                                </tr>
+                            </table>
+                        </form>
                     </td>
-                    <td th:text="${webuser.created_at}"></td>
-                    <td th:text="${webuser.is_active == 'y' ? '활성':'비활성'}"></td>
-                    <td><a th:href="@{/webuser/update(webuser_id=${webuser.webuser_id})}">수정</a></td>
-                    <td><a th:href="@{/webuser/delete(webuser_id=${webuser.webuser_id})}">삭제</a></td>
+
                 </tr>
+                </tbody>
             </table>
         </div>
         <div>
@@ -57,18 +146,47 @@
         </div>
     </div>
 <script th:inline="javascript">
-    function logout(){
-        fetch('/logout')
+
+    function insertWebuser(){
+        document.getElementById("insertForm").style.display="block";
+    }
+
+    function no(){
+        document.getElementById("insertForm").style.display="none";
+    }
+
+    function idcheck(){
+        const id=document.getElementById("id").value;
+        const span=document.getElementById("span");
+
+        fetch(`/webuser/idcheck?id=${id}`)
             .then(resp=>resp.text())
             .then(data=>{
-                alert(data);
-                location.href="/";
+                span.innerHTML=data;
             })
     }
 
-    function insertWebuser(){
-        location.href="/webuser/insert";
+    function updateForm(btn){
+        const row = btn.closest("tr");               // 수정 버튼이 있는 원래 row
+        const updateRow = row.nextElementSibling;    // 바로 다음 tr (수정 폼 tr)
+
+        // 안전장치: 다음 행이 updateTr인지 확인
+        if(!updateRow || !updateRow.classList.contains("updateTr")) return;
+
+        // 다른 updateTr은 전부 닫고(원하면)
+        document.querySelectorAll(".updateTr").forEach(tr => {
+            if(tr !== updateRow) tr.style.display = "none";
+        });
+
+        // 토글
+        updateRow.style.display = (updateRow.style.display === "none") ? "table-row" : "none";
     }
+
+    function closeUpdate(btn){
+        const updateRow = btn.closest("tr.updateTr");
+        if(updateRow) updateRow.style.display = "none";
+    }
+
 
     let status = /*[[${status}]]*/ null;
     let msg = /*[[${msg}]]*/ null;
