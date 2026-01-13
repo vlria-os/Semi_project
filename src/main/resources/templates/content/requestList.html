@@ -309,6 +309,8 @@
 
                     // 새로 받아온 상세 리스트로 다시 추가
                     const list = data.detailList;
+                    const name=data.names;
+
                     const newDetailRow = document.createElement("tr");
                     newDetailRow.classList.add("detailRow");
 
@@ -324,8 +326,11 @@
                                 </tr>`;
 
                     list.forEach(item => {
+                        const d=item.outbound_detail_id;
+                        const n=name[String(d)];
+
                         innerTable += `<tr data-item-id="${item.inbound_detail_id}">
-                                <td>${item.product_name}</td>
+                                <td>${n}</td>
                                 <td>${item.quantity}</td>
                                 <td>${item.approval_status}</td>
                                 <td>
@@ -408,6 +413,8 @@
 
                     // 새로 받아온 상세 리스트로 다시 추가
                     const list = data.detailList;
+                    const name=data.names;
+
                     const newDetailRow = document.createElement("tr");
                     newDetailRow.classList.add("detailRow");
 
@@ -423,8 +430,11 @@
                                 </tr>`;
 
                     list.forEach(item => {
+                        const d=item.outbound_detail_id;
+                        const n=name[String(d)];
+
                         innerTable += `<tr data-detail-id="${item.inbound_detail_id}">
-                                    <td>${item.product_name}</td>
+                                    <td>${n}</td>
                                     <td>${item.quantity}</td>
                                     <td>${item.approval_status}</td>
                                     <td>

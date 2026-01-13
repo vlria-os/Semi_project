@@ -91,7 +91,7 @@ public class inbound_app_Controller {
         int n=inboundService.update_approval(inbound_id,inbound_detailDto,approver_id);
         Map<String,Object> map=requestService.inboundList(inbound_id);
         List<Inbound_detailDto> detailList=(List<Inbound_detailDto>) map.get("list");
-        List<String> names=(List<String>) map.get("names");
+        Map<Integer,String> names=(Map<Integer,String>) map.get("names");
 
         Map<String,Object> result = new HashMap<>();
         result.put("success", n>0);
