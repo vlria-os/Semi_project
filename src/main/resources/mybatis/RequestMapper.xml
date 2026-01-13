@@ -298,7 +298,38 @@
 
     <!-- 승인 내역 전체 조회 -->
     <select id="approvalAll" resultType="ApprovalDto">
-        select * from approval order by approval_id desc
+        select * from
+        (
+        select rownum rn, p.* from approval p
+        order by approval_id desc
+        )
+        <![CDATA[
+        where rn >= #{startRow} and rn <= #{endRow}
+        ]]>
+    </select>
+
+    <!-- 승인 내역 전체 갯수 -->
+    <select id="approvalCount" resultType="int">
+        select count(*) from approval
+    </select>
+
+    <!-- 입출고 승인 내역(버튼 나누기) -->
+    <select id="approvalList" resultType="ApprovalDto">
+        select * from
+        (
+        select rownum rn, p.* from approval p
+        where bound_type = #{boundType}
+        order by approval_id desc
+        )
+        <![CDATA[
+        where rn >= #{startRow} and rn <= #{endRow}
+        ]]>
+    </select>
+
+    <!-- 승인 내역 전체 갯수 -->
+    <select id="approvaLlistCount" resultType="int">
+        select count(*) from approval
+        where bound_type = #{boundType}
     </select>
 
     <select id="approvalconfAll" resultType="ApprovalDto">

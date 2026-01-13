@@ -317,11 +317,12 @@ public class ApprovalController {
     }
 
     @GetMapping("/approval/list")
-    public String approvalList(Model model){
-        List<ApprovalDto> list=requestService.approvalAll();
+    public String approvalList(Model model,
+                               @RequestParam(name = "pageNum", defaultValue = "1") int pageNum){
+        Map<String,Object> map=requestService.approvalAll(pageNum);
 
-        model.addAttribute("list", list);
-
+        model.addAttribute("list", map.get("list"));
+        model.addAttribute("pageInfo",map.get("pageInfo"));
         model.addAttribute("navFragment", "fragment/nav/adminNav");
         model.addAttribute("content", "content/approvalList");
 

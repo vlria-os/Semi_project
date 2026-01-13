@@ -114,7 +114,16 @@ public interface RequestMapper {
        ========================= */
 
     /** 승인 내역 전체 조회 */
-    List<ApprovalDto> approvalAll();
+    List<ApprovalDto> approvalAll(Map<String,Object> map);
+
+    //field용
+    List<ApprovalDto> approvalconfAll();
+
+    int approvalCount();
+
+    List<ApprovalDto> approvalList(Map<String,Object> map);
+
+    int approvalListCount(@Param("boundType") String boundType);
 
     /** 입고 번호로 승인 내역 조회 */
     ApprovalDto selectApprovalIn(int inbound_id);

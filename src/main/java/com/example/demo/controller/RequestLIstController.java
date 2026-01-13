@@ -42,7 +42,7 @@ public class RequestLIstController {
             model.addAttribute("list",map.get("list"));
             model.addAttribute("pageInfo",map.get("pageInfo"));
             model.addAttribute("navFragment", "fragment/nav/officeNav");
-            model.addAttribute("content", "content/requestList");
+            model.addAttribute("content", "content/userRequestList");
         }
         model.addAttribute("webuser_id",webuser_id);
         model.addAttribute("role_id",role_id);
@@ -52,7 +52,8 @@ public class RequestLIstController {
     @GetMapping("/goinbound")
     @ResponseBody
     public Map<String,Object> goinbound(HttpSession session,
-                                      @RequestParam(name = "pageNum",defaultValue = "1") int pageNum){
+                                      @RequestParam(name = "pageNum",defaultValue = "1") int pageNum,
+                                        @RequestParam(value = "field", required = false) String field){
         int role_id = (int) session.getAttribute("role_id");
         int webuser_id = (int) session.getAttribute("webuser_id");
         if(role_id == 1){
