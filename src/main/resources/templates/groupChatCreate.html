@@ -70,7 +70,7 @@
             <!-- 하단 버튼 -->
             <div class="form-foot">
                 <button type="button" class="btn btn-ghost" onclick="location.href='/chat/list'">취소</button>
-                <button type="submit" class="btn btn-primary">채팅방 생성</button>
+                <button type="submit" class="btn btn-primary" id="createBtn" disabled>채팅방 생성</button>
             </div>
 
         </form>
@@ -103,9 +103,19 @@
         groupSearch.focus();
     }
 
+    const createBtn=document.getElementById("createBtn");
+
     function updateSelectedCount(){
         const checked = groupUserList.querySelectorAll("input[type='checkbox']:checked").length;
         selectedCountEl.innerText = checked;
+
+        const ok = checked >= 2;
+
+        createBtn.disabled = !ok;
+        createBtn.classList.toggle("is-disabled", !ok);
+
+        // 텍스트도 같이 바꾸면 UX 좋아짐(선택)
+        createBtn.innerText = ok ? "채팅방 생성" : "2명 이상 선택";
     }
 
     groupSearch.addEventListener("input", filterGroupList);

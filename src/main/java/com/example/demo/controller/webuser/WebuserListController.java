@@ -24,17 +24,19 @@ public class WebuserListController {
        String error = (String) session.getAttribute("error");
 
         // 역할 검색일 때만 문자열 → 숫자 변환
+        String roleId = "";
+
         if ("role_id".equals(field) && keyword != null && !keyword.isBlank()) {
-            if (keyword.equals("관리자")) {
-                keyword = String.valueOf(1);
-            } else if (keyword.equals("사무 직원")) {
-                keyword = String.valueOf(2);
-            } else if (keyword.equals("현장 직원")) {
-                keyword = String.valueOf(3);
+            if ("관리자".equals(keyword)) {
+                roleId = "1";
+            } else if ("사무 직원".equals(keyword) || "사무직원".equals(keyword)) {
+                roleId = "2";
+            } else if ("현장 직원".equals(keyword) || "현장직원".equals(keyword)) {
+                roleId = "3";
             }
         }
 
-        Map<String,Object> map=service.webuserList(pageNum,field,keyword);
+        Map<String,Object> map=service.webuserList(pageNum,field,roleId);
         model.addAttribute("list",map.get("list"));
         model.addAttribute("pageInfo",map.get("pageInfo"));
         model.addAttribute("field",field);

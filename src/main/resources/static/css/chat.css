@@ -1048,3 +1048,11 @@ a.room-name:focus{
     color: var(--blue);
 }
 
+/* disabled primary button */
+.btn-primary.is-disabled,
+.btn-primary:disabled{
+    opacity: .55;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
