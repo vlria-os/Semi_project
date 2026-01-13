@@ -42,7 +42,7 @@ public class RequestLIstController {
             model.addAttribute("list",map.get("list"));
             model.addAttribute("pageInfo",map.get("pageInfo"));
             model.addAttribute("navFragment", "fragment/nav/officeNav");
-            model.addAttribute("content", "content/requestList");
+            model.addAttribute("content", "content/userRequestList");
         }
         model.addAttribute("webuser_id",webuser_id);
         model.addAttribute("role_id",role_id);
