@@ -57,7 +57,7 @@
                     <tr>
                         <th>사원 번호</th><th>이름</th><th>아이디</th>
                         <th>역할</th><th>가입일</th><th>상태</th>
-                        <th>수정</th><th>삭제</th>
+                        <th>수정</th>
                     </tr>
                 </thead>
                 <tbody th:each="webuser:${list}">
@@ -73,9 +73,6 @@
                         <td th:text="${webuser.created_at}"></td>
                         <td th:text="${webuser.is_active == 'y' ? '활성':'비활성'}"></td>
                         <td><button type="button" onclick="updateForm(this)">수정</button></td>
-                        <td><button>삭제</button></td>
-                    <!--                    <td><a th:href="@{/webuser/update(webuser_id=${webuser.webuser_id})}">수정</a></td>-->
-                    <!--                    <td><a th:href="@{/webuser/delete(webuser_id=${webuser.webuser_id})}">삭제</a></td>-->
                 </tr>
                 <tr class="updateTr" style="display: none;">
                     <td colspan="8">
@@ -181,12 +178,6 @@
         // 토글
         updateRow.style.display = (updateRow.style.display === "none") ? "table-row" : "none";
     }
-
-    function closeUpdate(btn){
-        const updateRow = btn.closest("tr.updateTr");
-        if(updateRow) updateRow.style.display = "none";
-    }
-
 
     let status = /*[[${status}]]*/ null;
     let msg = /*[[${msg}]]*/ null;
