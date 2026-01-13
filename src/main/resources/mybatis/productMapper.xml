@@ -47,8 +47,8 @@
         ) c
         ON p.category_id = c.category_id
         WHERE
-            p.product_name LIKE '%' || #{value} || '%'
-            OR c.category_path LIKE '%' || #{value} || '%'
+            p.product_name LIKE '%' || #{keyword} || '%'
+            OR c.category_path LIKE '%' || #{keyword} || '%'
         )
         <![CDATA[
         WHERE rn >= #{startRow} and rn <= #{endRow}

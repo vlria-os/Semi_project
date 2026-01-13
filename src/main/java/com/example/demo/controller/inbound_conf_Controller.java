@@ -17,8 +17,8 @@ public class inbound_conf_Controller {
     private final InboundService inboundService;
     private final RequestService requestService;
 
-    @GetMapping("/field_staff/inbound_conf")
-    public String inbound_confFrom(Model model){
+    @GetMapping("/field_staff/bound_conf")
+    public String bound_confFrom(Model model){
         List<ApprovalDto> list=requestService.approvalconfAll();
 
         model.addAttribute("list", list);
@@ -28,7 +28,7 @@ public class inbound_conf_Controller {
         return "layout";
     }
 
-    @GetMapping("/field_staff/inbound_conf/detailList")
+    @GetMapping("/field_staff/bound_conf/detailList")
     @ResponseBody
     public Object approvalDetailList(@RequestParam String bound_type,
                                      @RequestParam int bound_id){
@@ -50,8 +50,7 @@ public class inbound_conf_Controller {
         String status="APPROVED";
         int n=inboundService.insert_confirm(lot_inDtos,status,null,confirmer_id);
 
-
-        return "redirect:/field_staff/inbound_conf";
+        return "redirect:/field_staff/bound_conf";
     }
 
     @PostMapping("/field_staff/inbound_conf_rej")
@@ -63,7 +62,7 @@ public class inbound_conf_Controller {
         String status="REJECTED";
         int n=inboundService.insert_confirm(lot_inDtos,status,reason,confirmer_id);
 
-        return "redirect:/field_staff/inbound_conf";
+        return "redirect:/field_staff/bound_conf";
     }
 
 }

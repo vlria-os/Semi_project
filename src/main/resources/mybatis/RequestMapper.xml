@@ -12,23 +12,23 @@
         select * from
         (select rownum rn,m.* from
             (select
-            'IN' as io_type,
-            i.inbound_id as io_id,
-            i.webuser_id,
-            i.request_date,
-            i.approval_status
-            from inbound i
+                'IN' as io_type,
+                i.inbound_id as io_id,
+                i.webuser_id,
+                i.request_date,
+                i.approval_status
+                from inbound i
             where i.approval_status='REQUEST'
 
             union all
 
             select
-            'OUT' as io_type,
-            o.outbound_id as io_id,
-            o.webuser_id,
-            o.request_date,
-            o.approval_status
-            from outbound o
+                'OUT' as io_type,
+                o.outbound_id as io_id,
+                o.webuser_id,
+                o.request_date,
+                o.approval_status
+                from outbound o
             where o.approval_status='REQUEST'
 
             order by request_date desc) m)
@@ -209,7 +209,7 @@
         values(
         approval_seq.nextval,
         #{approver_id},
-        'IN',
+        'in',
         #{inbound_id},
         null,
         #{approval_status},
@@ -223,7 +223,7 @@
         values(
         approval_seq.nextval,
         #{approver_id},
-        'IN',
+        'in',
         #{inbound_id},
         null,
         #{approval_status},
@@ -237,7 +237,7 @@
         values(
         approval_seq.nextval,
         #{approver_id},
-        'OUT',
+        'out',
         null,
         #{outbound_id},
         #{approval_status},
@@ -251,7 +251,7 @@
         values(
         approval_seq.nextval,
         #{approver_id},
-        'OUT',
+        'out',
         null,
         #{outbound_id},
         #{approval_status},
@@ -304,7 +304,6 @@
         select * from
         (
         select rownum rn, p.* from approval p
-        <include refid="search"/>
         order by approval_id desc
         )
         <![CDATA[
@@ -315,7 +314,6 @@
     <!-- 승인 내역 전체 갯수 -->
     <select id="approvalCount" resultType="int">
         select count(*) from approval
-        <include refid="search"/>
     </select>
 
     <!-- 입출고 승인 내역(버튼 나누기) -->
@@ -332,7 +330,7 @@
     </select>
 
     <!-- 승인 내역 전체 갯수 -->
-    <select id="approvalListCount" resultType="int">
+    <select id="approvaLlistCount" resultType="int">
         select count(*) from approval
         where bound_type = #{boundType}
     </select>
@@ -395,12 +393,5 @@
         from product
         where product_id = #{productId}
     </select>
-
-    <!-- 검색 조건문 -->
-    <sql id="search">
-        <if test="field != null and field != ''">
-            where ${field} like '%'||#{keyword}||'%'
-        </if>
-    </sql>
 
 </mapper>

@@ -22,8 +22,10 @@
                 <td>
                     [[${ps.product_id}]]
                     <input type="hidden"
+                           class="productId"
                            th:name="|outbound_reqDtos[${stat.index}].product_id|"
-                           th:value="${ps.product_id}">
+                           th:value="${ps.product_id}"
+                           disabled>
                 </td>
 
                 <td>[[${ps.product_name}]]</td>
@@ -49,55 +51,85 @@
         function toggleQty(checkbox){
             const tr = checkbox.closest('tr');
             const qtyInput = tr.querySelector('.reqQty');
+            const productInput = tr.querySelector('.productId');
 
             if(checkbox.checked){
                 qtyInput.disabled = false;
+                productInput.disabled = false;
                 qtyInput.focus();
             }else{
                 qtyInput.disabled = true;
                 qtyInput.value = '';
+                productInput.disabled = true;
             }
         }
 
+
         function submitOutbound(){
             const rows = document.querySelectorAll('tr');
-            let checkedCount = 0;
+            let checkedRows = [];
 
             for(const tr of rows){
                 const checkbox = tr.querySelector('.rowCheck');
-                if(!checkbox || !checkbox.checked) continue;
+                if(!checkbox) continue;
 
-                checkedCount++;
+                const productInput = tr.querySelector('.productId');
+                const qtyInput = tr.querySelector('.reqQty');
+
+                // ✅ 1단계: 일단 전부 name 제거
+                productInput.removeAttribute('name');
+                qtyInput.removeAttribute('name');
+
+                if(!checkbox.checked){
+                    productInput.disabled = true;
+                    qtyInput.disabled = true;
+                    qtyInput.value = '';
+                    continue;
+                }
 
                 const stockQty = Number(tr.querySelector('.stockQty').innerText);
-                const reqInput = tr.querySelector('.reqQty');
-                const reqQty = Number(reqInput.value);
+                const reqQty = Number(qtyInput.value);
 
                 if(!reqQty || reqQty <= 0){
                     alert('출고 요청 수량을 입력해주세요.');
-                    reqInput.focus();
+                    qtyInput.focus();
                     return;
                 }
 
                 if(reqQty > stockQty){
                     alert(`출고 요청 수량(${reqQty})이 재고 수량(${stockQty})을 초과했습니다.`);
-                    reqInput.focus();
+                    qtyInput.focus();
                     return;
                 }
+
+                checkedRows.push(tr);
             }
 
-            if(checkedCount === 0){
+            if(checkedRows.length === 0){
                 alert('출고할 상품을 선택하세요.');
                 return;
             }
 
-            // 🔥 최종 확인
+            // ✅ 2단계: 체크된 것만 index 재부여
+            checkedRows.forEach((tr, idx) => {
+                const productInput = tr.querySelector('.productId');
+                const qtyInput = tr.querySelector('.reqQty');
+
+                productInput.disabled = false;
+                qtyInput.disabled = false;
+
+                productInput.name = `outbound_reqDtos[${idx}].product_id`;
+                qtyInput.name = `outbound_reqDtos[${idx}].quantity`;
+            });
+
             if(!confirm('출고 요청 하시겠습니까?')) return;
 
             document.getElementById('outboundForm').submit();
         }
 
+
+
+
+
     </script>
-
-
 </section>

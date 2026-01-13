@@ -22,16 +22,22 @@ public class outbound_conf_Controller {
         return "field_staff/outbound_conf";
     }
 
-    @PostMapping("/field_staff/outbound_conf")
-    public String outbound_conf(int outbound_detail_id,
-                               @ModelAttribute Lot_outListDto lot_outListDto,
-                               String status,
+    @PostMapping("/field_staff/outbound_conf_app")
+    public String outbound_conf_app(int outbound_detail_id,
                                HttpSession session){
-        //int confirmer_id=(int)session.getAttribute("webuser_id");
-        int confirmer_id=1100;
-        List<Lot_outDto> lot_outDtos=lot_outListDto.getLot_outDtos();
-        int n=outboundService.insert_confirm(outbound_detail_id,status,confirmer_id);
+        int confirmer_id=(int)session.getAttribute("webuser_id");
+        int n=outboundService.insert_confirm(outbound_detail_id,"CONFIRMED",null,confirmer_id);
 
-        return "redirect:/field_staff/outbound_conf";
+        return "redirect:/field_staff/bound_conf";
+    }
+
+    @PostMapping("/field_staff/outbound_conf_rej")
+    public String outbound_conf_rej(int outbound_detail_id,
+                                String reason,
+                                HttpSession session){
+        int confirmer_id=(int)session.getAttribute("webuser_id");
+        int n=outboundService.insert_confirm(outbound_detail_id,"REJECTED",reason,confirmer_id);
+
+        return "redirect:/field_staff/bound_conf";
     }
 }

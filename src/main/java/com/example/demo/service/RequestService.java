@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.dto.*;
 import com.example.demo.mapper.Inbound_detailMapper;
+import com.example.demo.mapper.Outbound_detailMapper;
 import com.example.demo.mapper.ProductMapper;
 import com.example.demo.mapper.RequestMapper;
 import com.example.demo.pagination.PageInfo;
@@ -19,6 +20,7 @@ public class RequestService {
     private final RequestMapper mapper;
     private final ProductMapper productMapper;
     private final Inbound_detailMapper inbound_detailMapper;
+    private final Outbound_detailMapper outbound_detailMapper;
 
    /* ===============================
        1. 입출고 요청 조회
@@ -394,7 +396,13 @@ public class RequestService {
                     }
                 }
             }else{
-                //
+                List<String> list=outbound_detailMapper.select_detail_status(a.getOutbound_id());
+                for(String s:list){
+                    if ("REQUEST".equals(s)) {
+                        hasRequest = true;
+                        break;
+                    }
+                }
             }
             if (hasRequest) {
                 result.add(a);
