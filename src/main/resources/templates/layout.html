@@ -31,5 +31,31 @@
 
 <!-- FOOTER -->
 <footer th:replace="~{fragment/footer :: footer}"></footer>
+
+<!-- ✅ CHAT PANEL (공통) -->
+<div id="chatPanel" class="chat-panel" style="display:none;">
+    <div class="chat-panel-header">
+        <span>채팅</span>
+        <button type="button" class="chat-close" onclick="toggleChat()">✖</button>
+    </div>
+
+    <iframe id="chatFrame"
+            th:src="@{/chat/list}"
+            style="width:100%; height:calc(100% - 44px); border:0;">
+    </iframe>
+</div>
+
+<!-- ✅ CHAT TOGGLE JS (공통) -->
+<script>
+    // 헤더 fragment의 onclick에서 항상 접근 가능하게 전역으로 등록
+    window.toggleChat = function () {
+        const panel = document.getElementById("chatPanel");
+        if (!panel) return;
+
+        const open = panel.style.display === "block";
+        panel.style.display = open ? "none" : "block";
+    };
+</script>
+
 </body>
 </html>

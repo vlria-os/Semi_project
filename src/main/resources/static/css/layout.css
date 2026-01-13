@@ -147,3 +147,47 @@ body {
     padding: 0 24px;
     font-size: 13px;
 }
+
+
+/* ===== 채팅 ===== */
+.chat-panel{
+    position: fixed;
+    right: 40px;
+    top: 120px;   /* 헤더 + nav 아래 정도 */
+    width: 520px;
+    height: 560px;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    z-index: 9999;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+
+.chat-panel-header{
+    height: 44px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 0 12px;
+    border-bottom:1px solid #eee;
+}
+
+.chat-close{
+    background: transparent;
+    border: 0;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.chat-icon {
+    text-decoration: none;
+    color: inherit;   /* 글자색도 기본색 유지 */
+}
+
+.chat-icon:hover,
+.chat-icon:visited,
+.chat-icon:active {
+    text-decoration: none;
+    color: inherit;
+}

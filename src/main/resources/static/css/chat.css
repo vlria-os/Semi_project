@@ -503,13 +503,6 @@ a.room-name:focus{
     color: var(--blue) !important;
 }
 
-/* ---------- room actions ---------- */
-.room-actions{
-    display:flex;
-    align-items:center;
-    gap:8px;
-}
-
 /* ---------- modal (invite) ---------- */
 .modal-overlay{
     position: fixed;
@@ -811,4 +804,39 @@ a.room-name:focus{
     flex-direction: column;
 }
 
+.room-topbar{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap;          /* ✅ 줄바꿈 금지 */
+    gap: 10px;                  /* ✅ 요소간 간격 */
+}
+
+.room-action{
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: nowrap;          /* ✅ 버튼 줄바꿈 금지 */
+    white-space: nowrap;        /* ✅ 텍스트도 줄바꿈 금지 */
+}
+
+/* 가운데 방 제목은 줄어들 수 있게(버튼을 보호) */
+.room-title{
+    flex: 1;
+    min-width: 0;
+    justify-content: center;    /* 취향 */
+}
+
+.room-title .name{
+    max-width: 220px;           /* 필요 시 조절 */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 버튼들이 너무 크면 살짝 줄이기(선택) */
+.room-action .btn{
+    padding: 7px 10px;          /* 기존 9px 12px → 살짝 감소 */
+    font-size: 12px;
+}
 
