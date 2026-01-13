@@ -12,23 +12,23 @@
         select * from
         (select rownum rn,m.* from
             (select
-            'in' as io_type,
-            i.inbound_id as io_id,
-            i.webuser_id,
-            i.request_date,
-            i.approval_status
-            from inbound i
+                'in' as io_type,
+                i.inbound_id as io_id,
+                i.webuser_id,
+                i.request_date,
+                i.approval_status
+                from inbound i
             where i.approval_status='REQUEST'
 
             union all
 
             select
-            'out' as io_type,
-            o.outbound_id as io_id,
-            o.webuser_id,
-            o.request_date,
-            o.approval_status
-            from outbound o
+                'out' as io_type,
+                o.outbound_id as io_id,
+                o.webuser_id,
+                o.request_date,
+                o.approval_status
+                from outbound o
             where o.approval_status='REQUEST'
 
             order by request_date desc) m)
