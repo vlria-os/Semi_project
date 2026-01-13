@@ -121,13 +121,14 @@
         select * from
         (select rownum rn, m.* from
         (select * from inbound
+        where approval_status = 'REQUEST'
         order by inbound_id desc) m)
         <![CDATA[where rn>=#{startRow} and rn<=#{endRow}]]>
     </select>
 
     <!-- 관리자용 입고 요청 페이징용 입고 요청 건수 -->
     <select id="adminInboundCount" resultType="int">
-        select NVL(count(*),0) from inbound
+        select NVL(count(*),0) from inbound where approval_status = 'REQUEST'
     </select>
 
     <!-- 직원용 입고 요청 내역 -->
@@ -135,13 +136,14 @@
         select * from
         (select rownum rn,m.* from
         (select * from inbound where webuser_id=#{webuser_id}
+        and approval_status = 'REQUEST'
         order by inbound_id desc) m)
         <![CDATA[where rn>=#{startRow} and rn<=#{endRow}]]>
     </select>
 
     <!-- 직원 입고 요청 페이징용 입고 요청 건수 -->
     <select id="userInboundCount" parameterType="int" resultType="int">
-        select NVL(count(*),0) from inbound where webuser_id=#{webuser_id}
+        select NVL(count(*),0) from inbound where webuser_id=#{webuser_id} and approval_status = 'REQUEST'
     </select>
 
     <!-- 관리자용 출고 요청 내역 -->
@@ -149,27 +151,28 @@
         select * from
         (select rownum rn, m.* from
         (select * from outbound
+        where approval_status = 'REQUEST'
         order by outbound_id desc) m)
         <![CDATA[where rn>=#{startRow} and rn<=#{endRow}]]>
     </select>
 
     <!-- 관리자용 출고 요청 페이징용 출고 요청 건수 -->
     <select id="adminOutboundCount" resultType="int">
-        select NVL(count(*),0) from outbound
+        select NVL(count(*),0) from outbound where approval_status = 'REQUEST'
     </select>
 
     <!-- 직원용 출고 요청 내역 -->
     <select id="selectOutbound" parameterType="map" resultType="OutboundDto">
         select * from
         (select rownum rn,m.* from
-        (select * from outbound where webuser_id=#{webuser_id}
+        (select * from outbound where approval_status = 'REQUEST' and webuser_id=#{webuser_id}
         order by outbound_id desc) m)
         <![CDATA[where rn>=#{startRow} and rn<=#{endRow}]]>
     </select>
 
     <!-- 직원 출고 요청 페이징용 출고 요청 건수 -->
     <select id="userOutboundCount" parameterType="int" resultType="int">
-        select NVL(count(*),0) from outbound where webuser_id=#{webuser_id}
+        select NVL(count(*),0) from outbound where approval_status = 'REQUEST' webuser_id=#{webuser_id}
     </select>
 
     <!-- ===============================
