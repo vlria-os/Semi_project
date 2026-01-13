@@ -52,7 +52,8 @@ public class RequestLIstController {
     @GetMapping("/goinbound")
     @ResponseBody
     public Map<String,Object> goinbound(HttpSession session,
-                                      @RequestParam(name = "pageNum",defaultValue = "1") int pageNum){
+                                      @RequestParam(name = "pageNum",defaultValue = "1") int pageNum,
+                                        @RequestParam(value = "field", required = false) String field){
         int role_id = (int) session.getAttribute("role_id");
         int webuser_id = (int) session.getAttribute("webuser_id");
         if(role_id == 1){

@@ -332,13 +332,50 @@ public class RequestService {
        =============================== */
 
     // 승인 내역 전체 조회
-    public List<ApprovalDto> approvalAll(){
+    public Map<String,Object> approvalAll(int pageNum){
+        Map<String,Object> map=new HashMap<>();
+        map.put("pageNum",pageNum);
 
-        return mapper.approvalAll();
+        int totalRowCount=mapper.approvalCount();
+
+        PageInfo pageInfo=new PageInfo(pageNum,5,5,totalRowCount);
+
+        map.put("startRow",pageInfo.getStartRow());
+        map.put("endRow",pageInfo.getEndRow());
+
+        List<ApprovalDto> list=mapper.approvalAll(map);
+
+        Map<String,Object> result=new HashMap<>();
+        result.put("list",list);
+        result.put("pageInfo",pageInfo);
+
+        return result;
+    }
+
+    //승인 내역 입고/출고 버튼별 조회
+    public Map<String,Object> approvalList(int pageNum, String boundType){
+        Map<String,Object> map=new HashMap<>();
+        map.put("pageNum", pageNum);
+        map.put("boundType",boundType);
+
+        int totalRowCount=mapper.approvalListCount(boundType);
+
+        PageInfo pageInfo=new PageInfo(pageNum,5,5,totalRowCount);
+
+        map.put("startRow",pageInfo.getStartRow());
+        map.put("endRow",pageInfo.getEndRow());
+
+        List<ApprovalDto> list=mapper.approvalList(map);
+
+        Map<String,Object> result=new HashMap<>();
+        result.put("list",list);
+        result.put("pageInfo",pageInfo);
+
+        return result;
     }
 
     public List<ApprovalDto> approvalconfAll(){
-        List<ApprovalDto> approvalDtos=mapper.approvalAll();
+        List<ApprovalDto> approvalDtos=mapper.approvalconfAll();
         List<ApprovalDto> result = new ArrayList<>();
 
         for(ApprovalDto a:approvalDtos){

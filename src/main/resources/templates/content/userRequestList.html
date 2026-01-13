@@ -195,12 +195,11 @@
                 const list=data.list;
                 const name=data.names;
 
-                let innerTable = `<table class="detailTable" style="width:100%;">
+                let innerTable = `<table class="detailTable" style="width: 100%">
                                 <tr>
                                     <th>상품명</th>
                                     <th>수량</th>
-                                    <th>요청 상세</th>
-
+                                    <th>요청 상태</th>
                                 </tr>`;
 
                 list.forEach(l => {
@@ -211,7 +210,6 @@
                                     <td>${n}</td>
                                     <td>${l.quantity}</td>
                                     <td>${l.approval_status}</td>
-
                                 </tr>`;
                 });
 
@@ -252,7 +250,6 @@
                                     <th>상품명</th>
                                     <th>수량</th>
                                     <th>요청 상세</th>
-
                                 </tr>`;
 
                 list.forEach(l => {
@@ -263,7 +260,6 @@
                                     <td>${n}</td>
                                     <td>${l.quantity}</td>
                                     <td>${l.approval_status}</td>
-
                                 </tr>`;
                 });
 
@@ -271,165 +267,6 @@
                 td.innerHTML = innerTable;
                 detailRow.appendChild(td);
                 currentTr.insertAdjacentElement("afterend", detailRow);
-              });
-    }
-
-    function approveItem(btn){
-      const tr = btn.closest("tr");
-      const detailId = tr.dataset.detailId;
-      const inboundId = tr.closest("tr.detailRow").previousElementSibling.children[1].innerText.trim(); // 상위 inbound ID
-
-      if(!confirm("이 항목을 승인하시겠습니까?")) return;
-
-      // form-urlencoded 형식으로 보내기
-      const params = new URLSearchParams();
-      params.append("inbound_id", inboundId);
-      params.append("inbound_detail_id", detailId); // DTO 필드 이름과 맞춰야 함
-      params.append("approval_status", "APPROVED"); // DTO 필드 이름과 맞춰야 함
-
-      fetch(`/admin/inbound_app`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: params.toString()
-      })
-              .then(resp => resp.json())
-              .then(data => {
-                if(data.success){
-                  alert("승인 완료");
-
-                  // 기존 상세 행 삭제
-                  const detailRow = tr.closest("tr.detailRow");
-                  if(detailRow) detailRow.remove();
-
-                  // 새로 받아온 상세 리스트로 다시 추가
-                  const list = data.detailList;
-                  const newDetailRow = document.createElement("tr");
-                  newDetailRow.classList.add("detailRow");
-
-                  const td = document.createElement("td");
-                  td.setAttribute("colspan", tr.children.length);
-
-                  let innerTable = `<table class="detailTable" border="1" style="width:100%;">
-                                <tr>
-                                    <th>상품명</th>
-                                    <th>수량</th>
-                                    <th>요청 상세</th>
-
-                                </tr>`;
-
-                  list.forEach(item => {
-                    innerTable += `<tr data-item-id="${item.inbound_detail_id}">
-                                <td>${item.product_name}</td>
-                                <td>${item.quantity}</td>
-                                <td>${item.approval_status}</td>
-
-                            </tr>`;
-                  });
-
-                  innerTable += `</table>`;
-                  td.innerHTML = innerTable;
-                  newDetailRow.appendChild(td);
-                  tr.insertAdjacentElement("afterend", newDetailRow);
-
-                } else {
-                  alert("승인 실패");
-                }
-              });
-    }
-
-
-    function rejectItem(btn){
-      const tr = btn.closest("tr");
-
-      // 이미 텍스트박스 있으면 중복 생성 방지
-      if(tr.nextElementSibling && tr.nextElementSibling.classList.contains("rejectRow")){
-        return;
-      }
-
-      const rejectRow = document.createElement("tr");
-      rejectRow.classList.add("rejectRow");
-
-      const td = document.createElement("td");
-      td.setAttribute("colspan", tr.children.length);
-
-      td.innerHTML = `
-        <label>반려 사유: </label>
-        <input type="text" id="rejectReason" placeholder="사유 입력">
-        <button type="button" onclick="submitReject(this)">제출</button>
-        <button type="button" onclick="cancelReject(this)">취소</button>
-    `;
-
-      rejectRow.appendChild(td);
-      tr.insertAdjacentElement("afterend", rejectRow);
-    }
-
-    function submitReject(btn){
-      const rejectRow = btn.closest("tr");
-      const reason = rejectRow.querySelector("#rejectReason").value;
-
-      const detailRow = rejectRow.previousElementSibling; // 상세 테이블 행
-      const detailId = detailRow.dataset.detailId; // inbound_detail_id
-      const inboundId = detailRow.closest("tr.detailRow").previousElementSibling.children[1].innerText.trim(); // 상위 inbound ID
-
-      if(!reason.trim()){
-        alert("사유를 입력하세요.");
-        return;
-      }
-
-      // form-urlencoded 형식으로 보내기 (승인 함수와 동일 구조)
-      const params = new URLSearchParams();
-      params.append("inbound_id", inboundId);          // 쿼리 파라미터로 넘어가는 inbound_id
-      params.append("inbound_detail_id", detailId);    // DTO 필드
-      params.append("approval_status", "REJECTED");    // DTO 필드
-      params.append("reason", reason);                 // DTO 필드
-
-      fetch(`/admin/inbound_app`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: params.toString()
-      })
-              .then(resp => resp.json())
-              .then(data => {
-                if(data.success){
-                  alert("반려 완료");
-
-                  // 기존 상세 행 삭제
-                  const detailRowContainer = detailRow.closest("tr.detailRow");
-                  if(detailRowContainer) detailRowContainer.remove();
-
-                  // 새로 받아온 상세 리스트로 다시 추가
-                  const list = data.detailList;
-                  const newDetailRow = document.createElement("tr");
-                  newDetailRow.classList.add("detailRow");
-
-                  const td = document.createElement("td");
-                  td.setAttribute("colspan", detailRow.children.length);
-
-                  let innerTable = `<table class="detailTable" border="1" style="width:100%;">
-                                <tr>
-                                    <th>상품명</th>
-                                    <th>수량</th>
-                                    <th>요청 상세</th>
-
-                                </tr>`;
-
-                  list.forEach(item => {
-                    innerTable += `<tr data-detail-id="${item.inbound_detail_id}">
-                                    <td>${item.product_name}</td>
-                                    <td>${item.quantity}</td>
-                                    <td>${item.approval_status}</td>
-
-                                </tr>`;
-                  });
-
-                  innerTable += `</table>`;
-                  td.innerHTML = innerTable;
-                  newDetailRow.appendChild(td);
-                  detailRow.closest("tr.detailRow").insertAdjacentElement("afterend", newDetailRow);
-
-                } else {
-                  alert("반려 실패");
-                }
               });
     }
 
