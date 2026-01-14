@@ -23,8 +23,16 @@ public class ListController {
     public String list(Model model,
             @RequestParam(defaultValue = "1") int pagenum,
             @RequestParam(required = false)String keyword,
-            @RequestParam(required = false)String status
-            ) {
+            @RequestParam(required = false)String status) {
+
+        //keyword가 null이면 전체 조회로 처리
+        if(keyword != null && keyword.trim().isEmpty()){
+            keyword = null;
+        }
+
+        if(status != null && status.trim().isEmpty()){
+            status = null;
+        }
 
         int offset=(pagenum -1) * pagesize;
         //1. 총 데이터 수
@@ -39,11 +47,13 @@ public class ListController {
           model.addAttribute("pagenum",pagenum);
           model.addAttribute("totalPage",totalPage);
           model.addAttribute("status",status);
-          model.addAttribute("param",new Object(){
-              public String getkeyword() {
-                  return keyword;
-              }
-          });
+          model.addAttribute("keyword",keyword);
+          //익명의 클래스
+//          model.addAttribute("param",new Object(){
+//              public String getKeyword() {
+//                  return keyword;
+//              }
+//          });
             return "list";
         }
         @PostMapping("/stock/update")
