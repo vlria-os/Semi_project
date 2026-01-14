@@ -19,7 +19,7 @@
     <tbody id="productBody">
     <tr th:each="l:${list}">
         <td>
-            <input type="checkbox" class="chk" th:data-id="${l.product_id}">
+            <input type="checkbox" class="chk" th:data-id="${l.product_id}" th:data-status="${l.status}">
         </td>
         <td th:text="${l.product_id}"></td>
         <td><img th:src="@{'/image/' + ${l.save_name}}" style="width:100px;"></td>
@@ -31,9 +31,6 @@
         <td>
             <select class="warehouse" disabled>
                 <option value="">선택</option>
-                <option value="1">창고A</option>
-                <option value="2">창고B</option>
-                <option value="3">창고C</option>
             </select>
         </td>
         <td>
@@ -69,7 +66,11 @@
                     tbody.innerHTML += `
     <tr>
         <td>
-            <input type="checkbox" class="chk" data-id="${p.product_id}" ${saved ? 'checked' : ''}>
+            <input type="checkbox"
+       class="chk"
+       data-id="${p.product_id}"
+       data-status="${p.status}"
+       ${saved ? 'checked' : ''}>
         </td>
         <td>${p.product_id}</td>
         <td><img th:src="@{'/image/' + ${p.save_name}}" style="width:100px;"></td>
@@ -79,12 +80,9 @@
         <td>${p.status}</td>
         <td>${p.category}</td>
         <td>
-            <select class="warehouse" ${saved ? '' : 'disabled'}>
+            <select class="warehouse" name="warehouse_id" ${saved ? '' : 'disabled'}>
                 <option value="">선택</option>
-                <option value="1" ${saved?.warehouse==='1'?'selected':''}>창고A</option>
-                <option value="2" ${saved?.warehouse==='2'?'selected':''}>창고B</option>
-                <option value="3" ${saved?.warehouse==='3'?'selected':''}>창고C</option>
-            </select>
+           </select>
         </td>
         <td>
             <input type="number" class="qty" min="1" value="${saved?.qty ?? ''}" ${saved ? '' : 'disabled'} style="width:60px;">
@@ -110,9 +108,15 @@
             qty.disabled = !checkbox.checked;
 
             if(checkbox.checked){
-                selectedMap[id] = { warehouse: warehouse.value, qty: qty.value };
+                const status = checkbox.dataset.status;
+                loadWarehouses(warehouse, status);
+
+                selectedMap[id] = {
+                    warehouse: '',
+                    qty: '' };
             } else {
                 delete selectedMap[id];
+                warehouse.innerHTML = '<option value="">선택</option>';
             }
         }
 
@@ -128,11 +132,27 @@
 
     });
 
+    function loadWarehouses(selectEl, status){
+        fetch(`/office_staff/inbound_req/warehouse?status=${encodeURIComponent(status)}`)
+            .then(res => res.json())
+            .then(list => {
+                selectEl.innerHTML = '<option value="">선택</option>';
+
+                list.forEach(w => {
+                    selectEl.innerHTML += `
+                    <option value="${w.warehouse_id}">
+                        ${w.warehouse_name}
+                    </option>
+                `;
+                });
+            });
+    }
+
     function submitSelected() {
         const data = Object.entries(selectedMap).map(([product_id, info]) => ({
             product_id,
-            warehouse: info.warehouse_id,
-            qty: info.qty
+            warehouse_id: info.warehouse,
+            quantity: info.qty
         }));
 
         fetch('/office_staff/inbound_req', {

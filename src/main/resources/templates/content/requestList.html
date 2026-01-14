@@ -261,7 +261,9 @@
                     const d=l.outbound_detail_id;
                     const n=name[String(d)];
 
-                    innerTable += `<tr data-detail-id="${l.outbound_detail_id}" data-inbound-id="${l.outbound_id}">
+                    innerTable += `<tr data-detail-id="${l.outbound_detail_id}"
+                                        data-inbound-id="${l.outbound_id}"
+                                        data-qauntity="${l.quantity}">
                                     <td>${n}</td>
                                     <td>${l.quantity}</td>
                                     <td>${l.approval_status}</td>
@@ -288,6 +290,7 @@
 
         if (ioType === "IN") {
             const detailId = tr.dataset.detailId;
+            const quantity = tr.dataset.quantity;
             const inboundId = tr.closest("tr.detailRow").previousElementSibling.children[1].innerText.trim(); // 상위 inbound ID
 
             if (!confirm("이 항목을 승인하시겠습니까?")) return;
@@ -295,7 +298,8 @@
             // form-urlencoded 형식으로 보내기
             const params = new URLSearchParams();
             params.append("inbound_id", inboundId);
-            params.append("inbound_detail_id", detailId); // DTO 필드 이름과 맞춰야 함
+            params.append("inbound_detail_id", detailId);
+            params.append("quantity", quantity); // DTO 필드 이름과 맞춰야 함
             params.append("approval_status", "APPROVED"); // DTO 필드 이름과 맞춰야 함
 
             fetch(`/admin/inbound_app`, {

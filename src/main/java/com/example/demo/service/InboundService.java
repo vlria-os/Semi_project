@@ -53,12 +53,20 @@ public class InboundService {
     public int update_approval(int inbound_id,
                                Inbound_detailDto inbound_detailDto,
                                int approver_id){
+
+        int warehouse_id=inbound_detailMapper.select_warehouse(inbound_detailDto.getInbound_detail_id());
+
         //창고 한계 수량 점검
-//        int stock=warehouseMapper.warehouse_stock(inbound_detailDto.getWarehouse_id());
-//        int capacity=warehouseMapper.warehouse_capacity(inbound_detailDto.getWarehouse_id());
-//        if(stock+inbound_detailDto.getQuantity()>capacity){
-//            return -1;
-//        }
+        int stock=warehouseMapper.warehouse_stock(warehouse_id);
+        int capacity=warehouseMapper.warehouse_capacity(warehouse_id);
+
+        System.out.println("stock="+stock);
+        System.out.println("capacity="+capacity);
+        System.out.println("quantity="+inbound_detailDto.getQuantity());
+
+        if(stock+inbound_detailDto.getQuantity()>capacity){
+            return -1;
+        }
 
         int n=inbound_detailMapper.update_appStatus(inbound_detailDto);
         int m=inboundMapper.update_status(inbound_id);

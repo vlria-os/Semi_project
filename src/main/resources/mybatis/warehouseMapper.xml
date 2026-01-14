@@ -5,16 +5,14 @@
 
 <mapper namespace="com.example.demo.mapper.WarehouseMapper">
     <select id="warehouse_stock" parameterType="int" resultType="int">
-        select sum(s.quantity)
+        select NVL(sum(s.quantity),0)
         from stock s
         join lot_in l on s.lot_in_id=l.lot_in_id
         where l.warehouse_id=#{value}
     </select>
     <select id="warehouse_capacity" parameterType="int" resultType="int">
-        select capacity from warehouse where warehouse_id=#{value}
+        select maximum_capacity from warehouse where warehouse_id=#{value}
     </select>
-
-
     <sql id="warehouseSearch">
         <where>
             <if test="field != null and field != '' and field != 'all' ">
@@ -127,5 +125,8 @@
         ) sum_stock on w.warehouse_id = sum_stock.warehouse_id
         order by usage_rate desc
         fetch first 10 rows only
+    </select>
+    <select id="warehouseType" parameterType="String" resultType="WarehouseDto">
+        select warehouse_id, warehouse_name from warehouse where warehouse_type=#{value}
     </select>
 </mapper>
