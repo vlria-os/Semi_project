@@ -206,7 +206,9 @@
                     const d=l.inbound_detail_id;
                     const n=name[String(d)];
 
-                    innerTable += `<tr data-detail-id="${l.inbound_detail_id}" data-inbound-id="${l.inbound_id}">
+                    innerTable += `<tr data-detail-id="${l.inbound_detail_id}"
+                                      data-inbound-id="${l.inbound_id}"
+                                      data-quantity="${l.quantity}">
                                     <td>${n}</td>
                                     <td>${l.quantity}</td>
                                     <td>${l.approval_status}</td>
@@ -268,7 +270,7 @@
 
                     innerTable += `<tr data-detail-id="${l.outbound_detail_id}"
                                         data-inbound-id="${l.outbound_id}"
-                                        data-qauntity="${l.quantity}">
+                                        data-quantity="${l.quantity}">
                                     <td>${n}</td>
                                     <td>${l.quantity}</td>
                                     <td>${l.approval_status}</td>

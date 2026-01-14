@@ -53,6 +53,7 @@ public class InboundService {
     public int update_approval(int inbound_id,
                                Inbound_detailDto inbound_detailDto,
                                int approver_id){
+        System.out.println("서비스 진행중...");
 
         int warehouse_id=inbound_detailMapper.select_warehouse(inbound_detailDto.getInbound_detail_id());
 
