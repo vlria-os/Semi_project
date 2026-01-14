@@ -45,6 +45,7 @@
         i.request_date,
         i.approval_status
         from inbound i
+        where i.approval_status = 'REQUEST'
 
         union all
 
@@ -55,6 +56,7 @@
         o.request_date,
         o.approval_status
         from outbound o
+        where o.approval_status = 'REQUEST'
 
         order by request_date desc)
     </select>

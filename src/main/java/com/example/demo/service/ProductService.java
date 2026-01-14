@@ -75,13 +75,21 @@ public class ProductService {
      @Transactional
     public int insert(ProductDto productDto,
                       Product_imageDto product_imageDto){
-        String category=productDto.getCategory();
-        productDto.setCategory_id(productMapper.selectOne_category(category));
+//        String category=productDto.getCategory();
+//        productDto.setCategory_id(productMapper.selectOne_category(category));
         productMapper.insert_image(product_imageDto);
         productDto.setImage_id(product_imageDto.getImage_id());
         productMapper.insert(productDto);
 
         return 1;
+    }
+
+    public List<CategoryDto> getRootCategories(){
+        return productMapper.selectRootCategories();
+    }
+
+    public List<CategoryDto> getChildrenByParentId(int parentId){
+        return productMapper.selectChildrenByParentId(parentId);
     }
 
 }
