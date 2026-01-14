@@ -119,7 +119,7 @@ public interface RequestMapper {
     //field용
     List<ApprovalDto> approvalconfAll();
 
-    int approvalCount();
+    int approvalCount(Map<String,Object> map);
 
     List<ApprovalDto> approvalList(Map<String,Object> map);
 

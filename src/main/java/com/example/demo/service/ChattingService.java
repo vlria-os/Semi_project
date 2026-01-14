@@ -20,11 +20,8 @@ public class ChattingService {
     private final ChatPresenceStore store;
     private static final int SYSTEM_USER_ID = 9999;
 
-    public boolean isParticipant(int room_id, int user_id){
-        Map<String, Object> map=new HashMap<>();
-        map.put("room_id",room_id);
-        map.put("user_id",user_id);
-        return mapper.isParticipant(map) > 0;
+    public boolean isParticipant(int roomId, int userId) {
+        return mapper.isParticipant(roomId, userId) > 0;
     }
 
     public ChatRoomDto getRoom(int room_id){
@@ -50,11 +47,7 @@ public class ChattingService {
         }
 
         //보낸 사람은 이 메시지까지 읽은 상태로 기록
-        Map<String,Object> senderMap=new HashMap<>();
-        senderMap.put("roomId",roomId);
-        senderMap.put("userId",senderId);
-        senderMap.put("lastReadMessageId",messageId);
-        mapper.updateLastReadMessageId(senderMap);
+        mapper.updateLastReadMessageId(roomId,senderId,messageId);
 
         //이 메시지를 읽은 사람 수(보낸 사람 + 접속 중인 유저 제외)
         Map<String,Object> p=new HashMap<>();
@@ -69,12 +62,14 @@ public class ChattingService {
     }
 
     public int enterAndMarkReadAll(int roomId, int userId){
-        int maxId = mapper.selectMaxMessageId(roomId);
-        Map<String,Object> map = new HashMap<>();
-        map.put("roomId",roomId);
-        map.put("userId",userId);
-        map.put("lastReadMessageId",maxId);
-        mapper.updateLastReadMessageId(map);
+        Integer maxId = mapper.selectMaxMessageId(roomId);
+        // 없으면 null
+        if (maxId == null) {
+            return 0; // 메시지 없으면 읽음 처리할 것도 없음
+        }
+
+        mapper.updateLastReadMessageId(maxId, roomId, userId);
+
         return maxId;
     }
 
@@ -188,12 +183,7 @@ public class ChattingService {
 
     @Transactional
     public void updateLastReadUpTo(int roomId, int userId, int lastReadId){
-        Map<String,Object> map=new HashMap<>();
-        map.put("roomId",roomId);
-        map.put("userId",userId);
-        map.put("lastReadMessageId",lastReadId);
-
-        mapper.updateLastReadMessageId(map);
+        mapper.updateLastReadMessageId(roomId,userId,lastReadId);
     }
 
     public int calcUnreadCountForMyMessage(int roomId, int senderId, int messageId){

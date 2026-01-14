@@ -3,15 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <title>새 채팅</title>
+    <link rel="stylesheet" th:href="@{/css/chat.css}">
 </head>
 <body>
-<h2>사용자 목록</h2>
-<ul>
-    <li th:each="user:${users}">
-        <a th:href="@{/chat/start/{targetId}(targetId=${user.webuser_id})}"
-            th:text="${user.webuser_name}"></a>
-    </li>
-</ul>
-<button onclick="history.back()">뒤로가기</button>
+
+<div class="chat-page">
+    <div class="chat-card">
+
+        <!-- 상단 헤더 -->
+        <div class="chat-header">
+            <div class="title">
+                <span class="badge-dot"></span>
+                1:1 채팅 상대 선택
+            </div>
+            <button type="button" class="btn btn-ghost" onclick="location.href='/chat/list'">
+                뒤로가기
+            </button>
+        </div>
+
+        <!-- 목록 -->
+        <div class="pick-wrap">
+            <div class="pick-hint">채팅할 상대를 선택하세요.</div>
+
+            <div class="searchbar">
+                <input type="text" id="userSearch" class="search-input" placeholder="이름을 검색하세요."
+                    autocomplete="off">
+                <button type="button" class="search-clear" onclick="clearUserSearch()">
+                    ✕
+                </button>
+            </div>
+
+            <div id="userList" class="pick-list">
+                <a class="pick-item"
+                   th:each="user:${users}"
+                   th:attr="data-name=${#strings.toLowerCase(user.webuser_name)}"
+                   th:href="@{/chat/start/{targetId}(targetId=${user.webuser_id})}">
+                    <div class="pick-avatar"
+                         th:text="${#strings.substring(user.webuser_name,0,1)}">U</div>
+                    <div class="pick-name" th:text="${user.webuser_name}">사용자명</div>
+                    <div class="pick-arrow">›</div>
+                </a>
+            </div>
+            <div id="userEmpty" class="search-empty" style="display: none;">
+                검색 결과가 없어요
+            </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    const userSearch=document.getElementById("userSearch");
+    const userList=document.getElementById("userList");
+    const userEmpty=document.getElementById("userEmpty");
+
+    function filterUserList(){
+        const q = (userSearch.value || "").trim().toLowerCase();
+        let visible = 0;
+
+        userList.querySelectorAll(".pick-item").forEach(item => {
+            const name=item.dataset.name || "";
+            const show = q === "" || name.includes(q);
+            item.style.display = show ? "flex" : "none";
+            if (show) visible++;
+        });
+
+        userEmpty.style.display = (visible === 0) ? "block" : "none";
+    }
+
+    function clearUserSearch(){
+        userSearch.value = "";
+        filterUserList();
+        userSearch.focus();
+    }
+
+    userSearch.addEventListener("input",filterUserList);
+</script>
 </body>
 </html>

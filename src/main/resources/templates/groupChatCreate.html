@@ -3,39 +3,124 @@
 <head>
     <meta charset="UTF-8">
     <title>단체 채팅 만들기</title>
-    <style>
-        .user-list {
-            border: 1px solid #ccc;
-            padding: 10px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .user-item {
-            margin-bottom: 5px;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/chat.css}">
 </head>
 <body>
-<h2>단체 채팅방 만들기</h2>
-<form th:action="@{/chat/group/create}" method="post">
-    <!-- 방 이름 -->
-    <div>
-        <label>채팅방 이름</label><br>
-        <input type="text" name="roomName" required>
-    </div>
-    <hr>
-    <!-- 유저 선택 -->
-    <div class="user-list">
-        <div th:each="user:${users}" class="user-item">
-            <label>
-                <input type="checkbox" name="userIds" th:value="${user.webuser_id}">
-                <span th:text="${user.webuser_name}">유저명</span>
-            </label>
+
+<div class="chat-page">
+    <div class="chat-card">
+
+        <!-- 상단 헤더 -->
+        <div class="chat-header">
+            <div class="title">
+                <span class="badge-dot"></span>
+                단체 채팅 만들기
+            </div>
+            <button type="button" class="btn btn-ghost" onclick="location.href='/chat/list'">
+                뒤로가기
+            </button>
         </div>
+
+        <form th:action="@{/chat/group/create}" method="post" class="group-form">
+
+            <!-- 방 이름 -->
+            <div class="field">
+                <label class="field-label">채팅방 이름</label>
+                <input class="field-input" type="text" name="roomName" required placeholder="예) 재고팀 단체방">
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- 유저 선택 -->
+            <div class="pick-wrap">
+                <div class="pick-hint">참가자를 선택하세요.</div>
+
+                <!-- ✅ 검색창 -->
+                <div class="searchbar">
+                    <input id="groupSearch"
+                           class="search-input"
+                           type="text"
+                           placeholder="이름을 검색하세요"
+                           autocomplete="off">
+                    <button type="button" class="search-clear" onclick="clearGroupSearch()">✕</button>
+                </div>
+
+                <!-- ✅ 선택 수 표시 -->
+                <div class="pick-count">
+                    선택 <span id="selectedCount">0</span>명
+                </div>
+
+                <div id="groupUserList" class="pick-list">
+                    <label class="pick-check"
+                           th:each="user:${users}"
+                           th:attr="data-name=${#strings.toLowerCase(user.webuser_name)}">
+                        <input type="checkbox" name="userIds" th:value="${user.webuser_id}"
+                               onchange="updateSelectedCount()">
+                        <div class="pick-avatar"
+                             th:text="${#strings.substring(user.webuser_name,0,1)}">U</div>
+                        <div class="pick-name" th:text="${user.webuser_name}">유저명</div>
+                    </label>
+                </div>
+
+                <div id="groupEmpty" class="search-empty" style="display:none;">
+                    검색 결과가 없어요.
+                </div>
+            </div>
+
+            <!-- 하단 버튼 -->
+            <div class="form-foot">
+                <button type="button" class="btn btn-ghost" onclick="location.href='/chat/list'">취소</button>
+                <button type="submit" class="btn btn-primary" id="createBtn" disabled>채팅방 생성</button>
+            </div>
+
+        </form>
     </div>
-    <br>
-    <button type="submit">채팅방 생성</button>
-</form>
+</div>
+
+<script>
+    const groupSearch = document.getElementById("groupSearch");
+    const groupUserList = document.getElementById("groupUserList");
+    const groupEmpty = document.getElementById("groupEmpty");
+    const selectedCountEl = document.getElementById("selectedCount");
+
+    function filterGroupList(){
+        const q = (groupSearch.value || "").trim().toLowerCase();
+        let visible = 0;
+
+        groupUserList.querySelectorAll(".pick-check").forEach(item => {
+            const name = item.dataset.name || "";
+            const show = q === "" || name.includes(q);
+            item.style.display = show ? "flex" : "none";
+            if (show) visible++;
+        });
+
+        groupEmpty.style.display = (visible === 0) ? "block" : "none";
+    }
+
+    function clearGroupSearch(){
+        groupSearch.value = "";
+        filterGroupList();
+        groupSearch.focus();
+    }
+
+    const createBtn=document.getElementById("createBtn");
+
+    function updateSelectedCount(){
+        const checked = groupUserList.querySelectorAll("input[type='checkbox']:checked").length;
+        selectedCountEl.innerText = checked;
+
+        const ok = checked >= 2;
+
+        createBtn.disabled = !ok;
+        createBtn.classList.toggle("is-disabled", !ok);
+
+        // 텍스트도 같이 바꾸면 UX 좋아짐(선택)
+        createBtn.innerText = ok ? "채팅방 생성" : "2명 이상 선택";
+    }
+
+    groupSearch.addEventListener("input", filterGroupList);
+    updateSelectedCount();
+</script>
 
 </body>
 </html>

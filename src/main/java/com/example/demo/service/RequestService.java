@@ -334,11 +334,12 @@ public class RequestService {
        =============================== */
 
     // 승인 내역 전체 조회
-    public Map<String,Object> approvalAll(int pageNum){
+    public Map<String,Object> approvalAll(int pageNum, String field, String keyword){
         Map<String,Object> map=new HashMap<>();
-        map.put("pageNum",pageNum);
+        map.put("field",field);
+        map.put("keyword",keyword);
 
-        int totalRowCount=mapper.approvalCount();
+        int totalRowCount=mapper.approvalCount(map);
 
         PageInfo pageInfo=new PageInfo(pageNum,5,5,totalRowCount);
 
@@ -360,7 +361,11 @@ public class RequestService {
         map.put("pageNum", pageNum);
         map.put("boundType",boundType);
 
+        System.out.println(boundType);
+
         int totalRowCount=mapper.approvalListCount(boundType);
+
+        System.out.println(totalRowCount);
 
         PageInfo pageInfo=new PageInfo(pageNum,5,5,totalRowCount);
 
