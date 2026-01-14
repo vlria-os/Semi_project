@@ -30,6 +30,26 @@
             #{quantity}
         )
     </insert>
+    <insert id="insert_exp" parameterType="Inbound_detailDto">
+        insert into inbound_detail (
+        inbound_detail_id,
+        inbound_id,
+        product_id,
+        warehouse_id,
+        approval_status,
+        inbound_status,
+        quantity
+        )
+        values (
+        inbound_detail_seq.nextval,
+        #{inbound_id},
+        #{product_id},
+        #{warehouse_id},
+        'APPROVED',
+        'REQUEST',
+        #{quantity}
+        )
+    </insert>
     <update id="update_status" parameterType="Inbound_detailDto">
         UPDATE inbound_detail
         SET inbound_status=#{inbound_status}

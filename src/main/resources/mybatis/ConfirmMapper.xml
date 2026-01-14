@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.ConfirmMapper">
+    <select id="select_confirm_in" resultType="ConfirmInboundDto">
+        SELECT
+        i.inbound_id,
+        i.is_refund,
+        i.request_date,
+        s.inbound_status
+        FROM inbound i
+        INNER JOIN (
+            SELECT
+            inbound_id,
+            CASE
+            WHEN SUM(CASE WHEN inbound_status = 'REQUEST' THEN 1 ELSE 0 END) > 0
+            THEN 'REQUEST'
+            WHEN SUM(CASE WHEN inbound_status = 'CONFIRMED' THEN 1 ELSE 0 END) > 0
+            THEN 'CONFIRMED'
+            ELSE 'REJECTED'
+            END AS inbound_status
+            FROM inbound_detail
+            WHERE approval_status = 'APPROVED'
+            GROUP BY inbound_id
+            ) s
+        ON i.inbound_id = s.inbound_id
+    </select>
+    <select id="select_confirm_detailIn" parameterType="int" resultType="ConfirmInDetailDto">
+        SELECT
+            d.inbound_detail_id,
+            l.lot_in_id,
+            NVL(p.product_name, '없음')    AS product_name,
+            NVL(w.warehouse_name, '없음')  AS warehouse_name,
+            l.received_date,
+            l.expiration_date,
+            d.inbound_status,
+            l.quantity
+        FROM lot_in l
+            JOIN inbound_detail d
+            ON l.inbound_detail_id = d.inbound_detail_id
+            LEFT JOIN product p
+            ON d.product_id = p.product_id
+            LEFT JOIN warehouse w
+            ON l.warehouse_id = w.warehouse_id
+        WHERE d.inbound_id = #{value}
+    </select>
+    <select id="select_confirm_out" resultType="ConfirmOutboundDto">
+        SELECT
+            o.outbound_id,
+                CASE
+                WHEN MAX(CASE WHEN l.is_expired = 'Y' THEN 1 ELSE 0 END) = 1
+                THEN 'Y'
+                ELSE 'N'
+                END AS is_expired,
+            o.request_date,
+            s.outbound_status
+        FROM outbound o
+        INNER JOIN (
+            SELECT
+                outbound_id,
+                CASE
+                WHEN SUM(CASE WHEN outbound_status = 'REQUEST' THEN 1 ELSE 0 END) > 0
+                THEN 'REQUEST'
+                WHEN SUM(CASE WHEN outbound_status = 'CONFIRMED' THEN 1 ELSE 0 END) > 0
+                THEN 'CONFIRMED'
+                ELSE 'REJECTED'
+                END AS outbound_status
+            FROM outbound_detail
+            WHERE approval_status = 'APPROVED'
+            GROUP BY outbound_id
+        ) s
+            ON o.outbound_id = s.outbound_id
+        JOIN outbound_detail d
+            ON d.outbound_id = o.outbound_id
+        JOIN lot_out l
+            ON l.outbound_detail_id = d.outbound_detail_id
+        GROUP BY
+            o.outbound_id,
+            o.request_date,
+            s.outbound_status
+    </select>
+    <select id="select_confirm_detailOut" parameterType="int" resultType="ConfirmOutDetailDto">
+        SELECT
+        d.outbound_detail_id,
+        l.lot_out_id,
+        NVL(p.product_name, '없음')    AS product_name,
+        NVL(w.warehouse_name, '없음')  AS warehouse_name,
+        l.shipped_date,
+        d.outbound_status,
+        l.quantity
+        FROM lot_out l
+        JOIN outbound_detail d
+        ON l.outbound_detail_id = d.outbound_detail_id
+        LEFT JOIN product p
+        ON d.product_id = p.product_id
+        LEFT JOIN warehouse w
+        ON l.warehouse_id = w.warehouse_id
+        WHERE d.outbound_id = 201
+    </select>
+</mapper>
