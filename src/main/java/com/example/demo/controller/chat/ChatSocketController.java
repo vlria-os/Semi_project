@@ -23,6 +23,13 @@ public class ChatSocketController {
     @MessageMapping("/chat/message")
     public void sendMessage(ChatMessageDto dto){
 
+        if (dto == null || dto.getRoom_id() <= 0 || dto.getSender_id() <= 0) return;
+
+        if (!service.isParticipant(dto.getRoom_id(), dto.getSender_id())) {
+            template.convertAndSend("/topic/error/" + dto.getSender_id(), "NOT_PARTICIPANT");
+            return;
+        }
+
         //db 저장
         service.sendMessage(dto);
 
@@ -41,6 +48,15 @@ public class ChatSocketController {
     @MessageMapping("/chat/enter")
     public void enter(ChatPresenceDto dto,
                       SimpMessageHeaderAccessor headerAccessor) {
+
+        if (dto == null || dto.getRoomId() <= 0 || dto.getUserId() <= 0) return;
+
+        // ✅ 참여자 아니면 입장 차단
+        if (!service.isParticipant(dto.getRoomId(), dto.getUserId())) {
+            template.convertAndSend("/topic/error/" + dto.getUserId(), "NOT_PARTICIPANT");
+            return;
+        }
+
         //세션에 저장
         headerAccessor.getSessionAttributes().put("roomId", dto.getRoomId());
         headerAccessor.getSessionAttributes().put("userId", dto.getUserId());
