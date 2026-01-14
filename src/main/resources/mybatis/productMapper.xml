@@ -98,4 +98,18 @@
             #{save_name}
         )
     </insert>
+    <!-- 대분류 조회 -->
+    <select id="selectRootCategories" resultType="CategoryDto">
+        select category_id,category_name
+        from category where parent_id is null
+        order by category_id
+    </select>
+    <!-- 하위 카테고리 조회 -->
+    <select id="selectChildrenByParentId" resultType="CategoryDto">
+        select category_id,category_name,parent_id
+        from category where parent_id = #{parentId}
+        order by category_id
+    </select>
+    <!-- 카테고리 이름 조회 -->
+
 </mapper>

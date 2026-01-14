@@ -1,0 +1,78 @@
+<!-- content/productList.html -->
+<section xmlns:th="http://www.thymeleaf.org"
+         th:fragment="content">
+    <div class="main">
+        <button><a th:href="@{/content/confirmList}">입고</a></button>
+        <button><a th:href="@{/content/confirmList/out}">출고</a></button>
+        <table>
+            <tr>
+                <th>번호</th><th>반품여부</th><th>상태</th><th>요청일</th>
+            </tr>
+            <tr th:each="l:${list}" onclick="showDetail(this)">
+                <td th:text="${l.inbound_id}"></td>
+                <td th:text="${l.is_refund}"></td>
+                <td th:text="${l.inbound_status}"></td>
+                <td th:text="${l.request_date}"></td>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        function showDetail(btn){
+            const currentTr=btn.closest("tr");
+            const colCount = currentTr.children.length;
+
+            // 이미 상세 row 있으면 토글
+            if(currentTr.nextElementSibling &&
+                currentTr.nextElementSibling.classList.contains("detailRow")){
+                currentTr.nextElementSibling.remove();
+                return;
+            }
+            const bound_id=currentTr.children[0].innerText.trim();
+
+            fetch(`/confirm/detail_in?inbound_id=${bound_id}`)
+                .then(resp=>resp.json())
+                .then(data=>{
+                    console.log(data);
+                    const tr = document.createElement("tr");
+                    tr.className = "detailRow";
+
+                    let rows = "";
+                    data.forEach(l=>{
+                        let reasonBtn="";
+                        if(l.inbound_status == 'REJECTED'){
+                            reasonBtn = `
+                                      <button onclick="showReason('IN',${l.inbound_detail_id},
+                                      this)">사유 보기</button>
+                                    `;
+                        }
+                        rows += `
+                  <tr>
+                    <td>${l.inbound_status}</td>
+                    <td>${l.product_name}</td>
+                    <td>${l.warehouse_name}</td>
+                    <td>${l.received_date}</td>
+                    <td>${l.expiration_date}</td>
+                    <td>${l.quantity}</td>
+                    <td>
+                        ${reasonBtn}
+                    </td>
+                  </tr>
+                `;
+                    });
+
+                    tr.innerHTML=`
+                  <td colspan="${colCount}">
+                     <table>
+                     <tr>
+                        <th>상태</th><th>상품명</th><th>창고명</th><th>수령일</th><th>유통기한</th><th>수량</th>
+                     </tr>
+                     ${rows}
+                     </table>
+                  </td>
+                  `;
+                    currentTr.after(tr);
+                });
+        };
+    </script>
+</section>

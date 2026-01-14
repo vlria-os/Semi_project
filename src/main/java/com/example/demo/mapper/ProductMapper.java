@@ -4,6 +4,7 @@ import com.example.demo.dto.CategoryDto;
 import com.example.demo.dto.ProductDto;
 import com.example.demo.dto.Product_imageDto;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -18,4 +19,7 @@ public interface ProductMapper {
     int insert_image(Product_imageDto product_imageDto);
     String select_product(int product_id);
     int count(String keyword);
+
+    List<CategoryDto> selectRootCategories();
+    List<CategoryDto> selectChildrenByParentId(@Param("parentId") int parentId);
 }

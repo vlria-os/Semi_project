@@ -34,7 +34,6 @@ public class ChattingService {
     }
 
     public void sendMessage(ChatMessageDto dto){
-        //insert
         mapper.sendMessage(dto);
 
         int roomId = dto.getRoom_id();
@@ -46,20 +45,13 @@ public class ChattingService {
             return;
         }
 
-        //보낸 사람은 이 메시지까지 읽은 상태로 기록
-        mapper.updateLastReadMessageId(roomId,senderId,messageId);
+        // 보낸 사람은 이 메시지까지 읽음 처리
+        mapper.updateLastReadMessageId(roomId, senderId, messageId);
 
-        //이 메시지를 읽은 사람 수(보낸 사람 + 접속 중인 유저 제외)
-        Map<String,Object> p=new HashMap<>();
-        p.put("roomId",roomId);
-        p.put("senderId",senderId);
-        p.put("messageId",messageId);
-        int readers=mapper.countReadersForMessage(p);
-
-        int unreadPeople= calcUnreadCountForMyMessage(roomId, senderId,messageId);
-
-        dto.setRead_count(unreadPeople);
+        // ✅ 여기서 read_count 계산하지 말기
+        dto.setRead_count(0); // (선택) 그냥 0으로 초기화
     }
+
 
     public int enterAndMarkReadAll(int roomId, int userId){
         Integer maxId = mapper.selectMaxMessageId(roomId);

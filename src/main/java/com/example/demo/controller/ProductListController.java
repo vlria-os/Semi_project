@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.CategoryDto;
 import com.example.demo.dto.ProductDto;
 import com.example.demo.dto.Product_imageDto;
 import com.example.demo.service.ProductService;
@@ -22,24 +23,24 @@ import java.util.UUID;
 @Controller
 @RequiredArgsConstructor
 public class ProductListController {
-    private final String UPLOADPATH="c:/image_Semi/";
+    private final String UPLOADPATH = "c:/image_Semi/";
     private final ProductService productService;
 
     @GetMapping("/content/productList")
     public String productList(Model model,
                               @RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
                               HttpSession session) {
-        Map<String,Object> map=productService.productList(pageNum);
+        Map<String, Object> map = productService.productList(pageNum);
 
         model.addAttribute("list", map.get("productDtos"));
-        model.addAttribute("pageInfo",map.get("pageInfo"));
-        if((int)session.getAttribute("role_id")==1){
+        model.addAttribute("pageInfo", map.get("pageInfo"));
+        if ((int) session.getAttribute("role_id") == 1) {
             model.addAttribute("navFragment", "fragment/nav/adminNav");
             model.addAttribute("content", "content/productList");
-        }else if((int)session.getAttribute("role_id")==2){
+        } else if ((int) session.getAttribute("role_id") == 2) {
             model.addAttribute("navFragment", "fragment/nav/officeNav");
             model.addAttribute("content", "content/productList");
-        }else if((int)session.getAttribute("role_id")==3){
+        } else if ((int) session.getAttribute("role_id") == 3) {
             model.addAttribute("navFragment", "fragment/nav/fieldNav");
             model.addAttribute("content", "content/productList");
         }
@@ -48,42 +49,45 @@ public class ProductListController {
     }
 
     @GetMapping("/common/product_list")
-    public String inbound_reqForm(@RequestParam(name = "pageNum", defaultValue = "1") int pageNum, Model model){
-        Map<String,Object> map=productService.productList(pageNum);
+    public String inbound_reqForm(@RequestParam(name = "pageNum", defaultValue = "1") int pageNum, Model model) {
+        Map<String, Object> map = productService.productList(pageNum);
         model.addAttribute("list", map.get("productDtos"));
-        model.addAttribute("pageInfo",map.get("pageInfo"));
+        model.addAttribute("pageInfo", map.get("pageInfo"));
         return "common/product_list";
     }
 
     @PostMapping("/common/product_list")
     public String product_search(String keyword,
                                  @RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
-                                 Model model){
-        Map<String,Object> map=productService.productList(pageNum, keyword);
+                                 Model model) {
+        Map<String, Object> map = productService.productList(pageNum, keyword);
         model.addAttribute("list", map.get("productDtos"));
-        model.addAttribute("keyword",keyword);
+        model.addAttribute("keyword", keyword);
         return "common/product_list";
     }
 
     @GetMapping("/common/product_search")
     @ResponseBody
-    public Map<String,Object> productSearch(@RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
-                                          @RequestParam String keyword) {
-        Map<String,Object> map=productService.productList(pageNum, keyword);
+    public Map<String, Object> productSearch(@RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
+                                             @RequestParam String keyword) {
+        Map<String, Object> map = productService.productList(pageNum, keyword);
         return map;
     }
 
     @GetMapping("/content/product_insert")
-    public String product_insertForm(Model model){
-        model.addAttribute("productDto",new ProductDto());
+    public String product_insertForm(Model model) {
+        List<CategoryDto> rootCategory = productService.getRootCategories();
+
+        model.addAttribute("rootCategory", rootCategory);
+        model.addAttribute("productDto", new ProductDto());
         model.addAttribute("navFragment", "fragment/nav/adminNav");
         model.addAttribute("content", "content/product_insert");
         return "layout";
     }
 
     @PostMapping("/content/product_insert")
-    public String product_insert(ProductDto productDto){
-        MultipartFile file=productDto.getFile();
+    public String product_insert(ProductDto productDto) {
+        MultipartFile file = productDto.getFile();
 
         String orgFileName = file.getOriginalFilename();
         String extName = orgFileName.substring(orgFileName.lastIndexOf("."));
@@ -95,10 +99,16 @@ public class ProductListController {
             System.out.println(ie.getMessage());
         }
 
-        Product_imageDto imageDto=new Product_imageDto(0,UPLOADPATH + saveFileName,saveFileName);
+        Product_imageDto imageDto = new Product_imageDto(0, UPLOADPATH + saveFileName, saveFileName);
 
-        int n=productService.insert(productDto, imageDto);
+        int n = productService.insert(productDto, imageDto);
         return "redirect:/content/productList";
     }
 
+    @GetMapping("/content/product_category")
+    @ResponseBody
+    public List<CategoryDto> product_category(@RequestParam int parentId) {
+        List<CategoryDto> list = productService.getChildrenByParentId(parentId);
+        return list;
+    }
 }

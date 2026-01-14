@@ -21,16 +21,17 @@ public class Ref_ExpService {
     private final StockMapper stockMapper;
 
     //@Transactional
-    //@Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void insert_expiration(){
         List<Select_outboundDto> select_outboundDtos=stockMapper.select_expiration();
 
         OutboundDto outboundDto=new OutboundDto(0,0,null,"APPROVED");
         outboundMapper.insert_exp(outboundDto);
-        System.out.println(outboundDto.getOutbound_id());
+        System.out.println(select_outboundDtos);
+
         for(Select_outboundDto s:select_outboundDtos){
             Outbound_detailDto outbound_detailDto=new Outbound_detailDto(0,outboundDto.getOutbound_id(), s.getProduct_id(),"APPROVED",null,"REQUEST",s.getQuantity());
-            outbound_detailMapper.insert(outbound_detailDto);
+            outbound_detailMapper.insert_exp(outbound_detailDto);
 
             lot_outMapper.insert_exp(new Lot_outDto(0,outbound_detailDto.getOutbound_detail_id(),s.getWarehouse_id(),"Y",s.getLot_in_id(),
                                 s.getQuantity(),s.getStock_id(),null));
@@ -41,12 +42,24 @@ public class Ref_ExpService {
     }
 
     @Transactional
-    public void insert_refund(RefundDto refundDto){
-        InboundDto inboundDto=new InboundDto(0,refundDto.getWebuser_id(),null,null,"Y",refundDto.getLot_out_id());
+    public int insert_refund(int lot_out_id,
+                              int webuser_id){
+        int already_refunded=inboundMapper.is_refunded(lot_out_id);
+
+        if(already_refunded==1){
+            return -1;
+        }
+
+        InboundDto inboundDto=new InboundDto(0,webuser_id,null,null,"Y",lot_out_id);
         inboundMapper.insert(inboundDto);
+        RefundDto refundDto=lot_outMapper.select_refund(lot_out_id);
+
         Inbound_detailDto inbound_detailDto=new Inbound_detailDto(0, inboundDto.getInbound_id(), refundDto.getProduct_id(),
                 refundDto.getWarehouse_id(),null,null,null, refundDto.getQuantity());
+
         inbound_detailMapper.insert(inbound_detailDto);
 
+        return 1;
     }
+
 }

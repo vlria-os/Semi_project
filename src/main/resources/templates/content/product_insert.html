@@ -2,13 +2,77 @@
          th:fragment="content">
 <form th:action="@{/content/product_insert}" method="post" th:object="${productDto}" enctype="multipart/form-data">
       상품명 <input type="text" th:field="*{product_name}"><br>
-      카테고리 <input type="text" th:field="*{category}"><br>
+<!--      카테고리 <input type="text" th:field="*{category}"><br>-->
+    <div>
+        카테고리 <select id="parentCategory">
+            <option value="">대분류 선택</option>
+            <option th:each="c : ${rootCategory}"
+                    th:value="${c.category_id}"
+                    th:text="${c.category_name}">
+            </option>
+        </select>
+    </div>
+    <!-- 하위 -->
+    <div id="childBox" style="display: none;">
+        하위 카테고리 <select id="childCategory" name="category_id">
+                    </select>
+    </div>
       가격 <input type="text" th:field="*{price}"><br>
       단위 <input type="text" th:field="*{unit}"><br>
-      분류 <input type="text" th:field="*{status}"><br>
+<!--      분류 <input type="text" th:field="*{status}"><br>-->
+      분류 <select name="status" th:field="*{status}">
+                <option value="COLD" th:selected="${status == 'COLD'}">냉장</option>
+                <option value="ROOM" th:selected="${status == 'ROOM'}">실온</option>
+                <option value="FROZEN" th:selected="${status == 'FROZEN'}">냉동</option>
+          </select><br>
       이미지 <br>
     <input type="file" th:field="*{file}"><br>
     <div th:if="${msg!=null}" style="color: red; font-size: 0.8em">[[${msg}]]</div>
   <button type="submit">등록</button>
 </form>
 </section>
+<script>
+    const parentCategory=document.getElementById("parentCategory");
+    const childCategory=document.getElementById("childCategory");
+
+    parentCategory.addEventListener("change",function (){
+        const parentId=parentCategory.value;
+
+        // 대분류 선택 안 했으면 하위 숨기고 초기화
+        if (!parentId) {
+            childBox.style.display = "none";
+            childCategory.innerHTML = `<option>대분류를 먼저 선택하세요.</option>`;
+            return;
+        }
+
+        document.getElementById("childBox").style.display="block";
+
+        fetch(`/content/product_category?parentId=${parentId}`)
+            .then(resp=>resp.json())
+            .then(data => {
+
+                childCategory.innerHTML = "";
+
+                const opt=document.createElement('option');
+                opt.value="";
+                opt.textContent="하위 카테고리 선택";
+                childCategory.appendChild(opt)
+
+                data.forEach(c => {
+                    const opt=document.createElement("option");
+                    opt.value = `${c.category_id}`;
+                    opt.textContent = `${c.category_name}`;
+                    childCategory.appendChild(opt);
+                })
+
+                // 하위가 하나도 없을 때
+                if (data.length === 0) {
+                    childCategory.innerHTML = `<option value="">하위 카테고리가 없습니다.</option>`;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                childCategory.innerHTML = `<option value="">불러오기 실패</option>`;
+            });
+    })
+</script>

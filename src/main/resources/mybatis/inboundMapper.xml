@@ -50,4 +50,18 @@
     <select id="select_status" parameterType="int" resultType="String">
         select approval_status from inbound where inbound_id=#{inbound_id}
     </select>
+    <select id="is_refunded" parameterType="int" resultType="int">
+        SELECT
+            CASE
+            WHEN EXISTS (
+            SELECT 1
+            FROM inbound
+            WHERE is_refund = 'Y'
+            AND lot_out_id = #{value}
+        )
+        THEN 1
+            ELSE 0
+            END AS is_refund_exists
+        FROM dual
+    </select>
 </mapper>

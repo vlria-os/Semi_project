@@ -8,4 +8,5 @@ public interface InboundMapper {
     int insert(InboundDto inboundDto);
     int update_status(int inbound_id);
     String select_status(int inbound_id);
+    int is_refunded(int lot_out_id);
 }
