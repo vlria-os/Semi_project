@@ -24,8 +24,8 @@ public class outbound_req_Controller {
     public String outbound_reqForm(@RequestParam(required = false)String keyword,
                                    @RequestParam(required = false)String status,
                                    Model model){
-        List<ProductStockDto> p = service.selectAll(keyword, status);
-        model.addAttribute("p", p);
+//        List<ProductStockDto> p = service.selectAll(keyword, status);
+//        model.addAttribute("p", p);
 
         model.addAttribute("navFragment", "fragment/nav/officeNav");
         model.addAttribute("content", "content/outbound_req");
