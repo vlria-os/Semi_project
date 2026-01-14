@@ -628,8 +628,18 @@
             rejectRow.remove();
     }
 
-    function allApprove(btn){
+    function allApprove(){
+        if (!confirm("정말 전체 승인하시겠습니까?")) return;
 
+        fetch('/inbound/approve/all', {
+            method: 'POST'
+        })
+            .then(res => {
+                if (!res.ok) throw new Error();
+                alert("전체 승인 완료");
+                location.reload();
+            })
+            .catch(() => alert("전체 승인 실패"));
     }
 
 </script>
