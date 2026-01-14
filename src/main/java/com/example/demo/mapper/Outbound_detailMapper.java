@@ -8,6 +8,7 @@ import java.util.List;
 @Mapper
 public interface Outbound_detailMapper {
     int insert(Outbound_detailDto outboundDetailDto);
+    int insert_exp(Outbound_detailDto outboundDetailDto);
     int update_outStatus(Outbound_detailDto outbound_detailDto);
     int update_outStatus_rej(int outbound_detail_id);
     int update_outStatus_conf(int outbound_detail_id);

@@ -49,12 +49,12 @@ public class WarehouseController {
 
     @GetMapping("/warehouse/insert")
     public String warehouseInsertForm(HttpSession session, Model model){
-        model.addAttribute("warehouseDto", new WarehouseDto());
         if((int)session.getAttribute("role_id")!=1) {
             return "redirect:/";
         }
         model.addAttribute("navFragment", "fragment/nav/adminNav");
         model.addAttribute("content", "warehouse/warehouse-insert");
+        model.addAttribute("warehouseDto", new WarehouseDto());
         return "layout";
     }
     @PostMapping("/warehouse/insert")

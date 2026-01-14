@@ -61,4 +61,10 @@
     <update id="insert_date" parameterType="int">
         update lot_out set shipped_date=sysdate where lot_out_id=#{lot_out_id}
     </update>
+    <select id="select_refund" parameterType="int" resultType="RefundDto">
+        select l.lot_out_id, l.warehouse_id, l.quantity, d.product_id from lot_out l
+        join outbound_detail d
+        on d.outbound_detail_id=l.outbound_detail_id
+        where lot_out_id=#{value}
+    </select>
 </mapper>
