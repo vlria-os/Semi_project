@@ -10,7 +10,6 @@ import java.util.Map;
 public interface WarehouseMapper {
     int warehouse_stock(int warehouse_id);
     int warehouse_capacity(int warehouse_id);
-
     int getWarehouseCount(Map<String, Object> map);
     List<WarehouseDto> selectWarehouseList(Map<String, Object> map);
     int insertWarehouse(WarehouseDto dto);
@@ -19,4 +18,5 @@ public interface WarehouseMapper {
     WarehouseDto selectAll(int n);
     List<WarehouseDto> selectWarehouse();
     List<WarehouseDto> selectLimit();
+    List<WarehouseDto> warehouseType(String warehouse_type);
 }
