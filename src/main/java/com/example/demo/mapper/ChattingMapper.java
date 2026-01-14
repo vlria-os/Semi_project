@@ -13,7 +13,9 @@ import java.util.Map;
 @Mapper
 public interface ChattingMapper {
     List<ChatRoomDto> chatRoomAll(int user_id);
-    int isParticipant(Map<String, Object> map);
+    int isParticipant(@Param("roomId") int roomId,
+                      @Param("userId") int userId);
+
     ChatRoomDto getRoom(int room_id);
     List<ChatMessageDto> getMessages(
             @Param("roomId") int roomId,
@@ -55,9 +57,11 @@ public interface ChattingMapper {
     //인원 수 조회
     int getRoomUserCount(@Param("roomId") int roomId);
 
-    int selectMaxMessageId(@Param("roomId") int roomId);
+    Integer selectMaxMessageId(@Param("roomId") int roomId);
 
-    int updateLastReadMessageId(Map<String,Object> map);
+    int updateLastReadMessageId(@Param("messageId") Integer messageId,
+                                @Param("roomId") int roomId,
+                                @Param("userId") int userId);
 
     int countReadersForMessage(Map<String,Object> map);
 

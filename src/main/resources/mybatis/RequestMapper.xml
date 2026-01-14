@@ -209,7 +209,7 @@
         values(
         approval_seq.nextval,
         #{approver_id},
-        'in',
+        'IN',
         #{inbound_id},
         null,
         #{approval_status},
@@ -223,7 +223,7 @@
         values(
         approval_seq.nextval,
         #{approver_id},
-        'in',
+        'IN',
         #{inbound_id},
         null,
         #{approval_status},
@@ -237,7 +237,7 @@
         values(
         approval_seq.nextval,
         #{approver_id},
-        'out',
+        'OUT',
         null,
         #{outbound_id},
         #{approval_status},
@@ -251,7 +251,7 @@
         values(
         approval_seq.nextval,
         #{approver_id},
-        'out',
+        'OUT',
         null,
         #{outbound_id},
         #{approval_status},

@@ -11,11 +11,11 @@
         where ru.user_id=#{user_id}
     </select>
     <!-- 해당 유저가 참여한 채팅방인지 확인 -->
-    <select id="isParticipant" parameterType="map" resultType="int">
+    <select id="isParticipant" resultType="int">
         select count(*)
         from chat_room_user
-        where room_id = #{room_id}
-        and user_id = #{user_id}
+        where room_id = #{roomId}
+        and user_id = #{userId}
     </select>
     <!-- room_id 로 채팅방 정보 조회 -->
     <select id="getRoom" parameterType="int" resultType="ChatRoomDto">
@@ -34,25 +34,37 @@
         m.content,
         m.created_at,
 
-        /* ✅ 내 메시지일 때만: 아직 안 읽은 사람 수 계산 */
         CASE
         WHEN m.sender_id = #{systemId} THEN 0
-        WHEN m.sender_id = #{userId} THEN (
-        SELECT COUNT(*)
-        FROM chat_room_user cru
-        WHERE cru.room_id = m.room_id
-        <![CDATA[AND cru.user_id <> m.sender_id
-        AND NVL(cru.last_read_message_id,0) < m.message_id
-        )]]>
+        WHEN m.sender_id = #{userId} THEN NVL(rc.unread_people, 0)
         ELSE 0
         END AS read_count
 
         FROM chat_message m
         LEFT JOIN webuser u
         ON m.sender_id = u.webuser_id
+
+        LEFT JOIN (
+        SELECT
+        m2.message_id,
+        COUNT(*) AS unread_people
+        FROM chat_message m2
+        JOIN chat_room_user cru
+        ON cru.room_id = m2.room_id
+        <![CDATA[
+        AND cru.user_id <> m2.sender_id
+        AND NVL(cru.last_read_message_id, 0) < m2.message_id
+        ]]>
+        WHERE m2.room_id = #{roomId}
+        AND m2.sender_id = #{userId}   -- ✅ 내 메시지에 대해서만 계산
+        GROUP BY m2.message_id
+        ) rc
+        ON rc.message_id = m.message_id
+
         WHERE m.room_id = #{roomId}
         ORDER BY m.message_id
     </select>
+
 
     <!-- 이름 가져오기 -->
     <select id="selectUserName" resultType="string">
@@ -257,15 +269,15 @@
         where room_id = #{roomId}
     </select>
     <!-- 특정 채팅방의 최신 메시지 아이디 조회 -->
-    <select id="selectMaxMessageId" resultType="int">
-        SELECT NVL(MAX(message_id), 0)
+    <select id="selectMaxMessageId" resultType="Integer">
+        SELECT MAX(message_id)
         FROM chat_message
         WHERE room_id = #{roomId}
     </select>
     <!-- 특정 채팅방의 특정 유저가 마지막으로 읽은 메시지 아이디 저장 -->
-    <update id="updateLastReadMessageId" parameterType="map">
+    <update id="updateLastReadMessageId">
         UPDATE chat_room_user
-        SET last_read_message_id = GREATEST(NVL(last_read_message_id,0), #{lastReadMessageId})
+        SET last_read_message_id = GREATEST(NVL(last_read_message_id,0), #{messageId, jdbcType=NUMERIC})
         WHERE room_id = #{roomId}
         AND user_id = #{userId}
     </update>

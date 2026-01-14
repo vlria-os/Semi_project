@@ -68,6 +68,11 @@ public class WebuserChatController {
                            Model model){
         int myId = (int) session.getAttribute("webuser_id");
 
+        if (!service.isParticipant(roomId, myId)) {
+            return "redirect:/chat/list"; // 또는 403 페이지
+        }
+
+
         model.addAttribute("room_id",roomId);
         model.addAttribute("user_id",myId);
         model.addAttribute("displayRoomName",
