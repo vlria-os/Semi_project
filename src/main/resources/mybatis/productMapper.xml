@@ -110,6 +110,9 @@
         from category where parent_id = #{parentId}
         order by category_id
     </select>
-    <!-- 카테고리 이름 조회 -->
+    <!-- 상품명 조회 -->
+    <select id="selectProductName" resultType="string">
+        select product_name from product where product_id=#{productId}
+    </select>
 
 </mapper>

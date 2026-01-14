@@ -207,8 +207,18 @@ public class RequestService {
         return map;
     }
 
-    public List<Inbound_detailDto> inboundAppList(int inbound_id){
-        return mapper.inboundAppList(inbound_id);
+    public Map<String,Object> inboundAppList(int inbound_id){
+        List<Inbound_detailDto> list=mapper.inboundAppList(inbound_id);
+
+        Map<Integer,Object> map=new HashMap<>();
+        for(Inbound_detailDto i:list){
+            map.put(i.getInbound_detail_id(),productMapper.selectProductName(i.getProduct_id()));
+        }
+
+        Map<String,Object> result=new HashMap<>();
+        result.put("list",list);
+        result.put("names",map);
+        return result;
     }
 
     public String product_name(int product_id){
@@ -233,8 +243,18 @@ public class RequestService {
         return map;
     }
 
-    public List<Outbound_detailDto> outboundAppList(int outbound_id){
-        return mapper.outboundAppList(outbound_id);
+    public Map<String,Object> outboundAppList(int outbound_id){
+        List<Outbound_detailDto> list=mapper.outboundAppList(outbound_id);
+
+        Map<Integer,Object> map=new HashMap<>();
+        for(Outbound_detailDto o:list){
+            map.put(o.getOutbound_detail_id(),productMapper.selectProductName(o.getProduct_id()));
+        }
+
+        Map<String,Object> result=new HashMap<>();
+        result.put("list",list);
+        result.put("names",map);
+        return result;
     }
 
     // 입고 상세 번호로 상세 상품 조회

@@ -19,6 +19,7 @@ public interface ProductMapper {
     int insert_image(Product_imageDto product_imageDto);
     String select_product(int product_id);
     int count(String keyword);
+    String selectProductName(@Param("productId") int productId);
 
     List<CategoryDto> selectRootCategories();
     List<CategoryDto> selectChildrenByParentId(@Param("parentId") int parentId);

@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.*;
 import com.example.demo.service.InboundService;
+import com.example.demo.service.ProductService;
 import com.example.demo.service.RequestService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -30,14 +32,14 @@ public class inbound_conf_Controller {
 
     @GetMapping("/field_staff/bound_conf/detailList")
     @ResponseBody
-    public Object approvalDetailList(@RequestParam String bound_type,
-                                     @RequestParam int bound_id){
+    public Map<String,Object> approvalDetailList(@RequestParam String bound_type,
+                                  @RequestParam int bound_id){
         if("IN".equals(bound_type)){
-            List<Inbound_detailDto> list=requestService.inboundAppList(bound_id);
-            return list;
+            Map<String,Object> map=requestService.inboundAppList(bound_id);
+            return map;
         }else {
-            List<Outbound_detailDto> list=requestService.outboundAppList(bound_id);
-            return list;
+            Map<String,Object> map=requestService.outboundAppList(bound_id);
+            return map;
         }
     }
 
