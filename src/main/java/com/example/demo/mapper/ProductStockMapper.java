@@ -20,5 +20,10 @@ public interface ProductStockMapper {
             @Param("keyword")String keyword,
             @Param("status")String status
     );
+
+    void updateQuantity(
+            @Param("productId")Long productId,
+            @Param("quantity")int quantity
+    );
 }
 

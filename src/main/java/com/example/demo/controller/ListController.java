@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -16,6 +17,7 @@ import java.util.List;
 public class ListController {
     private final ProductStockService service;
     private final int pagesize=6; //한 페이지에 6개씩 보여줄 데이터 수
+    private final ProductStockService stockService;
 
     @GetMapping("/list")
     public String list(Model model,
@@ -44,5 +46,17 @@ public class ListController {
           });
             return "list";
         }
-    }
+        @PostMapping("/stock/update")
+        public String updateStockQuantity(
+                @RequestParam Long productId,
+                @RequestParam int quantity) {
+            if (productId != null ) {
+                stockService.updateQuantity(productId, quantity);
+            }
+                return "redirect:/list";
+            }
+        }
+
+
+
 

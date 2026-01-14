@@ -36,18 +36,20 @@
             p.status,
             p.category_id,
             c.category_path,
+            pi.file_path AS image_path,
+            pi.original_name,
             sum(s.quantity) as quantity<!--집계함수적용-->
         FROM product p
+        JOIN stock s ON p.product_id = s.product_id
+        LEFT JOIN product_image pi ON p.image_id = pi.image_id
         JOIN (
-        SELECT
+            SELECT
                 category_id,
                 LTRIM(SYS_CONNECT_BY_PATH(category_name, '>'), '>') AS category_path
             FROM category
             START WITH parent_id IS NULL
             CONNECT BY PRIOR category_id = parent_id
         ) c ON p.category_id = c.category_id
-        join stock s on p.product_id=s.product_id
-
         <where>
             <if test="keyword != null and keyword.trim() != ''">
                 p.product_name LIKE '%' || #{keyword} || '%'
@@ -64,21 +66,22 @@
             p.unit,
             p.status,
             p.category_id,
-            c.category_path
+            c.category_path,
+            pi.file_path,
+            pi.original_name
         order by p.product_id
-
         offset #{offset} rows fetch next #{pagesize} rows only
     </select>
     <select id="count" resultType="int">
         SELECT COUNT(*)
         FROM product p
         JOIN (
-        SELECT
-        category_id,
-        LTRIM(SYS_CONNECT_BY_PATH(category_name, '>'), '>') AS category_path
-        FROM category
-        START WITH parent_id IS NULL
-        CONNECT BY PRIOR category_id = parent_id
+            SELECT
+                category_id,
+                LTRIM(SYS_CONNECT_BY_PATH(category_name, '>'), '>') AS category_path
+            FROM category
+            START WITH parent_id IS NULL
+            CONNECT BY PRIOR category_id = parent_id
         ) c ON p.category_id = c.category_id
         <if test="keyword != null and keyword.trim() != ''">
             AND (p.product_name LIKE '%' || #{keyword} || '%'
@@ -88,6 +91,12 @@
             AND p.status = #{status}
         </if>
     </select>
+   <!-- 재고 수량 수정-->
+    <update id="updateQuantity">
+        UPDATE STOCK
+        SET quantity = #{quantity}
+        WHERE product_id = #{productId}
+    </update>
 
 </mapper>
 

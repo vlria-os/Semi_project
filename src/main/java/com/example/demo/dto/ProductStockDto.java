@@ -23,5 +23,6 @@ public class ProductStockDto {
     private String category_path;
     private String image_path;
     private Integer image_id;
+    private String original_name;
 
 }
