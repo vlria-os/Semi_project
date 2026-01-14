@@ -1,0 +1,172 @@
+
+.main {
+    background-color: #f8faff;
+    font-family: 'Inter', -apple-system, sans-serif;
+    color: #333;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.main > button {
+    background-color: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+    padding: 10px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-right: 8px;
+    transition: all 0.2s;
+    margin-bottom: 20px;
+}
+
+.main > button:hover {
+    background-color: #e2e8f0;
+    color: #334155;
+}
+
+#Table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #edf2f7;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+#Table th {
+    background-color: #f8fafc;
+    color: #64748b;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 12px;
+    letter-spacing: 0.05em;
+    padding: 16px;
+    text-align: left;
+    border-bottom: 2px solid #edf2f7;
+}
+
+#Table td {
+    padding: 16px;
+    border-bottom: 1px solid #edf2f7;
+    font-size: 14px;
+    color: #1e293b;
+}
+
+#Table tr:last-child td {
+    border-bottom: none;
+}
+
+.detailRow {
+    background-color: #fcfdfe;
+}
+
+.detailTable {
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.detailTable button {
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    margin: 2px;
+}
+
+.detailTable button[onclick*="approveItem"] {
+    background-color: #10b981;
+    color: white;
+}
+
+.detailTable button[onclick*="approveItem"]:hover {
+    background-color: #059669;
+}
+
+.detailTable button[onclick*="rejectItem"] {
+    background-color: #64748b;
+    color: white;
+}
+
+.detailTable button[onclick*="rejectItem"]:hover {
+    background-color: #475569;
+}
+
+.all-approve-btn {
+    background-color: #3b82f6 !important; /* Your signature blue */
+    color: white;
+    padding: 10px 20px !important;
+    font-size: 14px !important;
+}
+
+.detailTable th {
+    background-color: #f1f5f9 !important;
+    padding: 12px !important;
+    font-size: 11px !important;
+}
+
+button[onclick*="Detail"], button[onclick*="Approve"], button[onclick*="submit"] {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button[onclick*="reject"], button[onclick*="cancel"] {
+    background-color: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+    padding: 6px 12px;
+    border-radius: 6px;
+    margin-left: 5px;
+}
+
+button:hover { opacity: 0.9; }
+
+#pagingArea {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    gap: 8px;
+    margin-top: 30px;
+    padding: 0;
+}
+
+#pagingArea a {
+    text-decoration: none;
+    padding: 8px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: white;
+    color: #64748b;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+#pagingArea a:hover {
+    border-color: #3b82f6;
+    color: #3b82f6;
+    background-color: #eff6ff;
+}
+
+.rejectRow input[type="text"] {
+    padding: 8px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    margin-right: 10px;
+    width: 250px;
+}
