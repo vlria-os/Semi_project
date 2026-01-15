@@ -2,10 +2,19 @@
 <section xmlns:th="http://www.thymeleaf.org"
          th:fragment="content">
     <link rel="stylesheet" th:href="@{/css/content/productlist.css}">
-
+<div class="main">
     <h2>상품 목록</h2>
 
-    <table>
+    <div class="search-container">
+        <input type="text"
+               id="keyword"
+               placeholder="상품명 또는 카테고리명"
+               onkeydown="if(event.key === 'Enter'){ event.preventDefault(); search(); }">
+
+        <button type="button" onclick="search()">검색</button>
+        <a th:href="@{/content/product_insert}" class="btn-insert">상품등록</a>
+    </div>
+    <table id="Table">
         <thead>
         <tr>
             <th>상품번호</th>
@@ -33,19 +42,9 @@
         </tbody>
     </table>
 
-    <div>
-        <input type="text"
-               id="keyword"
-               placeholder="상품명 또는 카테고리명"
-               onkeydown="if(event.key === 'Enter'){ event.preventDefault(); search(); }">
-
-        <button type="button" onclick="search()">검색</button>
-    </div>
-
-    <a th:href="@{/content/product_insert}">상품등록</a>
 
     <div>
-        <ul>
+        <ul id="pagingArea" th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
             <li th:if="${pageInfo.startPageNum > 1}">
                 <a th:href="@{/content/productList(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
             </li>
@@ -57,6 +56,7 @@
             </li>
         </ul>
     </div>
+</div>
 
     <!-- 페이지 전용 스크립트 -->
     <script>
