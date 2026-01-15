@@ -40,13 +40,14 @@ public class ProductStockService {
 
     //전체 데이터 수 조회(페이징용)
     public int count(String keyword,String status){
-        Map<String,Object> map=new HashMap<>();
-        map.put("keyword",keyword);
-        map.put("status",status);
-        return stockMapper.count(map);
+            Map<String,Object> map=new HashMap<>();
+            map.put("keyword",keyword);
+            map.put("status",status);
+            return stockMapper.count(map);
         }
     public void updateQuantity(Long productId, int quantity){
-        stockMapper.updateQuantity(productId,quantity);
+        int stock_id=stockMapper.select_stock(productId);
+        stockMapper.updateQuantity(stock_id,quantity);
     }
 }
 

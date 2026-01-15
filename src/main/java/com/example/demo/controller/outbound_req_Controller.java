@@ -24,15 +24,12 @@ public class outbound_req_Controller {
     public String outbound_reqForm(@RequestParam(required = false)String keyword,
                                    @RequestParam(required = false)String status,
                                    Model model){
-//        List<ProductStockDto> p = service.selectAll(keyword, status);
-//        model.addAttribute("p", p);
-
         model.addAttribute("navFragment", "fragment/nav/officeNav");
         model.addAttribute("content", "content/outbound_req");
         return "layout";
     }
 
-    @PostMapping("/office_staff/outbound_req")
+    @PostMapping("/content/outbound_req")
     public String outbound_req(@ModelAttribute Outbound_reqListDto outbound_reqListDto,
                                HttpSession session,
                                Model model){

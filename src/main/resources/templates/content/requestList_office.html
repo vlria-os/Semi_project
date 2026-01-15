@@ -1,0 +1,40 @@
+<section xmlns:th="http://www.thymeleaf.org"
+         th:fragment="content">
+  <div class="main">
+    <button onclick="gomain()">전체</button> <button onclick="goinbound()">입고</button>
+    <button onclick="gooutbound()">출고</button>
+    <table>
+      <tr>
+        <th>입출고 번호</th><th>승인 상태</th><th>승인일</th>
+      </tr>
+      <tr th:each="l:${list}">
+        <td th:text="${l.inbound_id}"></td>
+        <td th:text="${l.approval_status}"></td>
+        <td th:text="${l.request_date}"></td>
+        <td><button type="button"
+             onclick="showInDetail(this)">상세보기</button></td>
+      </tr>
+    </table>
+    <div>
+      <ul id="pagingArea" th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
+        <li th:if="${pageInfo.startPageNum > 1}">
+          <a th:href="@{/content/requestList/office(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
+        </li>
+        <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
+          <a th:href="@{/content/requestList/office(pageNum=${num})}">[[${num}]]</a>
+        </li>
+        <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
+          <a th:href="@{/content/requestList/office(pageNum=${pageInfo.endPageNum + 1})}">다음</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    function showInDetail(btn){
+
+    }
+
+  </script>
+
+</section>

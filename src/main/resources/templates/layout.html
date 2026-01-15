@@ -55,6 +55,56 @@
         const open = panel.style.display === "block";
         panel.style.display = open ? "none" : "block";
     };
+
+    document.addEventListener("click",(e) => {
+        const btn = e.target.closest("#btnCheckIn");
+        const btn2 = e.target.closest("#btnCheckOut");
+
+        if(!btn) return;
+
+        const btnOut = document.getElementById("btnCheckOut"); // ✅ 여기!
+        const btnIn  = document.getElementById("btnCheckIn");
+
+        fetch('/work/checkIn')
+            .then(resp => resp.text())
+            .then(data => {
+                alert(data.trim() === "success" ? "출근 성공!" : "출근 실패!");
+
+                if (data.trim() === "success") {          // ✅ 성공일 때만 토글
+                    btnIn.style.display = "none";
+                    if (btnOut) btnOut.style.display = "inline-flex";
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                alert("요청 실패! 콘솔을 확인하세요!");
+            });
+    });
+
+    document.addEventListener("click",(e) => {
+        const btn=e.target.closest("#btnCheckOut");
+        const btn2=e.target.closest("#btnCheckIn");
+
+        if(!btn) return;
+
+        const btnOut = document.getElementById("btnCheckOut");
+        const btnIn  = document.getElementById("btnCheckIn");
+
+        fetch('/work/checkOut')
+            .then(resp => resp.text())
+            .then(data => {
+                alert(data.trim() === "success" ? "퇴근 성공!" : "퇴근 실패!");
+
+                if (data.trim() === "success") {
+                    btnOut.style.display = "none";
+                    if (btnIn) btnIn.style.display = "inline-flex";
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                alert("요청 실패! 콘솔을 확인하세요!");
+            });
+    })
 </script>
 
 </body>

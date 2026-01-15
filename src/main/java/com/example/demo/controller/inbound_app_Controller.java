@@ -84,8 +84,9 @@ public class inbound_app_Controller {
     @ResponseBody
     public Map<String,Object> inbound_app(int inbound_id,
                               Inbound_detailDto inbound_detailDto,
-                              String reason,
                               HttpSession session){
+
+        System.out.println(inbound_detailDto);
 
         int approver_id=(int)session.getAttribute("webuser_id");
         int n=inboundService.update_approval(inbound_id,inbound_detailDto,approver_id);
@@ -97,6 +98,29 @@ public class inbound_app_Controller {
         result.put("success", n>0);
         result.put("detailList", detailList); // 최신 상세 리스트 반환
         result.put("names",names);
+        return result;
+    }
+
+
+    @PostMapping("/admin/inbound_app/all")
+    @ResponseBody
+    public Map<String,Object> inbound_app_all(@RequestBody List<Inbound_detailDto> inbound_detailDtos,
+                                          HttpSession session){
+        int n=0;
+        int inbound_id=inbound_detailDtos.get(0).getInbound_id();
+        int approver_id=(int)session.getAttribute("webuser_id");
+
+        for(Inbound_detailDto i:inbound_detailDtos){
+            n+=inboundService.update_approval(inbound_id,i,approver_id);
+        }
+
+        Map<String,Object> result = new HashMap<>();
+        if(n>inbound_detailDtos.size()){
+            result.put("success", n);
+        }else{
+            result.put("success",-1);
+        }
+
         return result;
     }
 }

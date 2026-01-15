@@ -15,8 +15,10 @@ public interface ProductStockMapper {
     int count(Map<String,Object> map);
 
     void updateQuantity(
-            @Param("productId")Long productId,
+            @Param("stock_id")int stock_id,
             @Param("quantity")int quantity
     );
+
+    int select_stock(Long product_id);
 }
 

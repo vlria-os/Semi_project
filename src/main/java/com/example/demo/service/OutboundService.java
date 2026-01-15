@@ -46,10 +46,12 @@ public class OutboundService {
         }
     }
 
-    //@Transactional
+    @Transactional
     public int update_approval(int outbound_id,
                                Outbound_detailDto outbound_detailDto,
                                int approver_id){
+
+        System.out.println(outbound_detailDto);
 
         int product_id=outbound_detailMapper.select_product(outbound_detailDto.getOutbound_detail_id());
         outbound_detailDto.setQuantity(outbound_detailMapper.select_quantity(outbound_detailDto.getOutbound_detail_id()));
@@ -94,6 +96,7 @@ public class OutboundService {
             stockMapper.update_out(new StockDto(s.getStock_id(), s.getLot_in_id(), useQty, product_id));
             sum += useQty;
         }
+
         return 1;
     }
 
