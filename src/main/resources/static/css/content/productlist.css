@@ -1,0 +1,130 @@
+h2 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 25px;
+    padding-left: 5px;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    border: 1px solid #edf2f7;
+    margin-bottom: 30px;
+}
+
+thead {
+    background-color: #f1f5f9;
+}
+
+th {
+    padding: 16px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+td {
+    padding: 16px;
+    vertical-align: middle;
+    font-size: 15px;
+    color: #334155;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:hover td {
+    background-color: #f8fafc;
+}
+
+td img {
+    width: 60px !important;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.search-container {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+#keyword {
+    flex-grow: 1;
+    padding: 12px 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background-color: #fcfcfc;
+    font-size: 14px;
+}
+
+#keyword:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+button[onclick="search()"] {
+    background-color: #1e293b;
+    color: white;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+button[onclick="search()"]:hover {
+    background-color: #334155;
+}
+
+a[th\:href*="product_insert"],
+a[href*="product_insert"] {
+    display: inline-block;
+    background-color: #3b82f6;
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.pagination_wrap ul {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    list-style: none;
+    padding: 0;
+}
+
+.pagination_wrap a {
+    padding: 8px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: white;
+    color: #64748b;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.pagination_wrap a:hover {
+    background-color: #f1f5f9;
+    border-color: #cbd5e1;
+}
