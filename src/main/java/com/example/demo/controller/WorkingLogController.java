@@ -16,6 +16,36 @@ public class WorkingLogController {
     @ResponseBody
     public String checkIn(HttpSession session){
         int webuserId=(int)session.getAttribute("webuser_id");
-        return "";
+
+        if(session.getAttribute("webuser_id")==null){
+            return "failure";
+        }
+
+        int roleId=(int)session.getAttribute("role_id");
+        boolean checkIn=workingLogService.checkIn(webuserId,roleId);
+
+        if(checkIn){
+            return "success";
+        }else {
+            return "failure";
+        }
+    }
+
+    @GetMapping("/work/checkOut")
+    @ResponseBody
+    public String checkOut(HttpSession session){
+        int webuserId=(int)session.getAttribute("webuser_id");
+
+        if(session.getAttribute("webuser_id")==null){
+            return "failure";
+        }
+
+        boolean checkOut=workingLogService.checkOut(webuserId);
+
+        if(checkOut){
+            return "success";
+        }else {
+            return "failure";
+        }
     }
 }

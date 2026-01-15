@@ -5,7 +5,14 @@
 
 <mapper namespace="com.example.demo.mapper.WorkingLogMapper">
     <insert id="checkIn" parameterType="map">
-        insert into working_log values(working_log_seq.nextval,sysdate,#{webuserId},#{name},#{roleId},
-        #{checkInTime},null,null,'REQUEST',null,null)
+        insert into working_log
+        ( working_log_id, working_date, webuser_id, name, role_id, check_in_time,
+        check_out_time, attend_status, approval_status, approver_id, approval_date )
+        values(working_log_seq.nextval,trunc(sysdate),#{webuserId},#{name},#{roleId},
+        sysdate,null,null,'REQUEST',null,null)
     </insert>
+    <update id="checkOut">
+        update working_log set check_out_time=sysdate, attend_status='WORK'
+        where webuser_id = #{webuserId}
+    </update>
 </mapper>

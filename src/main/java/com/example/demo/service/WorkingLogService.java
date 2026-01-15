@@ -17,14 +17,16 @@ public class WorkingLogService {
     private final WorkingLogMapper workingLogMapper;
     private final WebuserMapper webuserMapper;
 
-    private boolean checkIn(int webuserId, int roleId){
-        LocalTime checkInTime=LocalTime.now();
+    public boolean checkIn(int webuserId, int roleId){
         WebuserDto dto=webuserMapper.selectWebuser(webuserId);
         Map<String,Object> map=new HashMap<>();
         map.put("webuserId",webuserId);
         map.put("name",dto.getWebuser_name());
         map.put("roleId",roleId);
-        map.put("checkInTime",checkInTime);
-        return workingLogMapper.checkIn(map) > 1;
+        return workingLogMapper.checkIn(map) > 0;
+    }
+
+    public boolean checkOut(int webuserId){
+        return workingLogMapper.checkOut(webuserId) > 0;
     }
 }
