@@ -46,7 +46,8 @@ public class ProductStockService {
             return stockMapper.count(map);
         }
     public void updateQuantity(Long productId, int quantity){
-        stockMapper.updateQuantity(productId,quantity);
+        int stock_id=stockMapper.select_stock(productId);
+        stockMapper.updateQuantity(stock_id,quantity);
     }
 }
 

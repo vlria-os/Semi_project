@@ -71,7 +71,7 @@ public class StockListController {
     public String updateStockQuantity(
             @RequestParam Long productId,
             @RequestParam int quantity) {
-        if (productId != null ) {
+        if (productId != null) {
             stockService.updateQuantity(productId, quantity);
         }
         return "redirect:/stockList";

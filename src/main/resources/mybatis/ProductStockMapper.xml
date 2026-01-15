@@ -101,12 +101,18 @@
         )
     </select>
    <!-- 재고 수량 수정-->
-    <update id="updateQuantity">
+    <update id="updateQuantity" >
         UPDATE STOCK
         SET quantity = #{quantity}
-        WHERE product_id = #{productId}
+        WHERE stock_id=#{stock_id}
     </update>
-
+    <select id="select_stock" parameterType="long" resultType="int">
+        select * from
+        (
+            select s.*, rownum from stock s where product_id=#{value} and <![CDATA[quantity <> 0]]>
+        )
+        where rownum=1
+    </select>
 </mapper>
 
 
