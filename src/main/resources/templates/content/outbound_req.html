@@ -1,52 +1,87 @@
 <section xmlns:th="http://www.thymeleaf.org"
          th:fragment="content">
 
-    <h1>재고확인목록</h1>
-    <form id="outboundForm" method="post" action="/office_staff/outbound_req">
-        <table>
-            <tr>
-                <th>선택</th>
-                <th>상품번호</th>
-                <th>상품명</th>
-                <th>재고수량</th>
-                <th>출고 요청 수량</th>
-            </tr>
+    <h1>출고 요청</h1>
 
-            <tr th:each="ps, stat : ${p}">
-                <td>
-                    <input type="checkbox"
-                           class="rowCheck"
-                           onchange="toggleQty(this)">
-                </td>
+    <div>
+        <form th:action="@{/stockList/req}" method="get">
+            <button type="submit">전체</button>
+            <button type="submit" name="status" value="COLD">냉장</button>
+            <button type="submit" name="status" value="ROOM">실온</button>
+            <button type="submit" name="status" value="FROZEN">냉동</button>
+        </form>
+    </div>
 
-                <td>
-                    [[${ps.product_id}]]
-                    <input type="hidden"
-                           class="productId"
-                           th:name="|outbound_reqDtos[${stat.index}].product_id|"
-                           th:value="${ps.product_id}"
-                           disabled>
-                </td>
+    <form id="outboundForm" method="post" action="/content/outbound_req">
+    <table>
+        <tr>
+            <th>선택</th>
+            <th>재고번호</th>
+            <th>재고이름</th>
+            <th>카테고리</th>
+            <th>가격</th>
+            <th>수량</th>
+            <th>단위</th>
+            <th>이미지</th>
+            <th>제품종류</th>
 
-                <td>[[${ps.product_name}]]</td>
+        </tr>
+        <tr th:each="ps, stat : ${p}" th:if="${ps != null}">
+            <td>
+                <input type="checkbox"
+                       class="rowCheck"
+                       onchange="toggleQty(this)">
+            </td>
 
-                <td class="stockQty">[[${ps.quantity}]]</td>
+            <td>
+                <span th:text="${ps.product_id}"></span>
+                <input type="hidden"
+                       class="productId"
+                       th:value="${ps.product_id}"
+                       disabled>
+            </td>
+            <td th:text="${ps.product_name}"></td>
+            <td th:text="${ps.category_path}"></td>
+            <td th:text="${ps.price}"></td>
+            <td th:text="${ps.quantity}" class="stockQty"></td>
+            <td th:text="${ps.unit}"></td>
+            <td>
+                <img th:src="@{'/image/' + ${ps.save_name}}" style="width:100px;">
+            </td>
 
-                <td>
-                    <input type="number"
-                           class="reqQty"
-                           th:name="|outbound_reqDtos[${stat.index}].quantity|"
-                           min="1"
-                           disabled>
+            <td th:text="${ps.status}"></td>
+            <td>
+                <input type="number"
+                       class="reqQty"
+                       th:name="|outbound_reqDtos[${stat.index}].quantity|"
+                       min="1"
+                       disabled>
 
-                </td>
-            </tr>
-        </table>
+            </td>
+        </tr>
+    </table>
+    <button type="button" onclick="submitOutbound()">출고 요청</button>
 
-        <button type="button" onclick="submitOutbound()">출고 요청</button>
     </form>
-
-
+    <div>
+        <form th:action="@{/stockList/req}" method="get">
+            <input type="text" placeholder="상품명 또는 카테고리" name="keyword">
+            <input type="submit" value="검색">
+        </form>
+    </div>
+    <div th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
+        <ul>
+            <li th:if="${pageInfo.startPageNum > 1}">
+                <a th:href="@{/stockList(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
+            </li>
+            <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
+                <a th:href="@{/stockList(pageNum=${num},status=${status},keyword=${keyword})}">[[${num}]]</a>
+            </li>
+            <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
+                <a th:href="@{/stockList(pageNum=${pageInfo.endPageNum + 1})}">다음</a>
+            </li>
+        </ul>
+    </div>
     <script>
         function toggleQty(checkbox){
             const tr = checkbox.closest('tr');
@@ -66,7 +101,7 @@
 
 
         function submitOutbound(){
-            const rows = document.querySelectorAll('tr');
+            const rows = document.querySelectorAll('#outboundForm table tr');
             let checkedRows = [];
 
             for(const tr of rows){
@@ -76,7 +111,6 @@
                 const productInput = tr.querySelector('.productId');
                 const qtyInput = tr.querySelector('.reqQty');
 
-                // ✅ 1단계: 일단 전부 name 제거
                 productInput.removeAttribute('name');
                 qtyInput.removeAttribute('name');
 
@@ -126,10 +160,6 @@
 
             document.getElementById('outboundForm').submit();
         }
-
-
-
-
 
     </script>
 </section>

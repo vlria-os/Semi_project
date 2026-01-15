@@ -7,10 +7,7 @@ import com.example.demo.service.RequestService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -28,6 +25,7 @@ public class outbound_app_Controller {
     }
 
     @PostMapping("/admin/outbound_app")
+    @ResponseBody
     public Map<String, Object> outbound_app(int outbound_id,
                                @ModelAttribute Outbound_detailDto outbound_detailDto,
                                HttpSession session){
@@ -43,11 +41,13 @@ public class outbound_app_Controller {
         result.put("success", n>0);
         result.put("detailList", detailList); // 최신 상세 리스트 반환
         result.put("names",names);
+
         return result;
     }
 
     @PostMapping("/admin/outbound_app/all")
-    public Map<String, Object> outbound_app_all( @RequestBody List<Outbound_detailDto> outbound_detailDtos,
+    @ResponseBody
+    public Map<String, Object> outbound_app_all(@RequestBody List<Outbound_detailDto> outbound_detailDtos,
                                             HttpSession session){
 
         int n=0;
@@ -64,7 +64,6 @@ public class outbound_app_Controller {
         }else{
             result.put("success",-1);
         }
-
         return result;
     }
 }

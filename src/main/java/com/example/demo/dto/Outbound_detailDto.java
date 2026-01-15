@@ -8,11 +8,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Outbound_detailDto {
-    private int outbound_detail_id;
-    private int outbound_id;
-    private int product_id;
+    private Integer outbound_detail_id;
+    private Integer outbound_id;
+    private Integer product_id;
     private String approval_status;
     private String reason;
     private String outbound_status;
-    private int quantity;
+    private Integer quantity;
 }

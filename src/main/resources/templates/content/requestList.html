@@ -542,7 +542,7 @@
                                 </tr>`;
 
                         list.forEach(item => {
-                            const d = item.outbound_detail_id;
+                            const d = item.inbound_detail_id;
                             const n = name[String(d)];
 
                             innerTable += `<tr data-detail-id="${item.inbound_detail_id}"
@@ -620,7 +620,7 @@
                             const d = item.outbound_detail_id;
                             const n = name[String(d)];
 
-                            innerTable += `<tr data-detail-id="${item.inbound_detail_id}"
+                            innerTable += `<tr data-detail-id="${item.outbound_detail_id}"
                                                 data-quantity="${item.quantity}>
                                     <td>${n}</td>
                                     <td>${item.quantity}</td>
@@ -739,7 +739,7 @@
                     location.reload();
                 });
         }else {
-            const inboundId = parentRow.children[1].innerText.trim();
+            const outboundId = parentRow.children[1].innerText.trim();
             const approveList = [];
 
             detailRow
@@ -748,14 +748,9 @@
                     const detailId = row.dataset.detailId;
                     const quantity = row.dataset.quantity;
 
-                    if (!detailId || !quantity) {
-                        console.error("누락된 데이터", row);
-                        return;
-                    }
-
                     approveList.push({
-                        inbound_id: inboundId,
-                        inbound_detail_id: Number(detailId),
+                        outbound_id: outboundId,
+                        outbound_detail_id: Number(detailId),
                         quantity: Number(quantity),
                         approval_status: "APPROVED"
                     });
@@ -818,7 +813,7 @@
                     } else {
                         alert("승인 실패");
                     }
-                    location.reload();
+
                 })
         }
     }
