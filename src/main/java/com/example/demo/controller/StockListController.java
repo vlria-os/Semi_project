@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor //@Autowired 대신 사용
@@ -19,9 +20,14 @@ public class StockListController {
     private final ProductStockService stockService;
 
     @GetMapping("/stockList")
-    public String list(Model model, HttpSession session) {
-        //4. Model에 담기
-        model.addAttribute("p",stockService.selectAll());
+    public String list(Model model, HttpSession session,
+                       @RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
+                       @RequestParam(value = "keyword", required = false) String keyword,
+                       @RequestParam(value = "status", required = false) String status) {
+        Map<String,Object> map=stockService.selectAll(pageNum, keyword, status);
+
+        model.addAttribute("p",map.get("list"));
+        model.addAttribute("pageInfo",map.get("pageInfo"));
         model.addAttribute("content", "content/stockList");
 
         if ((int) session.getAttribute("role_id") == 1) {

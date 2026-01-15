@@ -43,7 +43,7 @@
 
     <a th:href="@{/content/product_insert}">상품등록</a>
 
-    <div>
+    <div th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
         <ul>
             <li th:if="${pageInfo.startPageNum > 1}">
                 <a th:href="@{/content/productList(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
