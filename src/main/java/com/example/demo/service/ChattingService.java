@@ -18,7 +18,7 @@ import java.util.Map;
 public class ChattingService {
     private final ChattingMapper mapper;
     private final ChatPresenceStore store;
-    private static final int SYSTEM_USER_ID = 9999;
+    private static final int SYSTEM_USER_ID = 0;
 
     public boolean isParticipant(int roomId, int userId) {
         return mapper.isParticipant(roomId, userId) > 0;
