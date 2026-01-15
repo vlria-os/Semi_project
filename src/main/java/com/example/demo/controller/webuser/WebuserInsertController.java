@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -49,5 +50,12 @@ public class WebuserInsertController {
                     "계정 추가 실패!");
         }
         return "redirect:/webuser/list";
+    }
+
+    @PostMapping("/webuser/insert/excel")
+    @ResponseBody
+    public int webuserInsertExcel(@RequestParam("file") MultipartFile file){
+        int n=service.insertExcel(file);
+        return n;
     }
 }

@@ -3,6 +3,13 @@
     <div class="main">
         <div>
             <button onclick="insertWebuser()">계정 추가</button> <span id="span" style="color: red;font-size: 11px;"></span>
+            <!-- 숨긴 파일 input -->
+            <input type="file" id="fileInput" accept=".csv,.xlsx" style="display: none;">
+
+            <!-- 사용자에게 보여줄 버튼 -->
+            <button type="button" onclick="triggerFile()">엑셀로 추가하기</button>
+            <span id="span2" style="color: red;font-size: 11px;"></span>
+
         </div>
         <form th:action="@{/webuser/insert}" method="post" style="display: none;" id="insertForm">
             <table>
@@ -185,5 +192,40 @@
     if (status && msg) {
         alert(msg);
     }
+
+    function triggerFile() {
+        document.getElementById('fileInput').click(); // 파일 선택 창 열기
+    }
+
+    document.getElementById('fileInput').addEventListener('change', function() {
+        const file = this.files[0];
+        const span = document.getElementById('span2');
+
+        if (!file) {
+            span.textContent = "파일을 선택해주세요!";
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", file);
+
+        fetch("/webuser/insert/excel", {
+            method: "POST",
+            body: formData
+        })
+            .then(response => {
+                if (!response.ok) throw new Error("업로드 실패");
+                return response.json();
+            })
+            .then(data => {
+                span.style.color = "green";
+                span.textContent = `계정 ${data.length}개 등록 완료!`;
+            })
+            .catch(error => {
+                span.style.color = "red";
+                span.textContent = "업로드 중 오류 발생: " + error.message;
+            });
+    });
+
 </script>
 </section>

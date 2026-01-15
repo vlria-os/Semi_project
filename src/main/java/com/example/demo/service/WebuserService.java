@@ -3,9 +3,14 @@ package com.example.demo.service;
 import com.example.demo.dto.WebuserDto;
 import com.example.demo.mapper.WebuserMapper;
 import com.example.demo.pagination.PageInfo;
+import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +42,36 @@ public class WebuserService {
         result.put("pageInfo",pageInfo);
 
         return result;
+    }
+
+    public int insertExcel(MultipartFile file) {
+        int n=0;
+        try (CSVReader reader = new CSVReader(new InputStreamReader(file.getInputStream()))) {
+            String[] line;
+            boolean isFirstLine = true;
+
+            while ((line = reader.readNext()) != null) {
+                if (isFirstLine) { // 헤더 스킵
+                    isFirstLine = false;
+                    continue;
+                }
+
+                WebuserDto webuserDto = new WebuserDto(
+                        0, line[0], line[1], line[2], Integer.parseInt(line[3]), "Y", null
+                );
+
+                n+=mapper.insertWebuser(webuserDto);
+            }
+        }catch(IOException ie){
+            System.out.println(ie.getMessage());
+            n=-1;
+        }catch(CsvValidationException ce){
+            System.out.println(ce.getMessage());
+            n=-1;
+        }
+
+        return n;
+
     }
 
     public WebuserDto selectWebuser(int webuser_id){
