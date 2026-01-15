@@ -22,7 +22,7 @@
         <tr th:each="l : ${list}">
             <td th:text="${l.product_id}"></td>
             <td>
-                <img th:src="@{'/image/' + ${l.save_name}}" style="width:100px; border-radius:8px;">
+                <img th:src="@{'/image/' + ${l.save_name}}" style="width:100px;">
             </td>
             <td th:text="${l.product_name}"></td>
             <td th:text="${l.unit}"></td>
@@ -33,7 +33,7 @@
         </tbody>
     </table>
 
-    <div class="search-container">
+    <div>
         <input type="text"
                id="keyword"
                placeholder="상품명 또는 카테고리명"
@@ -44,7 +44,7 @@
 
     <a th:href="@{/content/product_insert}">상품등록</a>
 
-    <div class="pagination_wrap">
+    <div>
         <ul>
             <li th:if="${pageInfo.startPageNum > 1}">
                 <a th:href="@{/content/productList(pageNum=${pageInfo.startPageNum - 1})}">이전</a>

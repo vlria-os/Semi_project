@@ -23,7 +23,7 @@
             </tr>
         </table>
         <div>
-            <ul id="pagingArea">
+            <ul id="pagingArea" th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
                 <li th:if="${pageInfo.startPageNum > 1}">
                     <a th:href="@{/layout(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
                 </li>

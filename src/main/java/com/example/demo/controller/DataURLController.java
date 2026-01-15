@@ -18,34 +18,10 @@ public class DataURLController {
     //이미지가 있는 폴더 경로
     private String imageDir="c:/web/image_Semi/";//팀 공유 폴더가..
 
-    //Get 요청 처리,파일 이름 받음
     @GetMapping("/image/{save_name}")
-    public ResponseEntity<Resource> showImage(@PathVariable("save_name") String save_name)
+    public UrlResource showImage(@PathVariable("save_name") String save_name)
             throws MalformedURLException {
-        // 안전하게 경로 검사
-        if (save_name.contains("..")) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        Path filePath = Paths.get(imageDir + save_name);
-
-        // 파일 없으면 404
-        if (!Files.exists(filePath)) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Resource resource = new UrlResource(filePath.toUri());
-
-        // Content-Type 자동 설정
-        String contentType;
-        try {
-            contentType = Files.probeContentType(filePath);
-        } catch (Exception e) {
-            contentType = "application/octet-stream";
-        }
-
-        return ResponseEntity.ok()
-                .contentType(MediaType.parseMediaType(contentType))
-                .body(resource);
+        return new UrlResource("file:"+imageDir+save_name);
     }
+
 }

@@ -37,7 +37,7 @@
         <input type="submit" value="검색">
     </form>
     <form th:action="@{/approval/list/btn}" method="get" id="ajaxForm" style="display: none;"></form>
-    <div id="pagingArea">
+    <div id="pagingArea" th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
         <ul id="serverPaging">
             <li th:if="${pageInfo.startPageNum > 1}">
                 <a th:href="@{/approval/list(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
