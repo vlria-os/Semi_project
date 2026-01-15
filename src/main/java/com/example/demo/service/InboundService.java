@@ -53,17 +53,19 @@ public class InboundService {
     public int update_approval(int inbound_id,
                                Inbound_detailDto inbound_detailDto,
                                int approver_id){
-        System.out.println("서비스 진행중...");
 
         int warehouse_id=inbound_detailMapper.select_warehouse(inbound_detailDto.getInbound_detail_id());
+
+        if(inbound_detailDto.getApproval_status().equals("REJECTED")){
+            int b=inbound_detailMapper.update_appStatus_rej(inbound_detailDto.getInbound_detail_id());
+            int c=inbound_detailMapper.update_reason(inbound_detailDto);
+            int m=inboundMapper.update_status(inbound_id);
+            return 1;
+        }
 
         //창고 한계 수량 점검
         int stock=warehouseMapper.warehouse_stock(warehouse_id);
         int capacity=warehouseMapper.warehouse_capacity(warehouse_id);
-
-        System.out.println("stock="+stock);
-        System.out.println("capacity="+capacity);
-        System.out.println("quantity="+inbound_detailDto.getQuantity());
 
         if(stock+inbound_detailDto.getQuantity()>capacity){
             return -1;
@@ -80,10 +82,6 @@ public class InboundService {
             int a=approvalMapper.insert_inbound(approvalDto);
         }
 
-        if(inbound_detailDto.getApproval_status().equals("REJECTED")){
-            int b=inbound_detailMapper.update_inbStatus_rej(inbound_detailDto.getInbound_detail_id());
-            int c=inbound_detailMapper.update_reason(inbound_detailDto);
-        }
         return 1;
     }
 
