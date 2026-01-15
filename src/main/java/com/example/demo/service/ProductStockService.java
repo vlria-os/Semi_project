@@ -1,21 +1,53 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.ListDto;
+import com.example.demo.dto.ProductStatus;
 import com.example.demo.dto.ProductStockDto;
 import com.example.demo.mapper.ProductStockMapper;
+import com.example.demo.pagination.PageInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
 public class ProductStockService {
-    private final ProductStockMapper mapper;
+    private final ProductStockMapper stockMapper;
 
-    public List<ProductStockDto> selectAll(String keyword,String product_type) {
-        return mapper.selectAll(keyword,product_type);
+    //페이지별 데잍 가져오기
+    public Map<String,Object> selectAll(int pageNum,String keyword, String status) {
+        Map<String,Object> map=new HashMap<>();
+        map.put("keyword",keyword);
+        map.put("status",status);
+
+        int totalRowCount=stockMapper.count(map);
+
+        PageInfo pageInfo=new PageInfo(pageNum,10,5,totalRowCount);
+
+        map.put("startRow",pageInfo.getStartRow());
+        map.put("endRow",pageInfo.getEndRow());
+
+        List<ProductStockDto> list=stockMapper.selectAll(map);
+
+        Map<String,Object> result=new HashMap<>();
+        result.put("list",list);
+        result.put("pageInfo",pageInfo);
+
+        return result;
     }
 
+    //전체 데이터 수 조회(페이징용)
+    public int count(String keyword,String status){
+        Map<String,Object> map=new HashMap<>();
+        map.put("keyword",keyword);
+        map.put("status",status);
+        return stockMapper.count(map);
+        }
+    public void updateQuantity(Long productId, int quantity){
+        stockMapper.updateQuantity(productId,quantity);
+    }
 }
+
 

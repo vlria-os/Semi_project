@@ -92,4 +92,8 @@ public class ProductService {
         return productMapper.selectChildrenByParentId(parentId);
     }
 
+    public String getProductName(int productId){
+        return productMapper.selectProductName(productId);
+    }
+
 }

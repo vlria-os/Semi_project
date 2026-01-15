@@ -1,36 +1,70 @@
 <section xmlns:th="http://www.thymeleaf.org"
          th:fragment="content">
-
-<h1>재고확인목록</h1>
-<form th:action="@{/stockList}" th:method="get">
-    <input type="text" name="product_name" placeholder="상품명,카테고리">
-    <button type="submit" style="display:none;"></button>
-    <button type="submit" name="status" value="COLD">냉장</button>
-    <button type="submit" name="status" value="FROZEN">냉동</button>
-    <button type="submit" name="status" value="ROOM">상온</button>
-    <button type="submit">검색</button>
-</form>
-
+    <h1>재고확인목록</h1>
+    <div>
+        <form th:action="@{/stockList}" method="get">
+            <button type="submit">전체</button>
+            <button type="submit" name="status" value="COLD">냉장</button>
+            <button type="submit" name="status" value="ROOM">실온</button>
+            <button type="submit" name="status" value="FROZEN">냉동</button>
+        </form>
+    </div>
     <table>
         <tr>
-            <th>상품번호</th>
-            <th>이미지</th>
-            <th>상품명</th>
-            <th>가격</th>
-            <th>단위</th>
-            <th>재고수량</th>
-            <th>제품종류</th>
+            <th>재고번호</th>
+            <th>재고이름</th>
             <th>카테고리</th>
+            <th>가격</th>
+            <th>수량</th>
+            <th>단위</th>
+            <th>이미지</th>
+            <th>제품종류</th>
+
         </tr>
-        <tr th:each="ps : ${p}">
-            <td>[[${ps.product_id}]]</td>
-            <td>[[${ps.product_name}]]</td>
-            <td>[[${ps.image_id}]]</td>
-            <td>[[${ps.price}]]</td>
-            <td>[[${ps.unit}]]</td>
-            <td>[[${ps.quantity}]]</td>
-            <td>[[${ps.status}]]</td>
-            <td>[[${ps.category_path}]]</td>
+        <tr th:each="ps : ${p}" th:if="${ps != null}">
+
+            <td th:text="${ps.product_id}"></td>
+            <td th:text="${ps.product_name}"></td>
+            <td th:text="${ps.category_path}"></td>
+            <td th:text="${ps.price}"></td>
+
+            <!-- 수량 수정 폼 -->
+            <td>
+                <form th:action="@{/stock/update}" method="post" style="display:flex; justify-content:center; gap:4px;">
+                    <input type="number"
+                           name="quantity"
+                           th:value="${ps.quantity}"
+                           min="0"
+                           style="width:60px; text-align:center;">
+                    <button type="submit">수정</button>
+                </form>
+            </td>
+
+            <td th:text="${ps.unit}"></td>
+            <td>
+                <img th:src="@{'/image/' + ${ps.save_name}}" style="width:100px;">
+            </td>
+
+            <td th:text="${ps.status}"></td>
         </tr>
-</table>
+    </table>
+    <div>
+        <form th:action="@{/stockList}" method="get">
+            <input type="text" placeholder="상품명 또는 카테고리" name="keyword">
+            <input type="submit" value="검색">
+        </form>
+    </div>
+    <div th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
+        <ul>
+            <li th:if="${pageInfo.startPageNum > 1}">
+                <a th:href="@{/stockList(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
+            </li>
+            <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
+                <a th:href="@{/stockList(pageNum=${num},status=${status},keyword=${keyword})}">[[${num}]]</a>
+            </li>
+            <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
+                <a th:href="@{/stockList(pageNum=${pageInfo.endPageNum + 1})}">다음</a>
+            </li>
+        </ul>
+    </div>
 </section>

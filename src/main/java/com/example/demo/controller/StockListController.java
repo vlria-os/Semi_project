@@ -8,24 +8,26 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor //@Autowired 대신 사용
 public class StockListController {
-    private final ProductStockService service;
+    private final ProductStockService stockService;
 
     @GetMapping("/stockList")
-    public String list(
-            @RequestParam(required = false)String keyword,
-            @RequestParam(required = false)String status,
-            Model model,
-            HttpSession session) {
+    public String list(Model model, HttpSession session,
+                       @RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
+                       @RequestParam(value = "keyword", required = false) String keyword,
+                       @RequestParam(value = "status", required = false) String status) {
+        Map<String,Object> map=stockService.selectAll(pageNum, keyword, status);
 
-        List<ProductStockDto> p = service.selectAll(keyword, status);
-        model.addAttribute("p", p);
+        model.addAttribute("p",map.get("list"));
+        model.addAttribute("pageInfo",map.get("pageInfo"));
         model.addAttribute("content", "content/stockList");
 
         if ((int) session.getAttribute("role_id") == 1) {
@@ -39,5 +41,15 @@ public class StockListController {
             return "layout";
         }
         return "layout";
+    }
+
+    @PostMapping("/stock/update")
+    public String updateStockQuantity(
+            @RequestParam Long productId,
+            @RequestParam int quantity) {
+        if (productId != null ) {
+            stockService.updateQuantity(productId, quantity);
+        }
+        return "redirect:/list";
     }
 }

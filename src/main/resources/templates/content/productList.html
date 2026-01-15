@@ -1,6 +1,7 @@
 <!-- content/productList.html -->
 <section xmlns:th="http://www.thymeleaf.org"
          th:fragment="content">
+    <link rel="stylesheet" th:href="@{/css/content/productlist.css}">
 
     <h2>상품 목록</h2>
 
@@ -73,6 +74,7 @@
                         tbody.innerHTML += `
               <tr>
                 <td>${p.product_id}</td>
+                <td><img src="/image/${p.save_name}" style="width:100px; border-radius:8px;"></td>
                 <td>${p.product_name}</td>
                 <td>${p.unit}</td>
                 <td>${p.price}</td>

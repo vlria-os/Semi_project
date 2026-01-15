@@ -10,14 +10,19 @@ import lombok.NoArgsConstructor;
 public class ProductStockDto {
     private int product_id;
     private String product_name;
-    private Integer category_id;
     private Integer price;
     private String unit;
-    private Integer image_id;
+
     private String status;
-    private String category_name;
+
     private Long stock_id;
     private Long lot_in_id;
     private Integer quantity;
+    private Integer category_id;
+    private String category_name;
     private String category_path;
+    private String image_path;
+    private Integer image_id;
+    private String save_name;
+
 }
