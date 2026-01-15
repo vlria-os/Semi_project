@@ -17,4 +17,5 @@ public interface Inbound_detailMapper {
     int update_appStatus_conf(int inbound_detail_id);
     int update_reason(Inbound_detailDto inbound_detailDto);
     List<String> select_detail_status(int inbound_id);
+    int select_warehouse(int inbound_detail_id);
 }

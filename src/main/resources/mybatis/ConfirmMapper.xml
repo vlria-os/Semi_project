@@ -26,6 +26,7 @@
             GROUP BY inbound_id
             ) s
         ON i.inbound_id = s.inbound_id
+        where inbound_status='CONFIRMED' or inbound_status='REJECTED'
     </select>
     <select id="select_confirm_detailIn" parameterType="int" resultType="ConfirmInDetailDto">
         SELECT

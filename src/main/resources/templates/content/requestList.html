@@ -1,5 +1,6 @@
 <section xmlns:th="http://www.thymeleaf.org"
          th:fragment="content">
+    <link rel="stylesheet" th:href="@{/css/content/requestlist.css}">
     <div class="main">
         <button onclick="gomain()">전체</button> <button onclick="goinbound()">입고</button>
         <button onclick="gooutbound()">출고</button>
@@ -206,7 +207,9 @@
                     const d=l.inbound_detail_id;
                     const n=name[String(d)];
 
-                    innerTable += `<tr data-detail-id="${l.inbound_detail_id}" data-inbound-id="${l.inbound_id}">
+                    innerTable += `<tr data-detail-id="${l.inbound_detail_id}"
+                                      data-inbound-id="${l.inbound_id}"
+                                      data-quantity="${l.quantity}">
                                     <td>${n}</td>
                                     <td>${l.quantity}</td>
                                     <td>${l.approval_status}</td>
@@ -214,15 +217,21 @@
                                         <button type="button" onclick="approveItem(this)">승인</button>
                                         <button type="button" onclick="rejectItem(this)">반려</button>
                                     </td>
-                                </tr>
-                                <tr>
+                                </tr>`;
+                                /*<tr>
                                     <th colspan="4"><button data-inbound-id="${l.outbound_id}"
                                             onclick="allApprove(this)">전체 수락</button></th>
-                                </tr>
-                                `;
+                                </tr>*/ <!-- 이거 옮겼습니다 (✨프론트 노예가)-->
                 });
 
-                innerTable += `</table>`;
+
+                innerTable += `
+                                <tr class="detail-footer">
+                                    <td colspan="4" style="text-align: right; padding: 15px;">
+                                        <button type="button" class="all-approve-btn" data-io-id="${bound_id}" onclick="allApprove(this)">✨ 전체 수락</button>
+                                    </td>
+                                </tr>
+                                </table>`; <!-- 여기로 -->
                 td.innerHTML = innerTable;
                 detailRow.appendChild(td);
                 currentTr.insertAdjacentElement("afterend", detailRow);
@@ -266,7 +275,9 @@
                     const d=l.outbound_detail_id;
                     const n=name[String(d)];
 
-                    innerTable += `<tr data-detail-id="${l.outbound_detail_id}" data-inbound-id="${l.outbound_id}">
+                    innerTable += `<tr data-detail-id="${l.outbound_detail_id}"
+                                        data-inbound-id="${l.outbound_id}"
+                                        data-quantity="${l.quantity}">
                                     <td>${n}</td>
                                     <td>${l.quantity}</td>
                                     <td>${l.approval_status}</td>
@@ -274,15 +285,21 @@
                                         <button type="button" onclick="approveItem(this)">승인</button>
                                         <button type="button" onclick="rejectItem(this)">반려</button>
                                     </td>
-                                </tr>
-                                <tr>
+                                </tr>`;
+                                /*<tr>
                                     <th colspan="4"><button data-inbound-id="${l.outbound_id}"
                                             onclick="allApprove(this)">전체 수락</button></th>
-                                </tr>
-                                `;
+                                </tr>*/ <!--이것도 옯겼습니다-->
+
                 });
 
-                innerTable += `</table>`;
+                innerTable += `
+                                <tr class="detail-footer">
+                                    <td colspan="4" style="text-align: right; padding: 15px;">
+                                        <button type="button" class="all-approve-btn" data-io-id="${bound_id}" onclick="allApprove(this)">✨ 전체 수락</button>
+                                    </td>
+                                </tr>
+                                </table>`; <!--여기로 background: #f8fafc; style="background-color: #10b981;"-->
                 td.innerHTML = innerTable;
                 detailRow.appendChild(td);
                 currentTr.insertAdjacentElement("afterend", detailRow);
@@ -298,6 +315,7 @@
 
         if (ioType === "IN") {
             const detailId = tr.dataset.detailId;
+            const quantity = tr.dataset.quantity;
             const inboundId = tr.closest("tr.detailRow").previousElementSibling.children[1].innerText.trim(); // 상위 inbound ID
 
             if (!confirm("이 항목을 승인하시겠습니까?")) return;
@@ -305,7 +323,8 @@
             // form-urlencoded 형식으로 보내기
             const params = new URLSearchParams();
             params.append("inbound_id", inboundId);
-            params.append("inbound_detail_id", detailId); // DTO 필드 이름과 맞춰야 함
+            params.append("inbound_detail_id", detailId);
+            params.append("quantity", quantity); // DTO 필드 이름과 맞춰야 함
             params.append("approval_status", "APPROVED"); // DTO 필드 이름과 맞춰야 함
 
             fetch(`/admin/inbound_app`, {
@@ -624,8 +643,18 @@
             rejectRow.remove();
     }
 
-    function allApprove(btn){
+    function allApprove(){
+        if (!confirm("정말 전체 승인하시겠습니까?")) return;
 
+        fetch('/inbound/approve/all', {
+            method: 'POST'
+        })
+            .then(res => {
+                if (!res.ok) throw new Error();
+                alert("전체 승인 완료");
+                location.reload();
+            })
+            .catch(() => alert("전체 승인 실패"));
     }
 
 </script>

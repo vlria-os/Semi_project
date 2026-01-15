@@ -78,4 +78,7 @@
     <select id="select_detail_status" parameterType="int" resultType="String">
         select inbound_status from inbound_detail where inbound_id=#{value}
     </select>
+    <select id="select_warehouse" parameterType="int" resultType="int">
+        select warehouse_id from inbound_detail where inbound_detail_id=#{value}
+    </select>
 </mapper>

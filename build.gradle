@@ -38,6 +38,7 @@ dependencies {
     testImplementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter-test:4.0.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
+    implementation 'com.opencsv:opencsv:5.7.1'
     implementation 'com.alibaba:easyexcel:3.3.3'
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 }
