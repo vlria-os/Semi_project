@@ -6,26 +6,26 @@
     <select id="selectAll" resultType="ProductStockDto">
         select * from
         (
-        select rownum rn, m.* from
-        (
-        select
-        p.product_id as product_id, p.product_name as product_name,
-        p.price as price,NVL(s.quantity,0) as quantity,
-        p.unit as unit, i.file_path as image_path,i.save_name as save_name,
-        c.category_path as category_path,
-        p.status as status
-        from product p
-        left join stock s
-        on p.product_id = s.product_id
-        left join product_image i
-        on p.image_id=i.image_id
-        left join
-        (
-        select category_id,
-        ltrim(sys_connect_by_path(category_name,'>'),'>') as category_path
-        from category
-        start with parent_id is null
-        connect by prior category_id = parent_id) c
+            select rownum rn, m.* from
+            (
+                select
+                p.product_id as product_id, p.product_name as product_name,
+                p.price as price,NVL(s.quantity,0) as quantity,
+                p.unit as unit, i.file_path as image_path,i.save_name as save_name,
+                c.category_path as category_path,
+                p.status as status
+            from product p
+            left join stock s
+            on p.product_id = s.product_id
+            left join product_image i
+            on p.image_id=i.image_id
+            left join
+            (
+                select category_id,
+                ltrim(sys_connect_by_path(category_name,'>'),'>') as category_path
+                    from category
+                    start with parent_id is null
+                    connect by prior category_id = parent_id) c
         on p.category_id = c.category_id
         <where>
             <if test="keyword != null and keyword != ''">

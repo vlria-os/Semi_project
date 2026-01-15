@@ -138,14 +138,13 @@
         select * from
         (select rownum rn,m.* from
         (select * from inbound where webuser_id=#{webuser_id}
-        and approval_status = 'REQUEST'
         order by inbound_id desc) m)
         <![CDATA[where rn>=#{startRow} and rn<=#{endRow}]]>
     </select>
 
     <!-- 직원 입고 요청 페이징용 입고 요청 건수 -->
     <select id="userInboundCount" parameterType="int" resultType="int">
-        select NVL(count(*),0) from inbound where webuser_id=#{webuser_id} and approval_status = 'REQUEST'
+        select NVL(count(*),0) from inbound where webuser_id=#{webuser_id}
     </select>
 
     <!-- 관리자용 출고 요청 내역 -->
