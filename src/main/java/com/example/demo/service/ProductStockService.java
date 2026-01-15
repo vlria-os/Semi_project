@@ -14,8 +14,8 @@ public class ProductStockService {
     private final ProductStockMapper stockMapper;
 
     //페이지별 데잍 가져오기
-    public List<ProductStockDto> selectAll(String keyword,String status,int offset,int pagesize) {
-        return mapper.selectAll(keyword,status,offset,pagesize);
+    public List<ProductStockDto> selectAll() {
+        return mapper.selectAll();
     }
 
     //전체 데이터 수 조회(페이징용)

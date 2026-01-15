@@ -48,7 +48,7 @@
                     rows += `
     <tr class="detailItem"
       data-bound-detail-id="${bound_type == 'IN' ? l.inbound_detail_id : l.outbound_detail_id}" data-bound-type="${bound_type}">
-      <td>${name}</td>
+      <td data-product-id="${l.product_id}">${name}</td>
       <td class="originQty">${l.quantity}</td>
       <td>${bound_type == 'IN' ? l.inbound_status : l.outbound_status}</td>
       <td>
@@ -77,7 +77,7 @@
       <tr class="detailItem"
           data-bound-detail-id="${l.outbound_detail_id}"
           data-bound-type="OUT">
-        <td>${name}</td>
+        <td data-product-id="${l.product_id}">${name}</td>
         <td>${l.quantity}</td>
         <td>${l.outbound_status}</td>
         <td>—</td>
@@ -218,7 +218,7 @@
         form.action = '/field_staff/outbound_conf_app';
 
         form.appendChild(hidden('outbound_detail_id', boundDetailId));
-        form.appendChild(hidden('product_id', detailTr.children[0].innerText));
+        form.appendChild(hidden('product_id', detailTr.children[0].dataset.productId));
         form.appendChild(hidden('quantity', detailTr.children[1].innerText));
 
         document.body.appendChild(form);
@@ -251,7 +251,7 @@
         form.appendChild(hidden(`lot_inDtos[${idx}].expiration_date`, expireDate));
         form.appendChild(hidden(`lot_inDtos[${idx}].quantity`, qty));
         form.appendChild(hidden(`lot_inDtos[${idx}].product_id`,
-                detailTr.children[0].innerText));
+                detailTr.children[0].dataset.productId));
 
         // 🔥 핵심: IN/OUT 공통 상세 ID + 타입
         const isIn = boundType === 'IN'; // 너가 쓰는 값에 맞춰
@@ -305,7 +305,7 @@
 
       // 🔥 핵심: List 바인딩 가능하게
       form.appendChild(hidden('product_id',
-              detailTr.children[0].innerText));
+              detailTr.children[0].dataset.productId));
 
       if(boundType === 'IN'){
         form.action = '/field_staff/inbound_conf_rej';

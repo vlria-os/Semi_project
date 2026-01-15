@@ -9,12 +9,7 @@ import java.util.List;
 @Mapper
 public interface ProductStockMapper {
 
-    List<ProductStockDto> selectAll(
-            @Param("keyword")String keyword,
-            @Param("status")String status,
-            @Param("offset") int offset,
-            @Param("pagesize") int pagesize
-            );
+    List<ProductStockDto> selectAll();
 
     int count(
             @Param("keyword")String keyword,
