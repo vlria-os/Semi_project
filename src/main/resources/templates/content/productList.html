@@ -1,6 +1,7 @@
 <!-- content/productList.html -->
 <section xmlns:th="http://www.thymeleaf.org"
          th:fragment="content">
+    <link rel="stylesheet" th:href="@{/css/content/productlist.css}">
 
     <h2>상품 목록</h2>
 
@@ -21,7 +22,7 @@
         <tr th:each="l : ${list}">
             <td th:text="${l.product_id}"></td>
             <td>
-                <img th:src="@{'/image/' + ${l.save_name}}" style="width:100px;">
+                <img th:src="@{'/image/' + ${l.save_name}}" style="width:100px; border-radius:8px;">
             </td>
             <td th:text="${l.product_name}"></td>
             <td th:text="${l.unit}"></td>
@@ -32,7 +33,7 @@
         </tbody>
     </table>
 
-    <div>
+    <div class="search-container">
         <input type="text"
                id="keyword"
                placeholder="상품명 또는 카테고리명"
@@ -43,7 +44,7 @@
 
     <a th:href="@{/content/product_insert}">상품등록</a>
 
-    <div>
+    <div class="pagination_wrap">
         <ul>
             <li th:if="${pageInfo.startPageNum > 1}">
                 <a th:href="@{/content/productList(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
@@ -73,6 +74,7 @@
                         tbody.innerHTML += `
               <tr>
                 <td>${p.product_id}</td>
+                <td><img src="/image/${p.save_name}" style="width:100px; border-radius:8px;"></td>
                 <td>${p.product_name}</td>
                 <td>${p.unit}</td>
                 <td>${p.price}</td>
