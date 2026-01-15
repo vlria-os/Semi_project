@@ -3,6 +3,7 @@ body {
     font-family: 'Inter', -apple-system, sans-serif;
     color: #333;
     margin: 0;
+    padding: 40px;
 }
 
 .container {
