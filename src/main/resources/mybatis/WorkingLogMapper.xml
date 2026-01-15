@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.WorkingLogMapper">
+    <insert id="checkIn" parameterType="map">
+        insert into working_log values(working_log_seq.nextval,sysdate,#{webuserId},#{name},#{roleId},
+        #{checkInTime},null,null,'REQUEST',null,null)
+    </insert>
+</mapper>

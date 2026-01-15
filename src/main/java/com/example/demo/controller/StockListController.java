@@ -74,6 +74,6 @@ public class StockListController {
         if (productId != null ) {
             stockService.updateQuantity(productId, quantity);
         }
-        return "redirect:/list";
+        return "redirect:/stockList";
     }
 }

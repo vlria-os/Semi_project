@@ -36,6 +36,7 @@
                            th:value="${ps.quantity}"
                            min="0"
                            style="width:60px; text-align:center;">
+                    <input type="text" name="productId" th:value="${ps.product_id}" hidden>
                     <button type="submit">수정</button>
                 </form>
             </td>
