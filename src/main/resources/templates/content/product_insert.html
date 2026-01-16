@@ -13,17 +13,14 @@
                 <input type="text" th:field="*{product_name}" placeholder="상품 이름을 입력하세요">
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="category-area">
                 <label>카테고리</label>
-                <select id="parentCategory">
+                <select id="parentCategory" class="category-select" data-level="1">
                     <option value="">대분류 선택</option>
                     <option th:each="c : ${rootCategory}" th:value="${c.category_id}" th:text="${c.category_name}"></option>
                 </select>
 
-                <div id="childBox" style="display: none;">
-                    <label>하위 카태고리</label>
-                    <select id="childCategory" name="category_id"></select>
-                </div>
+                <input type="hidden" name="category_id" id="finalCategoryId" th:field="*{category_id}">
             </div>
 
             <div class="form-group">
@@ -87,48 +84,90 @@
     </div>
 </section>
 <script>
-    const parentCategory=document.getElementById("parentCategory");
-    const childCategory=document.getElementById("childCategory");
+    const categoryArea=document.getElementById("category-area");
+    const finalInput=document.getElementById("finalCategoryId");
 
-    parentCategory.addEventListener("change",function (){
-        const parentId=parentCategory.value;
+    categoryArea.addEventListener("change", function(e) {
+        if(e.target.classList.contains('category-select')){
+            const parentId=e.target.value;
+            const currentLevel=parseInt(e.target.getAttribute('data-level'));
+            const allSelects=categoryArea.querySelectorAll(".category-select");
 
-
-        // 대분류 선택 안 했으면 하위 숨기고 초기화
-        if (!parentId) {
-            childBox.style.display = "none";
-            childCategory.innerHTML = `<option>대분류를 먼저 선택하세요.</option>`;
-            return;
-        }
-
-        document.getElementById("childBox").style.display="block";
-
-        fetch(`/content/product_category?parentId=${parentId}`)
-            .then(resp=>resp.json())
-            .then(data => {
-
-                childCategory.innerHTML = "";
-
-                const opt=document.createElement('option');
-                opt.value="";
-                opt.textContent="하위 카테고리 선택";
-                childCategory.appendChild(opt)
-
-                data.forEach(c => {
-                    const opt=document.createElement("option");
-                    opt.value = `${c.category_id}`;
-                    opt.textContent = `${c.category_name}`;
-                    childCategory.appendChild(opt);
-                })
-
-                // 하위가 하나도 없을 때
-                if (data.length === 0) {
-                    childCategory.innerHTML = `<option value="">하위 카테고리가 없습니다.</option>`;
+            allSelects.forEach(select => {
+                if(parseInt(select.getAttribute('data-level')) > currentLevel) {
+                    select.remove();
                 }
-            })
-            .catch(err => {
-                console.error(err);
-                childCategory.innerHTML = `<option value="">불러오기 실패</option>`;
             });
-    })
+            finalInput.value= parentId;
+
+            if(!parentId) return;
+
+            fetch(`/content/product_category?parentId=${parentId}`)
+                .then(resp => resp.json())
+                .then(data => {
+                    if(data && data.length > 0){
+                        const nextLevel= currentLevel +1;
+                        const newSelect= document.createElement('select');
+
+                        newSelect.className= 'category-select';
+                        newSelect.setAttribute('data-level', nextLevel);
+                        newSelect.style.marginTop= "10px";
+                        newSelect.innerHTML=`<option value=">하위 카테고리 선택</option>"`;
+
+                        data.forEach(c => {
+                            const opt= document.createElement("option");
+                            opt.value= c.category_id;
+                            opt.textContent= c.category_name;
+                            newSelect.appendChild(opt);
+                        });
+                        categoryArea.appendChild(newSelect);
+                    }
+                })
+            .catch(error => console.error("Error fetching SubCategories: ", error));
+        }
+    });
+
+    // const parentCategory=document.getElementById("parentCategory");
+    // const childCategory=document.getElementById("childCategory");
+    //
+    // parentCategory.addEventListener("change",function (){
+    //     const parentId=parentCategory.value;
+    //
+    //     // 대분류 선택 안 했으면 하위 숨기고 초기화
+    //     if (!parentId) {
+    //         childBox.style.display = "none";
+    //         childCategory.innerHTML = `<option>대분류를 먼저 선택하세요.</option>`;
+    //         return;
+    //     }
+    //
+    //     document.getElementById("childBox").style.display="block";
+    //
+    //     fetch(`/content/product_category?parentId=${parentId}`)
+    //         .then(resp=>resp.json())
+    //         .then(data => {
+    //
+    //             childCategory.innerHTML = "";
+    //
+    //             const opt=document.createElement('option');
+    //             opt.value="";
+    //             opt.textContent="하위 카테고리 선택";
+    //             childCategory.appendChild(opt)
+    //
+    //             data.forEach(c => {
+    //                 const opt=document.createElement("option");
+    //                 opt.value = `${c.category_id}`;
+    //                 opt.textContent = `${c.category_name}`;
+    //                 childCategory.appendChild(opt);
+    //             })
+    //
+    //             // 하위가 하나도 없을 때
+    //             if (data.length === 0) {
+    //                 childCategory.innerHTML = `<option value="">하위 카테고리가 없습니다.</option>`;
+    //             }
+    //         })
+    //         .catch(err => {
+    //             console.error(err);
+    //             childCategory.innerHTML = `<option value="">불러오기 실패</option>`;
+    //         });
+    // })
 </script>
