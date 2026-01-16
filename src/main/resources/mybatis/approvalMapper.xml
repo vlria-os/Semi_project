@@ -26,7 +26,6 @@
             approval_id,
             approver_id,
             bound_type,
-            inbound_id,
             outbound_id,
             approval_status,
             created_at
@@ -34,7 +33,6 @@
             approval_seq.nextval,
             #{approver_id},
             'OUT',
-            null,
             #{outbound_id},
             #{approval_status},
             sysdate

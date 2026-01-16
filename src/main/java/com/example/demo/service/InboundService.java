@@ -93,6 +93,8 @@ public class InboundService {
 
         for (Lot_inDto l : lot_inDtos){
             l.setConfirmer_id(confirmer_id);
+            l.setWarehouse_id(inbound_detailMapper.select_warehouse(l.getInbound_detail_id()));
+
             if(status.equals("REJECTED")){
                 int m=inbound_detailMapper.update_inbStatus_rej(l.getInbound_detail_id());
                 Inbound_detailDto inbound_detailDto=new Inbound_detailDto();

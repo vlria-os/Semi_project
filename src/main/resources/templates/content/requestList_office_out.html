@@ -5,34 +5,34 @@
     <button><a th:href="@{/content/requestList_out/office}">출고</a></button>
     <table>
       <tr>
-        <th>입출고 번호</th><th>승인 상태</th><th>승인일</th>
+        <th>출고 번호</th><th>승인 상태</th><th>승인일</th>
       </tr>
       <tr th:each="l:${list}">
-        <td th:text="${l.inbound_id}"></td>
+        <td th:text="${l.outbound_id}"></td>
         <td th:text="${l.approval_status}"></td>
         <td th:text="${l.request_date}"></td>
         <td><button type="button"
-                    th:attr="data-in-id=${l.inbound_id}"
-             onclick="showInDetail(this)">상세보기</button></td>
+                    th:attr="data-out-id=${l.outbound_id}"
+                    onclick="showOutDetail(this)">상세보기</button></td>
       </tr>
     </table>
     <div>
       <ul id="pagingArea" th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
         <li th:if="${pageInfo.startPageNum > 1}">
-          <a th:href="@{/content/requestList/office(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
+          <a th:href="@{/content/requestList_out/office(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
         </li>
         <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
-          <a th:href="@{/content/requestList/office(pageNum=${num})}">[[${num}]]</a>
+          <a th:href="@{/content/requestList_out/office(pageNum=${num})}">[[${num}]]</a>
         </li>
         <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
-          <a th:href="@{/content/requestList/office(pageNum=${pageInfo.endPageNum + 1})}">다음</a>
+          <a th:href="@{/content/requestList_out/office(pageNum=${pageInfo.endPageNum + 1})}">다음</a>
         </li>
       </ul>
     </div>
   </div>
 
   <script>
-    function showInDetail(btn){
+    function showOutDetail(btn){
       const currentTr = btn.closest("tr");
       const colCount = currentTr.children.length;
 
@@ -43,9 +43,9 @@
         return;
       }
 
-      const bound_id = btn.dataset.inId;
+      const bound_id = btn.dataset.outId;
 
-      fetch(`/content/requestList/office/in?inbound_id=${bound_id}`)
+      fetch(`/content/requestList_out/office/out?outbound_id=${bound_id}`)
               .then(resp => resp.json())
               .then(list => {
                 console.log(list);
@@ -61,7 +61,6 @@
                           <tr>
                               <th>요청자</th>
                               <th>상품명</th>
-                              <th>창고명</th>
                               <th>수량</th>
                               <th>요청 상태</th>
                               <th>입고 상태</th>
@@ -70,18 +69,17 @@
 
                 list.forEach(l => {
                   const showReasonBtn =
-                          (l.approval_status === 'REJECTED' || l.inbound_status === 'REJECTED')
+                          (l.approval_status === 'REJECTED' || l.outbound_status === 'REJECTED')
                                   ? `<button type="button" onclick="showReason(this)">사유</button>`
                                   : ``;
 
-                  innerTable += `<tr data-detail-id="${l.inbound_detail_id}",
+                  innerTable += `<tr data-detail-id="${l.outbound_detail_id}",
                                      data-reason="${l.reason ?? ''}">
                     <td>${l.webuser_id}</td>
                     <td>${l.product_name}</td>
-                    <td>${l.warehouse_name}</td>
                     <td>${l.quantity}</td>
                     <td>${l.approval_status}</td>
-                    <td>${l.inbound_status}</td>
+                    <td>${l.outbound_status}</td>
                     <td>${showReasonBtn}</td>
                  </tr>`;
                 });
