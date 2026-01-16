@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>API</title>
+</head>
+<body>
+<h1>전북특별자치도 고창군 축산특산물</h1>
+<button onclick="loadLocalProducts()">불러오기</button>
+<div id="result"></div>
+<script>
+    function loadLocalProducts(){
+        fetch('/test')
+            .then(resp => resp.text())
+            .then(xmlText => {
+                const xml = new DOMParser().parseFromString(xmlText, "text/xml");
+                const items = xml.getElementsByTagName("item");
+
+                let html = "";
+                for (const item of items) {
+                    const property = item.getElementsByTagName("PROPERTY")[0]?.textContent || "";
+                    const name = item.getElementsByTagName("NAME")[0]?.textContent || "";
+                    html += `<p><b>${name}</b></p>
+                             <p>${property}</p>
+                            `;
+                }
+                document.getElementById("result").innerHTML = html;
+            })
+            .catch(console.error);
+    }
+</script>
+
+</body>
+</html>
