@@ -1,0 +1,108 @@
+<section xmlns:th="http://thymeleaf.org" th:fragment="content">
+
+  <link rel="stylesheet" th:href="@{/css/content/productinsert.css}">
+  <div class="main">
+    <h2>상품 수정</h2>
+    <form th:action="@{/content/product_update}" method="post" enctype="multipart/form-data" th:object="${productDto}">
+      <input type="hidden" th:field="*{product_id}">
+
+      <div class="form-group">
+        <label>상품명</label>
+        <input type="text" th:field="*{product_name}" required>
+      </div>
+
+      <div class="form-group">
+        <label>카테고리 변경</label>
+        <select id="parentCategory">
+          <option value="">대분류 선택</option>
+          <option th:each="c : ${rootCategory}" th:value="${c.category_id}" th:text="${c.category_name}"></option>
+        </select>
+      </div>
+
+      <div id="childBox" style="display: block; margin-top: 10px;">
+        <label>하위 카테고리 (현재 분류: [[${productDto.category}]])</label>
+        <select id="childCategory" name="category_id">
+          <option th:value="*{category_id}" th:text="*{category}"></option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>가격</label>
+        <input type="number" th:field="*{price}" required>
+      </div>
+
+      <div class="form-group">
+        <label>단위</label>
+        <input type="text" th:field="*{unit}">
+      </div>
+
+      <div class="form-group">
+        <label>보관 분류</label>
+        <select th:field="*{status}">
+          <option value="ROOM">실온</option>
+          <option value="COLD">냉장</option>
+          <option value="FROZEN">냉동</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>현제 이미지</label>
+        <img th:src="@{'/image/' + *{save_name}}" style="width: 120px; display: block; margin-bottom: 10px; border-radius: 8px;">
+        <label>이미지 변경 (선택)</label>
+        <input type="file" th:field="*{file}">
+      </div>
+
+      <div style="dispaly: flex; gap: 10px; margin-top: 30px;" class="button-area">
+        <button type="submit" style="flex: 2;" class="btn-submit">수정 완료</button>
+
+        <button type="button" onclick="deleteProduct()" style="flex: 1; background-color: #ef4444; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+          삭제
+        </button>
+        <form id="deleteForm" th:action="@{/content/product_delete}" method="post" style="display: none;">
+          <input type="hidden" name="product_id" th:value="${productDto.product_id}">
+        </form>
+
+        <a th:href="@{/content/productList}" style="flex: 1; text-align: center; background: #64748b; color: white; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: 600;">뒤로가기</a>
+      </div>
+    </form>
+  </div>
+
+  <script th:inline="javascript">
+    const parentCategory=document.getElementById("parentCategory");
+    const childCategory=document.getElementById("childCategory");
+    const childBox=document.getElementById("childBox");
+
+    function deleteProduct(){
+      if(confirm("정말로 이 상품을 삭제하시겠습니가?")){
+        document.getElementById("deleteForm").submit();
+      }
+    }
+
+    function loadChildCategory(parentId, selectedChildId= null){
+      if(!parentId){
+        childBox.style.display= "none";
+        return;
+      }
+
+      fetch(`/content/product_category?parentId=${parentId}`)
+              .then(resp => resp.json())
+              .then(data => {
+                childBox.style.display= "block";
+                childCategory.innerHTML= `<option value="">하위 카테고리 선택</option>`;
+
+                data.forEach(c => {
+                  const opt= document.createElement("option");
+                  opt.value= c.category_id;
+                  opt.textContent= c.category_name;
+                  if(selectedChildId && c.category_id == selectedChildId){
+                    opt.selected= true;
+                  }
+                  childCategory.appendChild(opt);
+                });
+              });
+    }
+    parentCategory.addEventListener("change", function(){
+      loadChildCategory(this.value);
+    });
+  </script>
+</section>
