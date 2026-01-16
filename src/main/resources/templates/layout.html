@@ -104,7 +104,32 @@
                 console.error(error);
                 alert("요청 실패! 콘솔을 확인하세요!");
             });
-    })
+    });
+
+    async function refreshTotalUnread(){
+        try{
+            const res = await fetch("/chat/unread/total");
+            const total = await res.json();
+
+            const badge = document.getElementById("chatUnreadBadge");
+            if (!badge) return;
+
+            if (total > 0){
+                badge.textContent = total > 99 ? "99+" : total;
+                badge.style.display = "flex";
+            } else {
+                badge.style.display = "none";
+            }
+        } catch(e){
+            console.error(e);
+        }
+    }
+
+    // 페이지 로드시 1번
+    refreshTotalUnread();
+
+    setInterval(refreshTotalUnread, 500);
+
 </script>
 
 </body>

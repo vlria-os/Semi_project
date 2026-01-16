@@ -263,6 +263,10 @@ public class ChattingService {
     public List<WebuserDto> getRoomMembers(int roomId){
         return mapper.selectRoomMembers(roomId);
     }
+
+    public int getTotalUnread(int userId){
+        return mapper.selectTotalUnread(userId);
+    }
 }
 
 

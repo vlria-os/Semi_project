@@ -12,7 +12,7 @@ import java.util.Map;
 
 @Mapper
 public interface ChattingMapper {
-    List<ChatRoomDto> chatRoomAll(int user_id);
+
     int isParticipant(@Param("roomId") int roomId,
                       @Param("userId") int userId);
 
@@ -24,7 +24,7 @@ public interface ChattingMapper {
     );
 
     int sendMessage(ChatMessageDto dto);
-    ChatMessageDto selectReadCount(int room_id);
+
     List<ChatRoomDto> chatRoomListSummary(int user_id);
 
     ChatListUpdateDto selectChatRoomSummary(
@@ -67,8 +67,6 @@ public interface ChattingMapper {
 
     List<Integer> selectRoomUserIds(@Param("roomId") int roomId);
 
-    int updateLastReadForOnlineUsers(Map<String,Object> map);
-
     String selectDisplayRoomName(@Param("roomId") int roomId,
                                  @Param("userId") int userId);
 
@@ -84,5 +82,5 @@ public interface ChattingMapper {
 
     List<WebuserDto> selectRoomMembers(@Param("roomId") int roomId);
 
-
+    int selectTotalUnread(int userId);
 }
