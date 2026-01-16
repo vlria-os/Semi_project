@@ -11,6 +11,7 @@
         insert into lot_in(
             lot_in_id,
             inbound_detail_id,
+            confirmer_id,
             warehouse_id,
             expiration_date,
             received_date,
@@ -18,6 +19,7 @@
         ) values(
             #{lot_in_id},
             #{inbound_detail_id},
+            #{confirmer_id},
             #{warehouse_id},
             #{expiration_date},
             sysdate,

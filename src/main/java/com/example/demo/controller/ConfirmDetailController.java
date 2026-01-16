@@ -1,9 +1,7 @@
-package com.example.demo.controller.webuser;
+package com.example.demo.controller;
 
 import com.example.demo.dto.ConfirmInDetailDto;
 import com.example.demo.dto.ConfirmOutDetailDto;
-import com.example.demo.dto.ConfirmOutboundDto;
-import com.example.demo.mapper.ConfirmMapper;
 import com.example.demo.service.ConfirmListService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

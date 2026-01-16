@@ -164,9 +164,10 @@
         })
             .then(res => res.json())
             .then(result => {
-                alert('요청 완료');
-                console.log(result);
-                // 1. 선택 데이터 초기화
+                if(result){
+                    alert('요청 완료');
+                }
+
                 Object.keys(selectedMap).forEach(id => delete selectedMap[id]);
 
                 // 2. 체크박스, 창고, 수량 초기화

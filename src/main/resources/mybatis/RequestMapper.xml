@@ -130,7 +130,7 @@
 
     <!-- 관리자용 입고 요청 페이징용 입고 요청 건수 -->
     <select id="adminInboundCount" resultType="int">
-        select NVL(count(*),0) from inbound where approval_status = 'REQUEST'
+        select NVL(count(*),0) from inbound
     </select>
 
     <!-- 직원용 입고 요청 내역 -->
@@ -141,6 +141,7 @@
         order by inbound_id desc) m)
         <![CDATA[where rn>=#{startRow} and rn<=#{endRow}]]>
     </select>
+
 
     <!-- 직원 입고 요청 페이징용 입고 요청 건수 -->
     <select id="userInboundCount" parameterType="int" resultType="int">
@@ -159,21 +160,21 @@
 
     <!-- 관리자용 출고 요청 페이징용 출고 요청 건수 -->
     <select id="adminOutboundCount" resultType="int">
-        select NVL(count(*),0) from outbound where approval_status = 'REQUEST'
+        select NVL(count(*),0) from outbound
     </select>
 
     <!-- 직원용 출고 요청 내역 -->
     <select id="selectOutbound" parameterType="map" resultType="OutboundDto">
         select * from
         (select rownum rn,m.* from
-        (select * from outbound where approval_status = 'REQUEST' and webuser_id=#{webuser_id}
+        (select * from outbound where webuser_id=#{webuser_id}
         order by outbound_id desc) m)
         <![CDATA[where rn>=#{startRow} and rn<=#{endRow}]]>
     </select>
 
     <!-- 직원 출고 요청 페이징용 출고 요청 건수 -->
     <select id="userOutboundCount" parameterType="int" resultType="int">
-        select NVL(count(*),0) from outbound where approval_status = 'REQUEST' webuser_id=#{webuser_id}
+        select NVL(count(*),0) from outbound
     </select>
 
     <!-- ===============================
@@ -393,6 +394,21 @@
         select product_name
         from product
         where product_id = #{productId}
+    </select>
+    <select id="selectDetailInOffice" parameterType="int" resultType="InboundDetail_OfficeDto">
+        select i.webuser_id, d.inbound_detail_id, p.product_name, w.warehouse_name, d.approval_status, d.inbound_status, d.reason, d.quantity
+        from inbound_detail d
+        join product p on d.product_id=p.product_id
+        join warehouse w on d.warehouse_id=w.warehouse_id
+        join inbound i on i.inbound_id=d.inbound_id
+        where d.inbound_id=#{value}
+    </select>
+    <select id="selectDetailOutOffice" parameterType="int" resultType="OutboundDetail_OfficeDto">
+        select o.webuser_id, d.outbound_detail_id, p.product_name, d.approval_status, d.outbound_status, d.reason, d.quantity
+        from outbound_detail d
+        join product p on d.product_id=p.product_id
+        join outbound o on o.outbound_id=d.outbound_id
+        where d.outbound_id=#{value}
     </select>
 
 </mapper>

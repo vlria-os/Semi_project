@@ -144,5 +144,10 @@ public interface RequestMapper {
 
 
     List<Inbound_detailDto> inboundAppList(int inbound_id);
+
     List<Outbound_detailDto> outboundAppList(int outbound_id);
+
+    List<InboundDetail_OfficeDto> selectDetailInOffice(int inbound_id);
+
+    List<OutboundDetail_OfficeDto> selectDetailOutOffice(int outbound_id);
 }

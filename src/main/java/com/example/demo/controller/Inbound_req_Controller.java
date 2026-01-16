@@ -38,9 +38,13 @@ public class Inbound_req_Controller {
     public Map<String, Object> inbound_req(@RequestBody List<Inbound_reqDto> list,
                               HttpSession session){
         int webuser_id = (int) session.getAttribute("webuser_id");
-        inboundService.insert_request(list, webuser_id);
+        int n=inboundService.insert_request(list, webuser_id);
 
-        return Map.of("status", "success");
+        System.out.println("======>"+n);
+        if(n>0){
+            return Map.of("success", true);
+        }
+        return Map.of("success", false);
     }
 
     @GetMapping("/office_staff/inbound_req/warehouse")
