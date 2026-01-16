@@ -7,30 +7,51 @@
 </head>
 
 <body>
-<!-- HEADER -->
-<header th:replace="~{fragment/header :: header}"></header>
+
+<header class="header">
+    <div class="header-left">
+        <a th:href="@{/}" class="logo"><strong>HanSolWarehouse</strong></a>
+        <nav class="header-nav" th:replace="~{${navFragment}}"/>
+    </div>
+
+    <div class="header-right" th:replace="~{fragment/header :: .header-right}"></div>
+</header>
 
 <div class="layout-container">
-    <!-- SIDEBAR (고정 UI) -->
-    <aside class="sidebar"
-           th:replace="~{fragment/sidebar :: sidebar}">
-    </aside>
-
     <div class="layout-body">
-        <!-- NAV (권한별로 교체됨) -->
-        <nav class="nav"
-             th:replace="~{${navFragment}}">
-        </nav>
-
-        <!-- MAIN CONTENT -->
         <main class="content">
-            <section th:replace="~{${content}}"></section>
+            <section th:replace="~{${content}}"/>
         </main>
     </div>
+    <aside class="sidebar" th:replace="~{fragment/sidebar :: sidebar}"/>
 </div>
 
+<footer th:replace="~{fragment/footer :: footer}"/>
+
+<!-- HEADER -->
+<!--<header th:replace="~{fragment/header :: header}"></header>-->
+
+<!--<div class="layout-container">-->
+    <!-- SIDEBAR (고정 UI) -->
+<!--    <aside class="sidebar"-->
+<!--           th:replace="~{fragment/sidebar :: sidebar}">-->
+<!--    </aside>-->
+
+<!--    <div class="layout-body">-->
+<!--        &lt;!&ndash; NAV (권한별로 교체됨) &ndash;&gt;-->
+<!--        <nav class="nav"-->
+<!--             th:replace="~{${navFragment}}">-->
+<!--        </nav>-->
+
+<!--        &lt;!&ndash; MAIN CONTENT &ndash;&gt;-->
+<!--        <main class="content">-->
+<!--            <section th:replace="~{${content}}"></section>-->
+<!--        </main>-->
+<!--    </div>-->
+<!--</div>-->
+
 <!-- FOOTER -->
-<footer th:replace="~{fragment/footer :: footer}"></footer>
+<!--<footer th:replace="~{fragment/footer :: footer}"></footer>-->
 
 <!-- ✅ CHAT PANEL (공통) -->
 <div id="chatPanel" class="chat-panel" style="display:none;">
@@ -104,7 +125,17 @@
                 console.error(error);
                 alert("요청 실패! 콘솔을 확인하세요!");
             });
-    })
+    });
+
+    document.addEventListener("DOMContentLoaded", function(){
+        const navLinks=document.querySelectorAll(".nav-tabs a");
+        navLinks.forEach(link => {
+            link.addEventListener("click", function(){
+                navLinks.forEach(l => l.classList.remove("active"));
+                this.classList.add("active");
+            });
+        });
+    });
 </script>
 
 </body>
