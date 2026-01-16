@@ -101,10 +101,26 @@
         )
     </select>
    <!-- 재고 수량 수정-->
-    <update id="updateQuantity" >
-        UPDATE STOCK
-        SET quantity = #{quantity}
-        WHERE stock_id=#{stock_id}
+    <select id="stockQuantityList" resultType="StockQuantityDto">
+        select
+        s.stock_id as stockId,
+        l.lot_in_id as lotInId,
+        p.product_name as productName,
+        s.quantity as quantity,
+        l.expiration_date as expirationDate
+        from stock s
+        join product p
+        on p.product_id=s.product_id
+        join lot_in l
+        on l.lot_in_id = s.lot_in_id
+        where p.product_id = #{productId}
+        order by expiration_date asc
+    </select>
+    <update id="updateQuantity">
+        update stock
+        set quantity = #{quantity}
+        where stock_id = #{stockId}
+        and lot_in_id = #{lotInId}
     </update>
     <select id="select_stock" parameterType="long" resultType="int">
         select * from
