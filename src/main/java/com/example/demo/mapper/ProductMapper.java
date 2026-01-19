@@ -27,4 +27,7 @@ public interface ProductMapper {
 
     List<CategoryDto> selectRootCategories();
     List<CategoryDto> selectChildrenByParentId(@Param("parentId") int parentId);
+
+    int insert_category(CategoryDto categoryDto);
+    int insert_firstcategory(CategoryDto categoryDto);
 }

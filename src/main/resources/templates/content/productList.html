@@ -5,7 +5,10 @@
 <div class="main">
     <div class="header-area">
         <h2>상품 목록</h2>
-        <a th:href="@{/content/product_insert}" class="btn-insert">상품등록</a>
+        <div th:class="btn" style="display: flex; gap: 5px;">
+            <a th:href="@{/content/product_insert}" class="btn-insert">상품등록</a>
+            <a th:href="@{/content/category_insert}" class="btn-insert">카테고리등록</a>
+        </div>
     </div>
 
     <div class="filter-container">

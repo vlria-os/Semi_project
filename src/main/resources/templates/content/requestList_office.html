@@ -7,13 +7,12 @@
       <tr>
         <th>입출고 번호</th><th>승인 상태</th><th>승인일</th>
       </tr>
-      <tr th:each="l:${list}">
+      <tr th:each="l:${list}"
+          th:attr="data-in-id=${l.inbound_id}"
+          onclick="showInDetail(this)">
         <td th:text="${l.inbound_id}"></td>
         <td th:text="${l.approval_status}"></td>
         <td th:text="${l.request_date}"></td>
-        <td><button type="button"
-                    th:attr="data-in-id=${l.inbound_id}"
-             onclick="showInDetail(this)">상세보기</button></td>
       </tr>
     </table>
     <div>

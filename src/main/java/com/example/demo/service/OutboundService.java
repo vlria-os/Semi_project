@@ -68,7 +68,6 @@ public class OutboundService {
         }
 
         if(outbound_detailDto.getApproval_status().equals("REJECTED")){
-            int b=outbound_detailMapper.update_outStatus_rej(outbound_detailDto.getOutbound_detail_id());
             int c=outbound_detailMapper.update_reason(outbound_detailDto);
         }
 

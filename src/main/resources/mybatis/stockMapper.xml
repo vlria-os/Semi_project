@@ -36,6 +36,6 @@
         from inbound_detail i
         join lot_in l on i.inbound_detail_id=l.inbound_detail_id
         join stock s on l.lot_in_id=s.lot_in_id
-        where <![CDATA[s.quantity <> 0]]> and TRUNC(l.expiration_date)=TRUNC(sysdate)
+        where <![CDATA[s.quantity <> 0]]> and TRUNC(l.expiration_date)<![CDATA[<=TRUNC(sysdate)]]>
     </select>
 </mapper>

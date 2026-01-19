@@ -78,6 +78,7 @@
             ON d.outbound_id = o.outbound_id
         JOIN lot_out l
             ON l.outbound_detail_id = d.outbound_detail_id
+        WHERE s.outbound_status = 'CONFIRMED'
         GROUP BY
             o.outbound_id,
             o.request_date,

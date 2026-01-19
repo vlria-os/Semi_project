@@ -32,10 +32,4 @@ public class RefundController {
 
         return result;
     }
-
-//    @PostMapping("/office_staff/inout_list")
-//    public String refund(RefundDto refundDto){
-//        ref_ExpService.insert_refund(refundDto);
-//        return "/office_staff/inout_list";
-//    }
 }
