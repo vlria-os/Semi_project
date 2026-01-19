@@ -20,14 +20,13 @@ public class Ref_ExpService {
     private final Lot_inMapper lot_inMapper;
     private final StockMapper stockMapper;
 
-    //@Transactional
-    @Scheduled(cron = "0 0 0 * * *")
+    @Transactional
+    @Scheduled(cron = "0 20 10 * * *")
     public void insert_expiration(){
         List<Select_outboundDto> select_outboundDtos=stockMapper.select_expiration();
 
         OutboundDto outboundDto=new OutboundDto(0,0,null,"APPROVED");
         outboundMapper.insert_exp(outboundDto);
-        System.out.println(select_outboundDtos);
 
         for(Select_outboundDto s:select_outboundDtos){
             Outbound_detailDto outbound_detailDto=new Outbound_detailDto(0,outboundDto.getOutbound_id(), s.getProduct_id(),"APPROVED",null,"REQUEST",s.getQuantity());

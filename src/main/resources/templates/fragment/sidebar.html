@@ -1,8 +1,46 @@
 
 <aside th:fragment="sidebar" class="sidebar">
-    <ul>
-        <li><a th:href="@{/}">유통기한 임박 상품 목록</a></li>
-        <li><a th:href="@{/}">창고 재적 한계 목록</a></li>
-    </ul>
+    <!-- sidebar -->
+    <div class="sidebar" th:fragment="sidebarContent">
+        <!--유통기한 임박-->
+        <div class="expiration-notif">
+            <div class="side-title">
+                <span class="alert-icon">⚠️</span>
+                <a th:href="@{/fragment/sidebar/dueDate}">유통기한 임박 관리</a>
+            </div>
+            <!-- 유통기한 임박 목록(10게(CSS))-->
+            <div class="side-content">
+                <ul th:if="${not #lists.isEmpty(dueList)}">
+                    <li th:each="item : ${dueList}">
+                        <span th:text="${item.product_name}"></span>
+                        <span style="color: #ef4444; font-weight: bold;" th:text="'D-' + ${item.days_left}"></span>
+                    </li>
+                </ul>
+                <div class="no-data" th:if="${#lists.isEmpty(dueList)}">
+                    <p>임박한 상품이 없습니다.</p>
+                </div>
+            </div>
+        </div>
+
+        <!--재고 한계 임박-->
+        <div class="storage-limit">
+            <div class="side-title">
+                <span class="storage-icon">🏗️</span>
+                <a th:href="@{/warehouse/list}">창고 관리</a>
+            </div>
+            <!-- 재고 한계 임박 목록(10게(CSS))-->
+            <div class="side-content">
+                <ul th:if="${not #lists.isEmpty(limitList)}">
+                    <li th:each="w : ${limitList}">
+                        <span th:text="${w.warehouse_name}"></span>
+                        <span th:text="${w.usage_rate} + '%'"></span>
+                    </li>
+                </ul>
+                <div class="no-data" th:if="${#lists.isEmpty(limitList)}">
+                    <p>창고 정보가 없습니다.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </aside>
 
