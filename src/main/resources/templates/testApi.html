@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>API</title>
+</head>
+<body>
+<h1>전북특별자치도 특산물</h1>
+<div id="result"></div>
+<h1>전라남도 해남군 특산물</h1>
+<div id="result2"></div>
+<script>
+    function loadJeonbuk(){
+        fetch('/jeonbuk')
+            .then(resp => resp.json())
+            .then(json => {
+                const data=json.data || [];
+                let html = "";
+
+                data.forEach(item => {
+                    html +=`
+                            <p><b>${item["식재료"]}</b></p>
+                            <p>${item["특성"]}</p>
+                            <p>${item["문의"]}</p>
+                          `;
+                })
+
+                document.getElementById("result").innerHTML = html;
+            })
+            .catch(console.error);
+    }
+
+    loadJeonbuk();
+
+    function loadHaenam(){
+        fetch(`/haenam`)
+            .then(resp => resp.json())
+            .then(json => {
+                const result=document.getElementById("result2");
+                let html="";
+
+                const data=json.data || [];
+
+                data.forEach(item => {
+                    html +=`
+                            <p><b>${item["특산물명"]}</b></p>
+                            <p>${item["연락처"]}</p>
+                            <p>${item["홈페이지"]}</p>
+                          `;
+                });
+                result.innerHTML=html;
+            })
+            .catch(console.error);
+    }
+
+    loadHaenam();
+</script>
+
+</body>
+</html>

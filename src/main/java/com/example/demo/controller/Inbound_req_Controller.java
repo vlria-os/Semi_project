@@ -1,9 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.Inbound_reqDto;
-import com.example.demo.dto.Inbound_reqListDto;
-import com.example.demo.dto.ProductDto;
-import com.example.demo.dto.WarehouseDto;
+import com.example.demo.dto.*;
 import com.example.demo.service.InboundService;
 import com.example.demo.service.ProductService;
 import com.example.demo.service.WarehouseService;
@@ -27,7 +24,7 @@ public class Inbound_req_Controller {
 
     @GetMapping("/office_staff/inbound_req")
     public String inbound_reqForm(@RequestParam(name = "pageNum", defaultValue = "1") int pageNum, Model model){
-        Map<String,Object> map=productService.productList(pageNum);
+        Map<String,Object> map=productService.productList(pageNum, new SearchDto());
 
         model.addAttribute("list", map.get("productDtos"));
         model.addAttribute("pageInfo",map.get("pageInfo"));
@@ -41,9 +38,13 @@ public class Inbound_req_Controller {
     public Map<String, Object> inbound_req(@RequestBody List<Inbound_reqDto> list,
                               HttpSession session){
         int webuser_id = (int) session.getAttribute("webuser_id");
-        inboundService.insert_request(list, webuser_id);
+        int n=inboundService.insert_request(list, webuser_id);
 
-        return Map.of("status", "success");
+        System.out.println("======>"+n);
+        if(n>0){
+            return Map.of("success", true);
+        }
+        return Map.of("success", false);
     }
 
     @GetMapping("/office_staff/inbound_req/warehouse")

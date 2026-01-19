@@ -153,6 +153,14 @@ public class RequestService {
         return result;
     }
 
+    public List<InboundDetail_OfficeDto> requestInbound_detail_office(int inbound_id){
+        return mapper.selectDetailInOffice(inbound_id);
+    }
+
+    public List<OutboundDetail_OfficeDto> requestOutbound_detail_office(int outbound_id){
+        return mapper.selectDetailOutOffice(outbound_id);
+    }
+
     // 관리자 로그인 - 출고 요청 페이징용 요청 건수
     public int adminOutboundCount(){
         return mapper.adminOutboundCount();

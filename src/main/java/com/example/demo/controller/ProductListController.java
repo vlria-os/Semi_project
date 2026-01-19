@@ -3,6 +3,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.CategoryDto;
 import com.example.demo.dto.ProductDto;
 import com.example.demo.dto.Product_imageDto;
+import com.example.demo.dto.SearchDto;
 import com.example.demo.service.ProductService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -29,50 +30,91 @@ public class ProductListController {
     @GetMapping("/content/productList")
     public String productList(Model model,
                               @RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
-                              HttpSession session) {
-        Map<String, Object> map = productService.productList(pageNum);
+                              HttpSession session,
+                              SearchDto searchDto,
+                              @RequestParam(name = "isAjax", defaultValue = "false") boolean isAjax) {
+        Map<String, Object> map = productService.productList(pageNum, searchDto);
 
         model.addAttribute("list", map.get("productDtos"));
         model.addAttribute("pageInfo", map.get("pageInfo"));
-        if ((int) session.getAttribute("role_id") == 1) {
-            model.addAttribute("navFragment", "fragment/nav/adminNav");
-            model.addAttribute("content", "content/productList");
-        } else if ((int) session.getAttribute("role_id") == 2) {
-            model.addAttribute("navFragment", "fragment/nav/officeNav");
-            model.addAttribute("content", "content/productList");
-        } else if ((int) session.getAttribute("role_id") == 3) {
-            model.addAttribute("navFragment", "fragment/nav/fieldNav");
-            model.addAttribute("content", "content/productList");
-        }
+        model.addAttribute("searchDto", searchDto);
+
+        if(isAjax){ return "content/productList :: #listContainer";}
+
+        Integer roleId = (Integer) session.getAttribute("role_id");
+        String nav= switch (roleId != null ? roleId : 1){
+            case 2 -> "officeNav";
+            case 3 -> "fieldNav";
+            default -> "adminNav";
+        };
+
+        model.addAttribute("navFragment", "fragment/nav/" + nav);
+        model.addAttribute("content", "content/productList");
 
         return "layout";
     }
 
-    @GetMapping("/common/product_list")
-    public String inbound_reqForm(@RequestParam(name = "pageNum", defaultValue = "1") int pageNum, Model model) {
-        Map<String, Object> map = productService.productList(pageNum);
-        model.addAttribute("list", map.get("productDtos"));
-        model.addAttribute("pageInfo", map.get("pageInfo"));
-        return "common/product_list";
+    @GetMapping("/content/product_update")
+    public String productUpdateForm(@RequestParam("product_id") int productId, Model model){
+        ProductDto productDto= productService.getProductById(productId);
+        List<CategoryDto> rootCategory= productService.getRootCategories();
+
+        model.addAttribute("productDto", productDto);
+        model.addAttribute("rootCategory", rootCategory);
+        model.addAttribute("navFragment", "fragment/nav/adminNav");
+        model.addAttribute("content", "content/product_update");
+        return "layout";
     }
 
-    @PostMapping("/common/product_list")
-    public String product_search(String keyword,
-                                 @RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
-                                 Model model) {
-        Map<String, Object> map = productService.productList(pageNum, keyword);
-        model.addAttribute("list", map.get("productDtos"));
-        model.addAttribute("keyword", keyword);
-        return "common/product_list";
+    @PostMapping("/content/productUpdate")
+    public String productUpdate(ProductDto productDto){
+        productService.updateProduct(productDto);
+        return "redirect:/content/productList";
     }
 
-    @GetMapping("/common/product_search")
-    @ResponseBody
-    public Map<String, Object> productSearch(@RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
-                                             @RequestParam String keyword) {
-        Map<String, Object> map = productService.productList(pageNum, keyword);
-        return map;
+    @PostMapping("/content/product_delete")
+    public String productDelete(@RequestParam("product_id") int productId){
+        productService.deleteProduct(productId);
+        return "redirect:/content/productList";
     }
+
+//        if ((int) session.getAttribute("role_id") == 1) {
+//            model.addAttribute("navFragment", "fragment/nav/adminNav");
+//            model.addAttribute("content", "content/productList");
+//        } else if ((int) session.getAttribute("role_id") == 2) {
+//            model.addAttribute("navFragment", "fragment/nav/officeNav");
+//            model.addAttribute("content", "content/productList");
+//        } else if ((int) session.getAttribute("role_id") == 3) {
+//            model.addAttribute("navFragment", "fragment/nav/fieldNav");
+//            model.addAttribute("content", "content/productList");
+//        }
+
+
+//    @GetMapping("/common/product_list")
+//    public String inbound_reqForm(@RequestParam(name = "pageNum", defaultValue = "1") int pageNum, Model model) {
+//        Map<String, Object> map = productService.productList(pageNum);
+//        model.addAttribute("list", map.get("productDtos"));
+//        model.addAttribute("pageInfo", map.get("pageInfo"));
+//        return "common/product_list";
+//    }
+
+//    @PostMapping("/common/product_list")
+//    public String product_search(String keyword,
+//                                 @RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
+//                                 Model model) {
+//        Map<String, Object> map = productService.productList(pageNum, keyword);
+//        model.addAttribute("list", map.get("productDtos"));
+//        model.addAttribute("keyword", keyword);
+//        return "common/product_list";
+//    }
+
+//    @GetMapping("/common/product_search")
+//    @ResponseBody
+//    public Map<String, Object> productSearch(@RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
+//                                             @RequestParam String keyword) {
+//        Map<String, Object> map = productService.productList(pageNum, keyword);
+//        return map;
+//    }
 
     @GetMapping("/content/product_insert")
     public String product_insertForm(Model model) {

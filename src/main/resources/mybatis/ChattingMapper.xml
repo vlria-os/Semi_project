@@ -372,4 +372,14 @@
         where cru.room_id = #{roomId}
         order by u.webuser_name
     </select>
+    <select id="selectTotalUnread" parameterType="int" resultType="int">
+        SELECT COUNT(*)
+        FROM chat_message m
+        JOIN chat_room_user cru
+        ON cru.room_id = m.room_id
+        WHERE cru.user_id = #{userId}
+        AND m.sender_id != #{userId}
+        AND m.message_id > NVL(cru.last_read_message_id, 0)
+    </select>
+
 </mapper>

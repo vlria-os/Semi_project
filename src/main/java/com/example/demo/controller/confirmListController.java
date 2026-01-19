@@ -54,4 +54,9 @@ public class confirmListController {
         return "layout";
     }
 
+//    @GetMapping("/confirm/detail_out")
+//    public List<> Confirm_out_detail(){
+//
+//    }
+
 }

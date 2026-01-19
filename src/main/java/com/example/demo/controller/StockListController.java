@@ -2,14 +2,17 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.ListDto;
 import com.example.demo.dto.ProductStockDto;
+import com.example.demo.dto.StockQuantityDto;
 import com.example.demo.service.ProductStockService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 import java.util.Map;
@@ -67,13 +70,16 @@ public class StockListController {
         return "layout";
     }
 
+    @GetMapping("/stock/updateForm")
+    @ResponseBody
+    public List<StockQuantityDto> updateStockQuantityForm(@RequestParam int productId) {
+        List<StockQuantityDto> list=stockService.stockQuantityList(productId);
+        return list;
+    }
+
     @PostMapping("/stock/update")
-    public String updateStockQuantity(
-            @RequestParam Long productId,
-            @RequestParam int quantity) {
-        if (productId != null) {
-            stockService.updateQuantity(productId, quantity);
-        }
+    public String updateQuantity(StockQuantityDto dto){
+        stockService.stockQuantityUpdate(dto.getQuantity(), dto.getStockId(), dto.getLotInId());
         return "redirect:/stockList";
     }
 }

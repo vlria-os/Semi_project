@@ -7,67 +7,173 @@
     <select id="selectAll" resultType="ProductDto">
         select * from product
     </select>
-    <select id="select_category" parameterType="int" resultType="CategoryDto">
-        SELECT *
-        FROM (
-            SELECT
-                category_id,
-                category_name,
-                parent_id,
-                LEVEL AS lvl
-            FROM category
-            START WITH category_id = #{value}
-            CONNECT BY PRIOR parent_id = category_id
-        )
-        order by lvl desc
+
+    <sql id="productSearch">
+        <where>
+            <if test="searchDto.field != null and searchDto.field != '' and searchDto.field != 'all' ">
+                and upper(p.status) = upper(#{searchDto.field})
+            </if>
+            <if test="searchDto.keyword != null and searchDto.keyword != '' ">
+                and (
+                    upper (p.product_name) like '%' || upper(#{searchDto.keyword}) || '%'
+                    or upper (c.category_path) like '%' || upper(#{searchDto.keyword}) || '%'
+                    or cast (p.product_id as varchar2(10)) like '%' || upper(#{searchDto.keyword}) || '%'
+                )
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectAllKeyword" parameterType="map" resultType="ProductDto">
+        select * from (
+            select rownum rn,
+                data.* from (
+                    select
+                        p.product_id,
+                        p.product_name,
+                        p.price,
+                        p.unit,
+                        p.status,
+                        p.category_id,
+                        c.category_path as category,
+                        i.save_name as save_name from product p
+                    join (
+                        select
+                            category_id,
+                            LTRIM (SYS_CONNECT_BY_PATH (category_name, '>'), '>') as category_path
+                        from category
+                        start with parent_id is null
+                        connect by prior category_id = parent_id
+                    ) c on p.category_id = c.category_id
+                    left join product_image i on p.image_id = i.image_id
+                    <include refid="productSearch"/>
+                    order by p.product_id desc
+                ) data
+            )
+        <![CDATA[
+        where rn >= #{startRow} and rn <= #{endRow}
+        ]]>
     </select>
-    <select id="selectOne_category" parameterType="String" resultType="int">
-        select category_id from category where category_name=#{value}
+
+    <select id="count" resultType="int" parameterType="map">
+        select count(*)
+        from product p
+        join (
+            select category_id, category_name from category
+            start with parent_id is null
+            connect by prior category_id = parent_id
+        ) c on p.category_id = c.category_id
+        <where>
+            <if test="searchDto.field != null and searchDto.field != '' and searchDto.field != 'all' ">
+                and p.status = upper(#{searchDto.field})
+            </if>
+            <if test="searchDto.keyword != null and searchDto.keyword != '' ">
+                and (
+                    upper(p.product_name) like '%' || upper(#{searchDto.keyword}) || '%'
+                    or p.product_id like '%' || #{searchDto.keyword} || '%'
+                )
+            </if>
+        </where>
     </select>
-    <select id="selectAll_keyword" parameterType="map" resultType="ProductDto">
-        SELECT * FROM
-        (
-        SELECT
-            rownum rn,
+
+    <update id="updateProduct" parameterType="ProductDto">
+        update product
+        <set>
+            <if test="product_name != null">product_name = #{product_name},</if>
+            <if test="category_id != 0">category_id= #{category_id},</if>
+            <if test="price != 0">price= #{price},</if>
+            <if test="unit != null">unit= #{unit},</if>
+            <if test="status !=null">status= #{status},</if>
+            <if test="image_id != 0">image_id= #{image_id}</if>
+        </set>
+        where product_id= #{product_id}
+    </update>
+
+    <select id="selectOneProduct" parameterType="int" resultType="ProductDto">
+        select
             p.product_id,
             p.product_name,
             p.price,
             p.unit,
             p.status,
             p.category_id,
-            c.category_path AS category
-        FROM product p
-        JOIN (
-        SELECT
-            category_id,
-            LTRIM(SYS_CONNECT_BY_PATH(category_name, '>'), '>') AS category_path
-            FROM category
-            START WITH parent_id IS NULL
-            CONNECT BY PRIOR category_id = parent_id
-        ) c
-        ON p.category_id = c.category_id
-        WHERE
-            p.product_name LIKE '%' || #{keyword} || '%'
-            OR c.category_path LIKE '%' || #{keyword} || '%'
-        )
-        <![CDATA[
-        WHERE rn >= #{startRow} and rn <= #{endRow}
-        ]]>
+            c.category_path as category
+        from product p
+        join (
+            select
+                category_id,
+                LTRIM (SYS_CONNECT_BY_PATH (category_name, '>'), '>') as category_path
+            from category
+            start with parent_id is null
+            connect by prior category_id= parent_id
+        ) c on p.category_id= c.category_id
+        where p.product_id= #{productId}
     </select>
-    <select id="count" resultType="int">
-        SELECT count(*) from product p
-        JOIN (
-        SELECT
-        category_id,
-        LTRIM(SYS_CONNECT_BY_PATH(category_name, '>'), '>') AS category_path
-        FROM category
-        START WITH parent_id IS NULL
-        CONNECT BY PRIOR category_id = parent_id
-        ) c
-        ON p.category_id = c.category_id
-        WHERE
-        p.product_name LIKE '%' || #{value} || '%'
-        OR c.category_path LIKE '%' || #{value} || '%'
+
+    <delete id="deleteProduct" parameterType="int">
+        delete from product where product_id= #{product_id}
+    </delete>
+
+<!--    <select id="select_category" parameterType="int" resultType="CategoryDto">-->
+<!--        SELECT *-->
+<!--        FROM (-->
+<!--            SELECT-->
+<!--                category_id,-->
+<!--                category_name,-->
+<!--                parent_id,-->
+<!--                LEVEL AS lvl-->
+<!--            FROM category-->
+<!--            START WITH category_id = #{value}-->
+<!--            CONNECT BY PRIOR parent_id = category_id-->
+<!--        )-->
+<!--        order by lvl desc-->
+<!--    </select>-->
+<!--    <select id="selectAll_keyword" parameterType="map" resultType="ProductDto">-->
+<!--        SELECT * FROM-->
+<!--        (-->
+<!--        SELECT-->
+<!--            rownum rn,-->
+<!--            p.product_id,-->
+<!--            p.product_name,-->
+<!--            p.price,-->
+<!--            p.unit,-->
+<!--            p.status,-->
+<!--            p.category_id,-->
+<!--            c.category_path AS category-->
+<!--        FROM product p-->
+<!--        JOIN (-->
+<!--        SELECT-->
+<!--            category_id,-->
+<!--            LTRIM(SYS_CONNECT_BY_PATH(category_name, '>'), '>') AS category_path-->
+<!--            FROM category-->
+<!--            START WITH parent_id IS NULL-->
+<!--            CONNECT BY PRIOR category_id = parent_id-->
+<!--        ) c-->
+<!--        ON p.category_id = c.category_id-->
+<!--        WHERE-->
+<!--            p.product_name LIKE '%' || #{keyword} || '%'-->
+<!--            OR c.category_path LIKE '%' || #{keyword} || '%'-->
+<!--        )-->
+<!--        <![CDATA[-->
+<!--        WHERE rn >= #{startRow} and rn <= #{endRow}-->
+<!--        ]]>-->
+<!--    </select>-->
+<!--    <select id="count" resultType="int">-->
+<!--        SELECT count(*) from product p-->
+<!--        JOIN (-->
+<!--        SELECT-->
+<!--        category_id,-->
+<!--        LTRIM(SYS_CONNECT_BY_PATH(category_name, '>'), '>') AS category_path-->
+<!--        FROM category-->
+<!--        START WITH parent_id IS NULL-->
+<!--        CONNECT BY PRIOR category_id = parent_id-->
+<!--        ) c-->
+<!--        ON p.category_id = c.category_id-->
+<!--        WHERE-->
+<!--        p.product_name LIKE '%' || #{value} || '%'-->
+<!--        OR c.category_path LIKE '%' || #{value} || '%'-->
+<!--    </select>-->
+    <select id="selectOne_category" parameterType="String" resultType="int">
+        select category_id from category where category_name=#{value}
     </select>
     <insert id="insert" parameterType="ProductDto">
         insert into product(

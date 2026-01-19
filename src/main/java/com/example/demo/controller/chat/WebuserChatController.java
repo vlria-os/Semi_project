@@ -214,4 +214,13 @@ public class WebuserChatController {
         }
         return service.getRoomMembers(roomId);
     }
+
+    @GetMapping("/chat/unread/total")
+    @ResponseBody
+    public int totalUnread(HttpSession session) {
+        int userId = (int) session.getAttribute("webuser_id");
+
+        return service.getTotalUnread(userId);
+    }
+
 }

@@ -2,6 +2,7 @@ package com.example.demo.service;
 
 import com.example.demo.dto.ProductStatus;
 import com.example.demo.dto.ProductStockDto;
+import com.example.demo.dto.StockQuantityDto;
 import com.example.demo.mapper.ProductStockMapper;
 import com.example.demo.pagination.PageInfo;
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,18 @@ public class ProductStockService {
     public void updateQuantity(Long productId, int quantity){
         int stock_id=stockMapper.select_stock(productId);
         stockMapper.updateQuantity(stock_id,quantity);
+    }
+
+    public List<StockQuantityDto> stockQuantityList(int productId){
+        return stockMapper.stockQuantityList(productId);
+    }
+
+    public boolean stockQuantityUpdate(int quantity, int stockId, int lotInId){
+        Map<String,Object> map=new HashMap<>();
+        map.put("quantity",quantity);
+        map.put("stockId",stockId);
+        map.put("lotInId",lotInId);
+        return stockMapper.updateQuantity(map) > 0;
     }
 }
 

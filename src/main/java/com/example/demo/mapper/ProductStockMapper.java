@@ -1,6 +1,7 @@
 package com.example.demo.mapper;
 
 import com.example.demo.dto.ProductStockDto;
+import com.example.demo.dto.StockQuantityDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -20,5 +21,8 @@ public interface ProductStockMapper {
     );
 
     int select_stock(Long product_id);
+
+    List<StockQuantityDto> stockQuantityList(@Param("productId") int productId);
+    int updateQuantity(Map<String,Object> map);
 }
 

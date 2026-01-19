@@ -21,8 +21,7 @@
             <th>제품종류</th>
 
         </tr>
-        <tr th:each="ps : ${p}" th:if="${ps != null}">
-
+        <tr th:each="ps : ${p}">
             <td th:text="${ps.product_id}"></td>
             <td th:text="${ps.product_name}"></td>
             <td th:text="${ps.category_path}"></td>
@@ -30,15 +29,13 @@
 
             <!-- 수량 수정 폼 -->
             <td>
-                <form th:action="@{/stock/update}" method="post" style="display:flex; justify-content:center; gap:4px;">
-                    <input type="number"
-                           name="quantity"
-                           th:value="${ps.quantity}"
-                           min="0"
-                           style="width:60px; text-align:center;">
-                    <input type="text" name="productId" th:value="${ps.product_id}" hidden>
-                    <button type="submit">수정</button>
-                </form>
+                <input type="text"
+                       name="quantity"
+                       th:value="${ps.quantity}"
+                       style="width:60px; text-align:center;"
+                       readonly
+                >
+                <button type="button" th:data-product-id="${ps.product_id}" onclick="quantityUpdate(this)">수정</button>
             </td>
 
             <td th:text="${ps.unit}"></td>
@@ -69,3 +66,62 @@
         </ul>
     </div>
 </section>
+<script>
+    function quantityUpdate(btn) {
+        const currentTr=btn.closest("tr");
+        const colCount = currentTr.children.length;
+
+        // 이미 상세 row 있으면 토글
+        if(currentTr.nextElementSibling &&
+            currentTr.nextElementSibling.classList.contains("quantityRow")){
+            currentTr.nextElementSibling.remove();
+            return;
+        }
+
+        const productId=btn.dataset.productId;
+
+        fetch(`/stock/updateForm?productId=${productId}`)
+            .then(resp=>resp.json())
+            .then(list=>{
+
+                const tr=document.createElement("tr");
+                tr.className="quantityRow";
+
+                let rows="";
+
+                list.forEach(l => {
+
+                    let quantityBtn=`
+                                    <form action="/stock/update" method="post">
+                                        <input type="number" name="quantity" value="${l.quantity}">
+                                        <input type="hidden" name="stockId" value="${l.stockId}">
+                                        <input type="hidden" name="lotInId" value="${l.lotInId}">
+                                        <button type="submit">수정</button>
+                                    </form>
+                                    `;
+
+                    rows += `
+                             <tr>
+                                <td>${l.lotInId}</td>
+                                <td>${l.productName}</td>
+                                <td>${quantityBtn}</td>
+                                <td>${l.expirationDate}</td>
+                             </tr>
+                            `;
+                });
+
+                tr.innerHTML=`
+                  <td colspan="${colCount}">
+                     <table>
+                     <tr>
+                        <th>로트 번호</th><th>상품명</th><th>수량</th><th>유통기한</th>
+                     </tr>
+                     ${rows}
+                     </table>
+                  </td>
+                  `;
+
+                currentTr.after(tr);
+            })
+    }
+</script>

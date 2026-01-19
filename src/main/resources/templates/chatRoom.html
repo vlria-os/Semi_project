@@ -209,6 +209,8 @@
                         lastReadId: mid
                     }));
                 }
+
+                notifyUnreadRefreshToOpener();
             });
 
             // ✅ read broadcast (내 메시지 read_count 감소용)
@@ -241,6 +243,8 @@
                         }
                     }
                 });
+
+                notifyUnreadRefreshToOpener();
             });
 
             // ✅ enter notify
@@ -508,6 +512,15 @@
             wrap.appendChild(row);
         });
     }
+
+    function notifyUnreadRefreshToOpener(){
+        try{
+            if (window.opener && !window.opener.closed) {
+                window.opener.postMessage({ type: "REFRESH_TOTAL_UNREAD" }, window.location.origin);
+            }
+        }catch(e){}
+    }
+
 
     // 시작
     connect();
