@@ -23,8 +23,7 @@ public class NoticeService {
         int limit = 10;
         int offset = (page - 1) * limit;
 
-        List<NoticeDto> list =
-                noticeMapper.selectNoticeList(offset, limit, startDate, endDate);
+        List<NoticeDto> list = noticeMapper.selectNoticeList(offset, limit, startDate, endDate);
 
         boolean hasNext = list.size() == limit;
 
@@ -33,26 +32,30 @@ public class NoticeService {
         map.put("hasNext", hasNext);
         return map;
     }
-    //상단 고정 공지 조회
+
+    // 상단 고정 공지 조회
     public List<NoticeDto> getPinnedNotices() {
         return noticeMapper.selectPinnedNotices();
-   }
-    // 등록
-    public void saveNotice(NoticeDto notice) {
-        noticeMapper.insertNotice(notice);
     }
 
-     //상세
+    // 등록
+    public int saveNotice(NoticeDto notice) {
+        return noticeMapper.insertNotice(notice);
+    }
+
+    // 상세
     public NoticeDto getNoticeDetail(Long noticeId) {
         noticeMapper.increaseViewCount(noticeId);
         return noticeMapper.selectNoticeDetail(noticeId);
     }
-    //수정
-    public void updateNotice(NoticeDto notice) {
-        noticeMapper.updateNotice(notice);
+
+    // 수정
+    public int updateNotice(NoticeDto notice) {
+        return noticeMapper.updateNotice(notice);
     }
-     //삭제
-    public void deleteNotice(Long noticeId) {
-    noticeMapper.deleteNotice(noticeId);
+
+    // 삭제
+    public int deleteNotice(Long noticeId) {
+        return noticeMapper.deleteNotice(noticeId);
     }
 }
