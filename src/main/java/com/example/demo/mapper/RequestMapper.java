@@ -55,7 +55,9 @@ public interface RequestMapper {
        ========================= */
 
     /** 입고 번호로 입고 상세 내역 조회 */
-    List<Inbound_detailDto> inboundList(int inbound_id);
+    List<Inbound_detailDto> inboundList(int inboundId);
+
+    List<InboundDetailDto> inboundDetailList(int inboundId);
 
     /** 출고 번호로 출고 상세 내역 조회 */
     List<Outbound_detailDto> outboundList(int outbound_id);

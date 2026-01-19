@@ -16,8 +16,8 @@ import java.util.Map;
 public class RequestLIstController {
     private final RequestService requestService;
 
-    @GetMapping("/content/requestList")
-    public String main(HttpSession session,
+    @GetMapping("/content/requestList_admin")
+    public String inboundAll(HttpSession session,
                        Model model,
                        @RequestParam(name = "pageNum",defaultValue = "1") int pageNum){
         Integer role_id = (Integer) session.getAttribute("role_id");
@@ -31,42 +31,32 @@ public class RequestLIstController {
             model.addAttribute("list",map.get("list"));
             model.addAttribute("pageInfo",map.get("pageInfo"));
             model.addAttribute("navFragment", "fragment/nav/adminNav");
-            model.addAttribute("content", "content/requestList");
+            model.addAttribute("content", "content/requestList_admin");
         }
         model.addAttribute("webuser_id",webuser_id);
         model.addAttribute("role_id",role_id);
         return "layout";
     }
 
-    @GetMapping("/goinbound")
-    @ResponseBody
-    public Map<String,Object> goinbound(HttpSession session,
-                                      @RequestParam(name = "pageNum",defaultValue = "1") int pageNum,
-                                        @RequestParam(value = "field", required = false) String field){
-        int role_id = (int) session.getAttribute("role_id");
-        int webuser_id = (int) session.getAttribute("webuser_id");
-        if(role_id == 1){
-            Map<String,Object> map=requestService.inboundAll(pageNum);
-            return map;
-        }else {
-            Map<String,Object> map=requestService.selectInbound(pageNum,webuser_id);
-            return map;
-        }
-
-    }
-
-    @GetMapping("/gooutbound")
-    @ResponseBody
-    public Map<String,Object> gooutbound(HttpSession session,
+    @GetMapping("/content/requestList_admin_out")
+    public String outboundAll(HttpSession session,
+                                        Model model,
                                         @RequestParam(name = "pageNum",defaultValue = "1") int pageNum){
-        int role_id = (int) session.getAttribute("role_id");
-        int webuser_id = (int) session.getAttribute("webuser_id");
-        if(role_id == 1){
+        Integer role_id = (Integer) session.getAttribute("role_id");
+        Integer webuser_id = (Integer) session.getAttribute("webuser_id");
+
+        if (role_id == null) {
+            return "redirect:/";
+        }else if(role_id == 1){
             Map<String,Object> map=requestService.outboundAll(pageNum);
-            return map;
-        }else {
-            Map<String,Object> map=requestService.selectOutbound(pageNum,webuser_id);
-            return map;
+
+            model.addAttribute("list",map.get("list"));
+            model.addAttribute("pageInfo",map.get("pageInfo"));
+            model.addAttribute("navFragment", "fragment/nav/adminNav");
+            model.addAttribute("content", "content/requestList_admin_out");
         }
+        model.addAttribute("webuser_id",webuser_id);
+        model.addAttribute("role_id",role_id);
+        return "layout";
     }
 }

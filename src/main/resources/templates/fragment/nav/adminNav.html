@@ -2,7 +2,7 @@
 <nav th:fragment="nav">
     <ul class="nav-tabs">
         <li><a th:href="@{/}" th:classappend="${#httpServletRequest !=null && #httpServletRequest.requestURI.contains('/notice')} ? 'active' : ''">공지사항</a></li>
-        <li><a th:href="@{/content/requestList}" th:classappend="${#httpServletRequest !=null && #httpServletRequest.requestURI.contains('/content/requestList')} ? 'active' : ''">입출고 승인</a></li>
+        <li><a th:href="@{/content/requestList_admin}" th:classappend="${#httpServletRequest !=null && #httpServletRequest.requestURI.contains('/content/requestList')} ? 'active' : ''">입출고 승인</a></li>
         <li><a th:href="@{/content/productList}" th:classappend="${#httpServletRequest !=null && #httpServletRequest.requestURI.contains('/content/productList')} ? 'active' : ''">상품 조회</a></li>
         <li><a th:href="@{/stockList}" th:classappend="${#httpServletRequest !=null && #httpServletRequest.requestURI.contains('/stockList')} ? 'active' : ''">재고 조회</a></li>
         <li><a th:href="@{/approval/list}" th:classappend="${#httpServletRequest !=null && #httpServletRequest.requestURIi.contains('/approval/list')} ? 'active' : ''">승인 내역</a></li>

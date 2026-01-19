@@ -24,7 +24,7 @@ public class ApiAdsController {
         String url = UriComponentsBuilder
                 .fromUriString(base)
                 // ✅ odcloud는 보통 serviceKey (S 대문자 ServiceKey 아니고)
-                .queryParam("serviceKey", "14828702d32a2c63fa843d3cdab151ae271fa46bd7f7284daebd0555ab349fd2")
+                .queryParam("serviceKey", "내_키")
                 .queryParam("page", 1)
                 .queryParam("perPage", 10)
                 .build(true)
@@ -52,7 +52,7 @@ public class ApiAdsController {
         String url = UriComponentsBuilder
                 .fromUriString(base)
                 // ✅ odcloud는 보통 serviceKey (S 대문자 ServiceKey 아니고)
-                .queryParam("serviceKey", "14828702d32a2c63fa843d3cdab151ae271fa46bd7f7284daebd0555ab349fd2")
+                .queryParam("serviceKey", "내_키")
                 .queryParam("page", 1)
                 .queryParam("perPage", 10)
                 .build(true)

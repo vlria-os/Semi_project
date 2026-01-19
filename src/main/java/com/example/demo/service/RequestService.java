@@ -215,6 +215,10 @@ public class RequestService {
         return map;
     }
 
+    public List<InboundDetailDto> inboundDetailList(int inbound_id){
+        return mapper.inboundDetailList(inbound_id);
+    }
+
     public Map<String,Object> inboundAppList(int inbound_id){
         List<Inbound_detailDto> list=mapper.inboundAppList(inbound_id);
 
