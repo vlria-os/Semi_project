@@ -12,10 +12,18 @@
 
 </head>
 <body>
+<body style="font-size: 25px;">
+<h3>📌 고정 공지 </h3>
+<ul>
+    <li th:each="notice : ${pinnedNotices}">
+      <a th:href="@{/notice/detail/{id}(id=${notice.noticeId})}"
+         th:text="${notice.title}">공지제목</a>
+    </li>
+</ul>
 
 <h2>회사 공지사항</h2>
 
-
+</body>
 
 
 <!--<form method="get" action="/notice/list"> -->

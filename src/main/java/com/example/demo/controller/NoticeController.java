@@ -27,7 +27,10 @@ public class NoticeController {
         Map<String, Object> result =
                 noticeService.getNoticeList(page, startDate, endDate);
 
-        model.addAttribute("noticeList", result.get("list"));
+        var pinnedNoticeService = noticeService.getPinnedNotices();
+
+        model.addAttribute("noticeList", result.get("list"));    //일반공지
+        model.addAttribute("pinnedNotices",pinnedNoticeService); //상단고정 공지
         model.addAttribute("page", page);
         model.addAttribute("hasNext", result.get("hasNext"));
         model.addAttribute("prevPage", page > 1 ? page - 1 : 1);
@@ -45,7 +48,10 @@ public class NoticeController {
     // 등록 처리
     @PostMapping("/new")
     public String save(NoticeDto notice) {
-        noticeService.saveNotice(notice);
+       if(notice.getPinYn() == null) {
+           notice.setPinYn("N");
+       }
+       noticeService.saveNotice(notice);
         return "redirect:/notice/list";
     }
 
@@ -66,7 +72,15 @@ public class NoticeController {
     //수정처리 (POST)
      @PostMapping("/edit")
     public String edit(NoticeDto notice) {
+        if(notice.getPinYn() == null) {
+            notice.setPinYn("N");
+        }
         noticeService.updateNotice(notice);
         return "redirect:/notice/detail/" + notice.getNoticeId();
+    }
+    @GetMapping ("/delete/{id}")
+    public String deleteNotice(@PathVariable Long id) {
+        noticeService.deleteNotice(id);
+        return "redirect:/notice/list";
     }
 }

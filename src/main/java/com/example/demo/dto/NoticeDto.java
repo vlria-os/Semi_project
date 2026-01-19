@@ -15,8 +15,8 @@ public class NoticeDto {
     private String title;  // 제목
     private String  content;// 내용
     private String writer;// 작성자
-    private Integer viewCount = 0;// 조회수
-    private String pinYn = "N"; // 주요공지
+    private Integer viewCount;// 조회수
+    private String pinYn= "N"; // 주요공지
     private LocalDateTime createdAt;  // 가입일
     private LocalDateTime updatedAt;  // 수정일
 

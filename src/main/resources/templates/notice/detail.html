@@ -5,7 +5,7 @@
   <title>공지 상세</title>
 </head>
 <body>
-
+eld
 <h2 th:text="${notice.title}"></h2>
 
 작성자: <span th:text="${notice.writer}"></span><br><br>
@@ -13,14 +13,34 @@
 조회수: <span th:text="${notice.viewCount}"></span>
 
 <hr>
-
+</body>
 <div>
         내용 : <span th:text="${notice.content}"></span>
 </div>
+<br>
+<table width="10%" style="white-space: nowrap;">
+    <tr>
+        <td width="30%"></td>
+        <td align="left">
+            <a th:href="@{/notice/edit/{id}(id=${notice.noticeId})}">수정</a>
+        </td>
+        <td align="right">
+            <a th:href="@{/notice/delete/{id}(id=${notice.noticeId})}"
+               onclick="return confirm('정말 삭제하시겠습니까?')">
+                삭제
+            </a>
+        </td>
+    </tr>
+</table>
 
 <br>
-<a th:href="@{/notice/edit/{id}(id=${notice.noticeId})}">수정</a><br><br>
+<table width="9%">
+<tr>
+<td width="10%"></td>
+<td align="right">
 <a href="/notice/list">목록으로</a>
-
+</td>
+</table>
+</tr>
 </body>
 </html>

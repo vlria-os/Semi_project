@@ -16,7 +16,7 @@
         CREATED_AT  AS createdAt,
         PIN_YN      AS pinYn
         FROM NOTICE
-        WHERE 1=1
+        WHERE PIN_YN= 'N'
         <if test="startDate != null and startDate != ''">
             AND CREATED_AT <![CDATA[>=]]> TO_DATE(#{startDate}, 'YYYY-MM-DD')
         </if>
@@ -26,16 +26,31 @@
         ORDER BY NOTICE_ID DESC
         OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
     </select>
+    <!--상단 고정 공지조회-->
+    <select id="selectPinnedNotices" resultType="com.example.demo.dto.NoticeDto">
+        SELECT
+        NOTICE_ID   AS noticeId,
+        TITLE,
+        CONTENT,
+        WRITER,
+        VIEW_COUNT  AS viewCount,
+        CREATED_AT  AS createdAt,
+        PIN_YN      AS pinYn
+        FROM NOTICE
+        WHERE PIN_YN= 'Y'
+        ORDER BY CREATED_AT DESC
+        </select>
 
     <!-- 등록 -->
-    <insert id="insertNotice">
+    <insert id="insertNotice" parameterType="com.example.demo.dto.NoticeDto">
         INSERT INTO NOTICE (
-            NOTICE_ID, TITLE, CONTENT, WRITER
+            NOTICE_ID, TITLE, CONTENT, WRITER,PIN_YN
         ) VALUES (
                      NOTICE_SEQ.NEXTVAL,
                      #{title},
                      #{content},
-                     #{writer}
+                     #{writer},
+                     #{pinYn}
                  )
     </insert>
 
@@ -59,15 +74,21 @@
         SET VIEW_COUNT = VIEW_COUNT + 1
         WHERE NOTICE_ID = #{noticeId}
     </update>
-
-    <update id="updateNotice">
+     <!-- 수정 -->
+    <update id="updateNotice" parameterType="com.example.demo.dto.NoticeDto">
         UPDATE NOTICE
         SET
             TITLE = #{title},
             CONTENT = #{content},
             WRITER = #{writer},
+            PIN_YN = #{pinYn},
             UPDATED_AT = SYSDATE
          WHERE NOTICE_ID = #{noticeId}
     </update>
+    <!-- 삭제 -->
+    <delete id="deleteNotice" parameterType="long">
+        DELETE FROM NOTICE
+        WHERE NOTICE_ID = #{noticeId}
+    </delete>
 
 </mapper>

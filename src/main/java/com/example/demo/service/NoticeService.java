@@ -31,19 +31,28 @@ public class NoticeService {
         Map<String, Object> map = new HashMap<>();
         map.put("list", list);
         map.put("hasNext", hasNext);
-
         return map;
     }
-
+    //상단 고정 공지 조회
+    public List<NoticeDto> getPinnedNotices() {
+        return noticeMapper.selectPinnedNotices();
+   }
+    // 등록
     public void saveNotice(NoticeDto notice) {
         noticeMapper.insertNotice(notice);
     }
 
+     //상세
     public NoticeDto getNoticeDetail(Long noticeId) {
         noticeMapper.increaseViewCount(noticeId);
         return noticeMapper.selectNoticeDetail(noticeId);
     }
+    //수정
     public void updateNotice(NoticeDto notice) {
         noticeMapper.updateNotice(notice);
+    }
+     //삭제
+    public void deleteNotice(Long noticeId) {
+    noticeMapper.deleteNotice(noticeId);
     }
 }

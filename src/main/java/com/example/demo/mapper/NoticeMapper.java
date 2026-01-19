@@ -23,4 +23,10 @@ public interface NoticeMapper {
     void increaseViewCount(Long noticeId);
 
     void updateNotice(NoticeDto notice);
-}
+
+    void deleteNotice(Long noticeId);
+
+    List<NoticeDto>selectPinnedNotices();
+
+    }
+
