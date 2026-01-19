@@ -26,23 +26,12 @@ public class RequestLIstController {
         if (role_id == null) {
             return "redirect:/";
         }else if(role_id == 1){
-            Map<String,Object> map=requestService.adminBound(pageNum);
+            Map<String,Object> map=requestService.inboundAll(pageNum);
 
             model.addAttribute("list",map.get("list"));
             model.addAttribute("pageInfo",map.get("pageInfo"));
             model.addAttribute("navFragment", "fragment/nav/adminNav");
             model.addAttribute("content", "content/requestList");
-        }else {
-            if (webuser_id == null) {
-                return "redirect:/";
-            }
-
-            Map<String,Object> map=requestService.userBound(pageNum,webuser_id);
-
-            model.addAttribute("list",map.get("list"));
-            model.addAttribute("pageInfo",map.get("pageInfo"));
-            model.addAttribute("navFragment", "fragment/nav/officeNav");
-            model.addAttribute("content", "content/userRequestList");
         }
         model.addAttribute("webuser_id",webuser_id);
         model.addAttribute("role_id",role_id);

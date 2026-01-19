@@ -2,24 +2,22 @@
          th:fragment="content">
     <link rel="stylesheet" th:href="@{/css/content/requestlist.css}">
     <div class="main">
-        <button onclick="gomain()">전체</button> <button onclick="goinbound()">입고</button>
+        <button onclick="goinbound()">입고</button>
         <button onclick="gooutbound()">출고</button>
         <table id="Table">
             <tr>
-                <th>입출고</th><th>입출고 번호</th><th>요청자</th><th>승인 상태</th><th>요청일</th><th>상세보기</th>
+                <th>입고 번호</th><th>요청자</th><th>승인 상태</th><th>요청일</th>
+                <th>반품 여부</th><th>상세보기</th>
             </tr>
             <tr th:each="l:${list}">
-                <td th:text="${l.io_type}"></td>
-                <td th:text="${l.io_id}"></td>
+                <td th:text="${l.inbound_id}"></td>
                 <td th:text="${l.webuser_id}"></td>
                 <td th:text="${l.approval_status}"></td>
                 <td th:text="${l.request_date}"></td>
-                <td th:if="${l.io_type=='IN'}"><button type="button"
-                                                       th:attr="data-io-id=${l.io_id}"
-                                                       onclick="showInDetail(this)">상세보기</button></td>
-                <td th:if="${l.io_type=='OUT'}"><button type="button"
-                                                        th:attr="data-io-id=${l.io_id}"
-                                                        onclick="showOutDetail(this)">상세보기</button>
+                <td th:text="${l.is_refund}"></td>
+                <td><button type="button"
+                            th:attr="data-io-id=${l.inbound_id}"
+                            onclick="showInDetail(this)">상세보기</button></td>
             </tr>
         </table>
         <div>
@@ -37,69 +35,9 @@
         </div>
     </div>
 <script th:inline="javascript">
-    function gomain(){
+
+    function goinbound(){
         location.href="/content/requestList";
-    }
-
-    function goinbound(pageNum = 1){
-        const table=document.getElementById("Table");
-        const paging=document.getElementById("pagingArea");
-
-        fetch(`/goinbound?pageNum=${pageNum}`)
-            .then(resp=>resp.json())
-            .then(data=>{
-
-                const list=data.list; 
-                const pageInfo=data.pageInfo;
-
-                //테이블 초기화
-                table.innerHTML=`
-                                <tr>
-                                    <th>번호</th><th>요청자</th><th>승인 상태</th><th>요청일</th><th>상세보기</th>
-                                </tr>
-                                `;
-                paging.innerHTML="";
-
-                //목록 출력
-                list.forEach(l=>{
-                    table.innerHTML+=`
-                                    <tr>
-                                        <td>${l.inbound_id}</td><td>${l.webuser_id}</td>
-                                        <td>${l.approval_status}</td><td>${l.request_date}</td>
-                                        <td><button type="button"
-                                                    data-io-id="${l.inbound_id}"
-                                                    onclick="showInDetail(this)">상세보기</button></td>
-                                    </tr>
-                                    `;
-                });
-
-                //이전 버튼
-                if (pageInfo.startPageNum > 1) {
-                    paging.innerHTML += `
-                    <li>
-                        <a href="javascript:goinbound(${pageInfo.startPageNum - 1})">이전</a>
-                    </li>
-                `;
-                }
-
-                //페이지 번호
-                for (let i = pageInfo.startPageNum; i <= pageInfo.endPageNum; i++) {
-                    paging.innerHTML += `
-                    <li>
-                        <a href="javascript:goinbound(${i})">${i}</a>
-                    </li>
-                `;
-                }
-
-                //다음 버튼
-                if (pageInfo.endPageNum < pageInfo.totalPageCount) {
-                    paging.innerHTML += `
-                    <li>
-                        <a href="javascript:goinbound(${pageInfo.endPageNum + 1})">다음</a>
-                    </li>
-                `;
-                }
-            })
     }
 
     function gooutbound(pageNum = 1){

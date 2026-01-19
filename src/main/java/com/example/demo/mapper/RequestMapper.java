@@ -68,47 +68,6 @@ public interface RequestMapper {
 
     String getProductName(@Param("productId") int productId);
 
-
-    /* =========================
-       3. 승인 / 반려 처리 (승인 테이블 INSERT)
-       ========================= */
-
-    /** 관리자 입고 요청 승인 내역 추가 */
-    int approvalIn(Map<String, Object> map);
-
-    /** 관리자 입고 요청 반려 내역 추가 */
-    int rejectionIn(Map<String, Object> map);
-
-    /** 관리자 출고 요청 승인 내역 추가 */
-    int approvalOut(Map<String, Object> map);
-
-    /** 관리자 출고 요청 반려 내역 추가 */
-    int rejectionOut(Map<String, Object> map);
-
-
-    /* =========================
-       4. 상태 변경 (UPDATE)
-       ========================= */
-
-    /** 입고 상세 테이블 승인 상태 및 반려 사유 수정 */
-    int inboundDetailStatus(Map<String, Object> map);
-
-    /** 출고 상세 테이블 승인 상태 및 반려 사유 수정 */
-    int outboundDetailStatus(Map<String, Object> map);
-
-    /** 입고 테이블 승인 상태 수정 */
-    int inboundStatus(Map<String, Object> map);
-
-    /** 출고 테이블 승인 상태 수정 */
-    int outboundStatus(Map<String, Object> map);
-
-    /** 승인된 입고 요청 건에 반려 상품 추가 시 승인 상태 수정 */
-    int updateApprovalIn(int inbound_id);
-
-    /** 승인된 출고 요청 건에 반려 상품 추가 시 승인 상태 수정 */
-    int updateApprovalOut(int outbound_id);
-
-
     /* =========================
        5. 승인 내역 조회
        ========================= */
@@ -124,23 +83,6 @@ public interface RequestMapper {
     List<ApprovalDto> approvalList(Map<String,Object> map);
 
     int approvalListCount(@Param("boundType") String boundType);
-
-    /** 입고 번호로 승인 내역 조회 */
-    ApprovalDto selectApprovalIn(int inbound_id);
-
-    /** 출고 번호로 승인 내역 조회 */
-    ApprovalDto selectApprovalOut(int outbound_id);
-
-
-    /* =========================
-       6. 요청 단건 조회 (상태 확인용)
-       ========================= */
-
-    /** 입고 번호로 입고 요청 단건 조회 */
-    InboundDto selectInboundId(int inbound_id);
-
-    /** 출고 번호로 출고 요청 단건 조회 */
-    OutboundDto selectOutboundId(int outbound_id);
 
 
     List<Inbound_detailDto> inboundAppList(int inbound_id);
