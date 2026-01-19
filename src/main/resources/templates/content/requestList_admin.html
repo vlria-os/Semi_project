@@ -73,25 +73,22 @@
                 const td = document.createElement("td");
                 td.setAttribute("colspan", colCount);
 
-                const list=data.list;
-                const name=data.names;
-
                 let innerTable = `<table class="detailTable" style="width:100%;">
                                 <tr>
                                     <th>상품명</th>
+                                    <th>상품 이미지</th>
                                     <th>수량</th>
                                     <th>요청 상세</th>
                                     <th>승인/반려</th>
                                 </tr>`;
 
-                list.forEach(l => {
-                    const d=l.inbound_detail_id;
-                    const n=name[String(d)];
+                data.forEach(l => {
 
                     innerTable += `<tr data-detail-id="${l.inbound_detail_id}"
                                       data-inbound-id="${l.inbound_id}"
                                       data-quantity="${l.quantity}">
-                                    <td>${n}</td>
+                                    <td>${l.product_name}</td>
+                                    <td><img src="/image/${l.save_name}" style="width:50px; height:50px; border-radius: 4px; object-fit: cover;"></td>
                                     <td>${l.quantity}</td>
                                     <td>${l.approval_status}</td>
                                     <td>
@@ -125,13 +122,11 @@
         const tr = btn.closest("tr");
 
         const detailRow = tr.closest("tr.detailRow");
-        const parentRow = detailRow.previousElementSibling;
-        const ioType = parentRow.children[0].innerText.trim();
 
-        if (ioType === "IN") {
             const detailId = tr.dataset.detailId;
             const quantity = tr.dataset.quantity;
-            const inboundId = tr.closest("tr.detailRow").previousElementSibling.children[1].innerText.trim(); // 상위 inbound ID
+            // const inboundId = tr.closest("tr.detailRow").previousElementSibling.children[1].innerText.trim(); // 상위 inbound ID
+            const inboundId=tr.dataset.inboundId;
 
             if (!confirm("이 항목을 승인하시겠습니까?")) return;
 
@@ -199,75 +194,6 @@
                     }
                     location.reload();
                 });
-        }else {
-            const detailId = tr.dataset.detailId;
-            const outboundId = tr.closest("tr.detailRow").previousElementSibling.children[1].innerText.trim(); // 상위 outbound ID
-
-            if (!confirm("이 항목을 승인하시겠습니까?")) return;
-
-            // form-urlencoded 형식으로 보내기
-            const params = new URLSearchParams();
-            params.append("outbound_id", outboundId);
-            params.append("outbound_detail_id", detailId); // DTO 필드 이름과 맞춰야 함
-            params.append("approval_status", "APPROVED"); // DTO 필드 이름과 맞춰야 함
-
-            fetch(`/admin/outbound_app`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                body: params.toString()
-            })
-                .then(resp => resp.json())
-                .then(data => {
-                    if (data.success) {
-                        alert("승인 완료");
-
-                        // 기존 상세 행 삭제
-                        const detailRow = tr.closest("tr.detailRow");
-                        if (detailRow) detailRow.remove();
-
-                        // 새로 받아온 상세 리스트로 다시 추가
-                        const list = data.detailList;
-                        const name = data.names;
-
-                        const newDetailRow = document.createElement("tr");
-                        newDetailRow.classList.add("detailRow");
-
-                        const td = document.createElement("td");
-                        td.setAttribute("colspan", tr.children.length);
-
-                        let innerTable = `<table class="detailTable" border="1" style="width:100%;">
-                                    <tr>
-                                        <th>상품명</th>
-                                        <th>수량</th>
-                                        <th>요청 상세</th>
-                                        <th>승인/반려</th>
-                                    </tr>`;
-
-                        list.forEach(item => {
-                            const d = item.outbound_detail_id;
-                            const n = name[String(d)];
-
-                            innerTable += `<tr data-item-id="${item.outbound_detail_id}">
-                                    <td>${n}</td>
-                                    <td>${item.quantity}</td>
-                                    <td>${item.approval_status}</td>
-                                    <td>
-                                        <button type="button" onclick="approveItem(this)">승인</button>
-                                        <button type="button" onclick="rejectItem(this)">반려</button>
-                                    </td>
-                                </tr>`;
-                        });
-
-                        innerTable += `</table>`;
-                        td.innerHTML = innerTable;
-                        newDetailRow.appendChild(td);
-                        tr.insertAdjacentElement("afterend", newDetailRow);
-                    } else {
-                        alert("승인 실패");
-                    }
-                    location.reload();
-                })
-        }
     }
 
 

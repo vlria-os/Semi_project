@@ -255,6 +255,10 @@ public class RequestService {
         return map;
     }
 
+    public List<OutboundDetailDto> outboundDetailList(int outbound_id){
+        return mapper.outboundDetailList(outbound_id);
+    }
+
     public Map<String,Object> outboundAppList(int outbound_id){
         List<Outbound_detailDto> list=mapper.outboundAppList(outbound_id);
 

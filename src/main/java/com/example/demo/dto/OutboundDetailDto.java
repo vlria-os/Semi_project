@@ -10,9 +10,8 @@ import lombok.NoArgsConstructor;
 public class OutboundDetailDto {
     private int outbound_detail_id;
     private int outbound_id;
-    private int product_id;
-    private String approval_status;
-    private String outbound_status;
+    private String product_name;
+    private String save_name;
     private int quantity;
-    private String reason;
+    private String approval_status;
 }

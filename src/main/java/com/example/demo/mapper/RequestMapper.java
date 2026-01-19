@@ -62,6 +62,8 @@ public interface RequestMapper {
     /** 출고 번호로 출고 상세 내역 조회 */
     List<Outbound_detailDto> outboundList(int outbound_id);
 
+    List<OutboundDetailDto> outboundDetailList(int outboundId);
+
     /** 입고 상세 번호로 단일 입고 상품 조회 */
     Inbound_detailDto selectDetailIn(int inbound_detail_id);
 

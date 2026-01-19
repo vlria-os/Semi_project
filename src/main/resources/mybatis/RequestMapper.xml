@@ -243,6 +243,23 @@
         select * from outbound_detail where outbound_id=#{value}
     </select>
 
+    <select id="outboundDetailList" parameterType="int" resultType="OutboundDetailDto">
+        select
+        d.outbound_detail_id as outbound_detail_id,
+        d.outbound_id as outbound_id,
+        p.product_name as product_name,
+        i.save_name as save_name,
+        d.quantity as quantity,
+        d.approval_status as approval_status
+        from outbound_detail d
+        join product p
+        on d.product_id = p.product_id
+        join product_image i
+        on p.image_id = i.image_id
+        where d.outbound_id=#{outboundId}
+        order by d.outbound_detail_id desc
+    </select>
+
     <!-- 입고 상세 번호별 정보 -->
     <select id="selectDetailIn" parameterType="int" resultType="Inbound_detailDto">
         select * from inbound_detail where inbound_detail_id=#{value}

@@ -71,25 +71,22 @@
                     const td = document.createElement("td");
                     td.setAttribute("colspan", colCount);
 
-                    const list=data.list;
-                    const name=data.names;
-
                     let innerTable = `<table class="detailTable" style="width:100%;">
                                 <tr>
                                     <th>상품명</th>
+                                    <th>상품 이미지</th>
                                     <th>수량</th>
                                     <th>요청 상세</th>
                                     <th>승인/반려</th>
                                 </tr>`;
 
-                    list.forEach(l => {
-                        const d=l.outbound_detail_id;
-                        const n=name[String(d)];
-
+                    data.forEach(l => {
                         innerTable += `<tr data-detail-id="${l.outbound_detail_id}"
                                         data-inbound-id="${l.outbound_id}"
                                         data-quantity="${l.quantity}">
-                                    <td>${n}</td>
+                                    <td>${l.product_name}</td>
+                                    <td><img src="/image/${l.save_name}"
+                                        style="width:50px; height:50px; border-radius: 4px; object-fit: cover;"></td>
                                     <td>${l.quantity}</td>
                                     <td>${l.approval_status}</td>
                                     <td>
