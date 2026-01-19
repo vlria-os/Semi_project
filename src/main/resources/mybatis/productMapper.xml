@@ -220,5 +220,10 @@
     <select id="selectProductName" resultType="string">
         select product_name from product where product_id=#{productId}
     </select>
-
+    <insert id="insert_category" parameterType="CategoryDto">
+        insert into category values(category_seq.nextval,#{category_name},#{parent_id})
+    </insert>
+    <insert id="insert_firstcategory" parameterType="CategoryDto">
+        insert into category values(category_seq.nextval,#{category_name},null)
+    </insert>
 </mapper>

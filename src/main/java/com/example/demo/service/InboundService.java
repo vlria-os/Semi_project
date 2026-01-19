@@ -57,9 +57,9 @@ public class InboundService {
         int warehouse_id=inbound_detailMapper.select_warehouse(inbound_detailDto.getInbound_detail_id());
 
         if(inbound_detailDto.getApproval_status().equals("REJECTED")){
-            int b=inbound_detailMapper.update_appStatus_rej(inbound_detailDto.getInbound_detail_id());
+            int a=inbound_detailMapper.update_appStatus_rej(inbound_detailDto.getInbound_detail_id());
             int c=inbound_detailMapper.update_reason(inbound_detailDto);
-            int m=inboundMapper.update_status(inbound_id);
+            int d=inboundMapper.update_status(inbound_id);
             return 1;
         }
 
