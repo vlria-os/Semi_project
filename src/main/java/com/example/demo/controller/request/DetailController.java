@@ -1,6 +1,8 @@
 package com.example.demo.controller.request;
 
+import com.example.demo.dto.InboundDetailDto;
 import com.example.demo.dto.Inbound_detailDto;
+import com.example.demo.dto.OutboundDetailDto;
 import com.example.demo.service.RequestService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -22,17 +24,17 @@ public class DetailController {
 
     @GetMapping("/request/admin/inbound")
     @ResponseBody
-    public Map<String, Object> adminInbound(
+    public List<InboundDetailDto> adminInbound(
             @RequestParam int inbound_id) {
 
-        return requestService.inboundList(inbound_id);
+        return requestService.inboundDetailList(inbound_id);
     }
 
     @GetMapping("/request/admin/outbound")
     @ResponseBody
-    public Map<String,Object> adminOutbound(
+    public List<OutboundDetailDto> adminOutbound(
             @RequestParam int outbound_id) {
-        return requestService.outboundList(outbound_id);
+        return requestService.outboundDetailList(outbound_id);
     }
 
     // ===== 사용자 =====

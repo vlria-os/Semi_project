@@ -2,165 +2,46 @@
          th:fragment="content">
     <link rel="stylesheet" th:href="@{/css/content/requestlist.css}">
     <div class="main">
-        <button onclick="gomain()">전체</button> <button onclick="goinbound()">입고</button>
+        <button onclick="goinbound()">입고</button>
         <button onclick="gooutbound()">출고</button>
         <table id="Table">
             <tr>
-                <th>입출고</th><th>입출고 번호</th><th>요청자</th><th>승인 상태</th><th>요청일</th><th>상세보기</th>
+                <th>상품명</th><th>요청자</th>
+                <th>반품 여부</th><th>요청일</th><th>상세보기</th>
             </tr>
             <tr th:each="l:${list}">
-                <td th:text="${l.io_type}"></td>
-                <td th:text="${l.io_id}"></td>
-                <td th:text="${l.webuser_id}"></td>
-                <td th:text="${l.approval_status}"></td>
-                <td th:text="${l.request_date}"></td>
-                <td th:if="${l.io_type=='IN'}"><button type="button"
-                                                       th:attr="data-io-id=${l.io_id}"
-                                                       onclick="showInDetail(this)">상세보기</button></td>
-                <td th:if="${l.io_type=='OUT'}"><button type="button"
-                                                        th:attr="data-io-id=${l.io_id}"
-                                                        onclick="showOutDetail(this)">상세보기</button>
+                <td th:text="${l.product_name}"></td>
+                <td th:text="${l.webuser_name}"></td>
+                <td th:text="${l.is_refund}"></td>
+                <td th:text="${#temporals.format(l.request_date, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                <td><button type="button"
+                            th:attr="data-inbound-id=${l.inbound_id}"
+                            onclick="showInDetail(this)">상세보기</button></td>
             </tr>
         </table>
-        <div>
-            <ul id="pagingArea" th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
+        <div id="pagingArea"  th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
+            <ul id="serverPaging">
                 <li th:if="${pageInfo.startPageNum > 1}">
-                    <a th:href="@{/layout(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
+                    <a th:href="@{/content/requestList_admin(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
                 </li>
                 <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
-                    <a th:href="@{/layout(pageNum=${num})}">[[${num}]]</a>
+                    <a th:href="@{/content/requestList_admin(pageNum=${num})}">[[${num}]]</a>
                 </li>
                 <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
-                    <a th:href="@{/layout(pageNum=${pageInfo.endPageNum + 1})}">다음</a>
+                    <a th:href="@{/content/requestList_admin(pageNum=${pageInfo.endPageNum + 1})}">다음</a>
                 </li>
             </ul>
+            <ul id="ajaxPaging" style="display: none"></ul>
         </div>
     </div>
 <script th:inline="javascript">
-    function gomain(){
-        location.href="/content/requestList";
+
+    function goinbound(){
+        location.href="/content/requestList_admin";
     }
 
-    function goinbound(pageNum = 1){
-        const table=document.getElementById("Table");
-        const paging=document.getElementById("pagingArea");
-
-        fetch(`/goinbound?pageNum=${pageNum}`)
-            .then(resp=>resp.json())
-            .then(data=>{
-
-                const list=data.list; 
-                const pageInfo=data.pageInfo;
-
-                //테이블 초기화
-                table.innerHTML=`
-                                <tr>
-                                    <th>번호</th><th>요청자</th><th>승인 상태</th><th>요청일</th><th>상세보기</th>
-                                </tr>
-                                `;
-                paging.innerHTML="";
-
-                //목록 출력
-                list.forEach(l=>{
-                    table.innerHTML+=`
-                                    <tr>
-                                        <td>${l.inbound_id}</td><td>${l.webuser_id}</td>
-                                        <td>${l.approval_status}</td><td>${l.request_date}</td>
-                                        <td><button type="button"
-                                                    data-io-id="${l.inbound_id}"
-                                                    onclick="showInDetail(this)">상세보기</button></td>
-                                    </tr>
-                                    `;
-                });
-
-                //이전 버튼
-                if (pageInfo.startPageNum > 1) {
-                    paging.innerHTML += `
-                    <li>
-                        <a href="javascript:goinbound(${pageInfo.startPageNum - 1})">이전</a>
-                    </li>
-                `;
-                }
-
-                //페이지 번호
-                for (let i = pageInfo.startPageNum; i <= pageInfo.endPageNum; i++) {
-                    paging.innerHTML += `
-                    <li>
-                        <a href="javascript:goinbound(${i})">${i}</a>
-                    </li>
-                `;
-                }
-
-                //다음 버튼
-                if (pageInfo.endPageNum < pageInfo.totalPageCount) {
-                    paging.innerHTML += `
-                    <li>
-                        <a href="javascript:goinbound(${pageInfo.endPageNum + 1})">다음</a>
-                    </li>
-                `;
-                }
-            })
-    }
-
-    function gooutbound(pageNum = 1){
-        const table=document.getElementById("Table");
-        const paging=document.getElementById("pagingArea");
-
-        fetch(`/gooutbound?pageNum=${pageNum}`)
-            .then(resp=>resp.json())
-            .then(data=>{
-
-                const list=data.list;
-                const pageInfo=data.pageInfo;
-
-                //테이블 초기화
-                table.innerHTML=`
-                                <tr>
-                                    <th>번호</th><th>요청자</th><th>승인 상태</th><th>요청일</th><th>상세보기</th>
-                                </tr>
-                                `;
-                paging.innerHTML="";
-
-                //목록 출력
-                list.forEach(l=>{
-                    table.innerHTML+=`
-                                    <tr>
-                                        <td>${l.outbound_id}</td><td>${l.webuser_id}</td>
-                                        <td>${l.approval_status}</td><td>${l.request_date}</td>
-                                        <td><button type="button"
-                                                    data-io-id="${l.outbound_id}"
-                                                    onclick="showOutDetail(this)">상세보기</button></td>
-                                    </tr>
-                                    `;
-                });
-
-                //이전 버튼
-                if (pageInfo.startPageNum > 1) {
-                    paging.innerHTML += `
-                    <li>
-                        <a href="javascript:gooutbound(${pageInfo.startPageNum - 1})">이전</a>
-                    </li>
-                `;
-                }
-
-                //페이지 번호
-                for (let i = pageInfo.startPageNum; i <= pageInfo.endPageNum; i++) {
-                    paging.innerHTML += `
-                    <li>
-                        <a href="javascript:gooutbound(${i})">${i}</a>
-                    </li>
-                `;
-                }
-
-                //다음 버튼
-                if (pageInfo.endPageNum < pageInfo.totalPageCount) {
-                    paging.innerHTML += `
-                    <li>
-                        <a href="javascript:gooutbound(${pageInfo.endPageNum + 1})">다음</a>
-                    </li>
-                `;
-                }
-            })
+    function gooutbound(){
+        location.href="/content/requestList_admin_out";
     }
 
     let status = /*[[${status}]]*/ null;
@@ -181,9 +62,9 @@
             return;
         }
 
-        const bound_id = btn.dataset.ioId;
+        const inboundId = btn.dataset.inboundId;
 
-        fetch(`/request/admin/inbound?inbound_id=${bound_id}`)
+        fetch(`/request/admin/inbound?inbound_id=${inboundId}`)
             .then(resp => resp.json())
             .then(data => {
                 const detailRow = document.createElement("tr");
@@ -192,25 +73,22 @@
                 const td = document.createElement("td");
                 td.setAttribute("colspan", colCount);
 
-                const list=data.list;
-                const name=data.names;
-
                 let innerTable = `<table class="detailTable" style="width:100%;">
                                 <tr>
                                     <th>상품명</th>
+                                    <th>상품 이미지</th>
                                     <th>수량</th>
                                     <th>요청 상세</th>
                                     <th>승인/반려</th>
                                 </tr>`;
 
-                list.forEach(l => {
-                    const d=l.inbound_detail_id;
-                    const n=name[String(d)];
+                data.forEach(l => {
 
                     innerTable += `<tr data-detail-id="${l.inbound_detail_id}"
                                       data-inbound-id="${l.inbound_id}"
                                       data-quantity="${l.quantity}">
-                                    <td>${n}</td>
+                                    <td>${l.product_name}</td>
+                                    <td><img src="/image/${l.save_name}" style="width:50px; height:50px; border-radius: 4px; object-fit: cover;"></td>
                                     <td>${l.quantity}</td>
                                     <td>${l.approval_status}</td>
                                     <td>
@@ -230,78 +108,10 @@
                 innerTable += `
                                 <tr class="detail-footer">
                                     <td colspan="4" style="text-align: right; padding: 15px;">
-                                        <button type="button" class="all-approve-btn" data-io-id="${bound_id}" onclick="allApprove(this)">✨ 전체 수락</button>
+                                        <button type="button" class="all-approve-btn" data-inbound-id="${inboundId}" onclick="allApprove(this)">✨ 전체 수락</button>
                                     </td>
                                 </tr>
                                 </table>`; <!-- 여기로 -->
-                td.innerHTML = innerTable;
-                detailRow.appendChild(td);
-                currentTr.insertAdjacentElement("afterend", detailRow);
-            });
-    }
-
-    function showOutDetail(btn) {
-        const currentTr = btn.closest("tr");
-        const colCount = currentTr.children.length;
-
-        // 이미 상세 row 있으면 토글
-        if (currentTr.nextElementSibling &&
-            currentTr.nextElementSibling.classList.contains("detailRow")) {
-            currentTr.nextElementSibling.remove();
-            return;
-        }
-
-        const bound_id =btn.dataset.ioId;
-
-        fetch(`/request/admin/outbound?outbound_id=${bound_id}`)
-            .then(resp => resp.json())
-            .then(data => {
-                const detailRow = document.createElement("tr");
-                detailRow.classList.add("detailRow");
-
-                const td = document.createElement("td");
-                td.setAttribute("colspan", colCount);
-
-                const list=data.list;
-                const name=data.names;
-
-                let innerTable = `<table class="detailTable" style="width:100%;">
-                                <tr>
-                                    <th>상품명</th>
-                                    <th>수량</th>
-                                    <th>요청 상세</th>
-                                    <th>승인/반려</th>
-                                </tr>`;
-
-                list.forEach(l => {
-                    const d=l.outbound_detail_id;
-                    const n=name[String(d)];
-
-                    innerTable += `<tr data-detail-id="${l.outbound_detail_id}"
-                                        data-inbound-id="${l.outbound_id}"
-                                        data-quantity="${l.quantity}">
-                                    <td>${n}</td>
-                                    <td>${l.quantity}</td>
-                                    <td>${l.approval_status}</td>
-                                    <td>
-                                        <button type="button" onclick="approveItem(this)">승인</button>
-                                        <button type="button" onclick="rejectItem(this)">반려</button>
-                                    </td>
-                                </tr>`;
-                                /*<tr>
-                                    <th colspan="4"><button data-inbound-id="${l.outbound_id}"
-                                            onclick="allApprove(this)">전체 수락</button></th>
-                                </tr>*/ <!--이것도 옯겼습니다-->
-
-                });
-
-                innerTable += `
-                                <tr class="detail-footer">
-                                    <td colspan="4" style="text-align: right; padding: 15px;">
-                                        <button type="button" class="all-approve-btn" data-io-id="${bound_id}" onclick="allApprove(this)">✨ 전체 수락</button>
-                                    </td>
-                                </tr>
-                                </table>`; <!--여기로 background: #f8fafc; style="background-color: #10b981;"-->
                 td.innerHTML = innerTable;
                 detailRow.appendChild(td);
                 currentTr.insertAdjacentElement("afterend", detailRow);
@@ -312,13 +122,11 @@
         const tr = btn.closest("tr");
 
         const detailRow = tr.closest("tr.detailRow");
-        const parentRow = detailRow.previousElementSibling;
-        const ioType = parentRow.children[0].innerText.trim();
 
-        if (ioType === "IN") {
             const detailId = tr.dataset.detailId;
             const quantity = tr.dataset.quantity;
-            const inboundId = tr.closest("tr.detailRow").previousElementSibling.children[1].innerText.trim(); // 상위 inbound ID
+            // const inboundId = tr.closest("tr.detailRow").previousElementSibling.children[1].innerText.trim(); // 상위 inbound ID
+            const inboundId=tr.dataset.inboundId;
 
             if (!confirm("이 항목을 승인하시겠습니까?")) return;
 
@@ -386,75 +194,6 @@
                     }
                     location.reload();
                 });
-        }else {
-            const detailId = tr.dataset.detailId;
-            const outboundId = tr.closest("tr.detailRow").previousElementSibling.children[1].innerText.trim(); // 상위 outbound ID
-
-            if (!confirm("이 항목을 승인하시겠습니까?")) return;
-
-            // form-urlencoded 형식으로 보내기
-            const params = new URLSearchParams();
-            params.append("outbound_id", outboundId);
-            params.append("outbound_detail_id", detailId); // DTO 필드 이름과 맞춰야 함
-            params.append("approval_status", "APPROVED"); // DTO 필드 이름과 맞춰야 함
-
-            fetch(`/admin/outbound_app`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                body: params.toString()
-            })
-                .then(resp => resp.json())
-                .then(data => {
-                    if (data.success) {
-                        alert("승인 완료");
-
-                        // 기존 상세 행 삭제
-                        const detailRow = tr.closest("tr.detailRow");
-                        if (detailRow) detailRow.remove();
-
-                        // 새로 받아온 상세 리스트로 다시 추가
-                        const list = data.detailList;
-                        const name = data.names;
-
-                        const newDetailRow = document.createElement("tr");
-                        newDetailRow.classList.add("detailRow");
-
-                        const td = document.createElement("td");
-                        td.setAttribute("colspan", tr.children.length);
-
-                        let innerTable = `<table class="detailTable" border="1" style="width:100%;">
-                                    <tr>
-                                        <th>상품명</th>
-                                        <th>수량</th>
-                                        <th>요청 상세</th>
-                                        <th>승인/반려</th>
-                                    </tr>`;
-
-                        list.forEach(item => {
-                            const d = item.outbound_detail_id;
-                            const n = name[String(d)];
-
-                            innerTable += `<tr data-item-id="${item.outbound_detail_id}">
-                                    <td>${n}</td>
-                                    <td>${item.quantity}</td>
-                                    <td>${item.approval_status}</td>
-                                    <td>
-                                        <button type="button" onclick="approveItem(this)">승인</button>
-                                        <button type="button" onclick="rejectItem(this)">반려</button>
-                                    </td>
-                                </tr>`;
-                        });
-
-                        innerTable += `</table>`;
-                        td.innerHTML = innerTable;
-                        newDetailRow.appendChild(td);
-                        tr.insertAdjacentElement("afterend", newDetailRow);
-                    } else {
-                        alert("승인 실패");
-                    }
-                    location.reload();
-                })
-        }
     }
 
 

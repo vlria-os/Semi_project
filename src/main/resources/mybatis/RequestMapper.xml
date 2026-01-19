@@ -119,18 +119,36 @@
     </select>
 
     <!-- 관리자용 입고 요청 내역 -->
-    <select id="inboundAll" parameterType="map" resultType="InboundDto">
+    <select id="inboundAll" parameterType="map" resultType="InboundAllDto">
         select * from
-        (select rownum rn, m.* from
-        (select * from inbound
-        where approval_status = 'REQUEST'
-        order by inbound_id desc) m)
+        (select rownum rn,m.* from
+        (select
+        i.inbound_id as inbound_id,
+        min(p.product_name) ||
+        case when count(*)>1 then ' 외 ' || (count(*)-1) || '개'
+        else '' end as product_name,
+        w.webuser_name as webuser_name,
+        i.approval_status as approval_status,
+        i.is_refund as is_refund,
+        i.request_date as request_date
+        from inbound i
+        join inbound_detail d
+        on i.inbound_id=d.inbound_id
+        join webuser w
+        on i.webuser_id=w.webuser_id
+        join product p
+        on d.product_id=p.product_id
+        where i.approval_status='REQUEST'
+        group by i.inbound_id,w.webuser_name,i.approval_status,
+        i.is_refund,i.request_date
+        order by i.inbound_id desc)m)
         <![CDATA[where rn>=#{startRow} and rn<=#{endRow}]]>
     </select>
 
     <!-- 관리자용 입고 요청 페이징용 입고 요청 건수 -->
     <select id="adminInboundCount" resultType="int">
         select NVL(count(*),0) from inbound
+        where approval_status = 'REQUEST'
     </select>
 
     <!-- 직원용 입고 요청 내역 -->
@@ -149,18 +167,35 @@
     </select>
 
     <!-- 관리자용 출고 요청 내역 -->
-    <select id="outboundAll" resultType="OutboundDto">
+    <select id="outboundAll" resultType="OutboundAllDto">
         select * from
-        (select rownum rn, m.* from
-        (select * from outbound
-        where approval_status = 'REQUEST'
-        order by outbound_id desc) m)
+        (select rownum rn,m.* from
+        (select
+        o.outbound_id as outbound_id,
+        min(p.product_name) ||
+        case when count(*)>1 then ' 외 ' || (count(*)-1) || '개'
+        else '' end as product_name,
+        w.webuser_name as webuser_name,
+        o.approval_status as approval_status,
+        o.request_date as request_date
+        from outbound o
+        join outbound_detail d
+        on o.outbound_id=d.outbound_id
+        join webuser w
+        on o.webuser_id=w.webuser_id
+        join product p
+        on d.product_id=p.product_id
+        where o.approval_status='REQUEST'
+        group by o.outbound_id,w.webuser_name,o.approval_status,
+        o.request_date
+        order by o.outbound_id desc)m)
         <![CDATA[where rn>=#{startRow} and rn<=#{endRow}]]>
     </select>
 
     <!-- 관리자용 출고 요청 페이징용 출고 요청 건수 -->
     <select id="adminOutboundCount" resultType="int">
         select NVL(count(*),0) from outbound
+        where approval_status = 'REQUEST'
     </select>
 
     <!-- 직원용 출고 요청 내역 -->
@@ -186,9 +221,43 @@
         select * from inbound_detail where inbound_id=#{value}
     </select>
 
+    <select id="inboundDetailList" parameterType="int" resultType="InboundDetailDto">
+        select
+        d.inbound_detail_id as inbound_detail_id,
+        d.inbound_id as inbound_id,
+        p.product_name as product_name,
+        i.save_name as save_name,
+        d.quantity as quantity,
+        d.approval_status as approval_status
+        from inbound_detail d
+        join product p
+        on d.product_id = p.product_id
+        join product_image i
+        on p.image_id = i.image_id
+        where d.inbound_id= #{inboundId}
+        order by d.inbound_detail_id desc
+    </select>
+
     <!-- 출고 요청 세부 내역 -->
     <select id="outboundList" parameterType="int" resultType="Outbound_detailDto">
         select * from outbound_detail where outbound_id=#{value}
+    </select>
+
+    <select id="outboundDetailList" parameterType="int" resultType="OutboundDetailDto">
+        select
+        d.outbound_detail_id as outbound_detail_id,
+        d.outbound_id as outbound_id,
+        p.product_name as product_name,
+        i.save_name as save_name,
+        d.quantity as quantity,
+        d.approval_status as approval_status
+        from outbound_detail d
+        join product p
+        on d.product_id = p.product_id
+        join product_image i
+        on p.image_id = i.image_id
+        where d.outbound_id=#{outboundId}
+        order by d.outbound_detail_id desc
     </select>
 
     <!-- 입고 상세 번호별 정보 -->
@@ -200,102 +269,6 @@
     <select id="selectDetailOut" parameterType="int" resultType="Outbound_detailDto">
         select * from outbound_detail where outbound_detail_id=#{value}
     </select>
-
-    <!-- ===============================
-         3. 승인 / 반려 처리 (요청 단위)
-         =============================== -->
-
-    <!-- 관리자 입고 승인 내역 추가 -->
-    <insert id="approvalIn" parameterType="map">
-        insert into approval
-        values(
-        approval_seq.nextval,
-        #{approver_id},
-        'IN',
-        #{inbound_id},
-        null,
-        #{approval_status},
-        sysdate
-        )
-    </insert>
-
-    <!-- 관리자 입고 반려 내역 추가 -->
-    <insert id="rejectionIn" parameterType="map">
-        insert into approval
-        values(
-        approval_seq.nextval,
-        #{approver_id},
-        'IN',
-        #{inbound_id},
-        null,
-        #{approval_status},
-        sysdate
-        )
-    </insert>
-
-    <!-- 관리자 출고 승인 내역 추가 -->
-    <insert id="approvalOut" parameterType="map">
-        insert into approval
-        values(
-        approval_seq.nextval,
-        #{approver_id},
-        'OUT',
-        null,
-        #{outbound_id},
-        #{approval_status},
-        sysdate
-        )
-    </insert>
-
-    <!-- 관리자 출고 반려 내역 추가 -->
-    <insert id="rejectionOut" parameterType="map">
-        insert into approval
-        values(
-        approval_seq.nextval,
-        #{approver_id},
-        'OUT',
-        null,
-        #{outbound_id},
-        #{approval_status},
-        sysdate
-        )
-    </insert>
-
-    <!-- ===============================
-         4. 상세 승인 상태 변경 (상품 단위)
-         =============================== -->
-
-    <!-- 입고 상세 승인 상태 변경 -->
-    <update id="inboundDetailStatus" parameterType="map">
-        update inbound_detail
-        set approval_status=#{approval_status},
-        reason=#{reason, jdbcType=VARCHAR}
-        where inbound_detail_id=#{inbound_detail_id}
-    </update>
-
-    <!-- 출고 상세 승인 상태 변경 -->
-    <update id="outboundDetailStatus" parameterType="map">
-        update outbound_detail
-        set approval_status=#{approval_status},
-        reason=#{reason, jdbcType=VARCHAR}
-        where outbound_detail_id=#{outbound_detail_id}
-    </update>
-
-    <!-- ===============================
-         5. 입출고 테이블 승인 상태 변경
-         =============================== -->
-
-    <!-- 입고 승인 상태 변경 -->
-    <update id="inboundStatus" parameterType="map">
-        update inbound set approval_status=#{approval_status}
-        where inbound_id=#{inbound_id}
-    </update>
-
-    <!-- 출고 승인 상태 변경 -->
-    <update id="outboundStatus" parameterType="map">
-        update outbound set approval_status=#{approval_status}
-        where outbound_id=#{outbound_id}
-    </update>
 
     <!-- ===============================
          6. 승인 내역 조회
@@ -347,47 +320,9 @@
         select * from approval order by approval_id desc
     </select>
 
-    <!-- 입고 번호로 승인 내역 조회 -->
-    <select id="selectApprovalIn" parameterType="int" resultType="ApprovalDto">
-        select * from approval
-        where bound_type='in' and inbound_id=#{inbound_id}
-    </select>
-
-    <!-- 출고 번호로 승인 내역 조회 -->
-    <select id="selectApprovalOut" parameterType="int" resultType="ApprovalDto">
-        select * from approval
-        where bound_type='out' and outbound_id=#{outbound_id}
-    </select>
-
-    <!-- ===============================
-         7. 승인 상태 보정
-         =============================== -->
-
-    <!-- 승인된 상품이 있는 입고 요청 건에 반려 상품이 추가되었을 때 승인 상태 수정 -->
-    <update id="updateApprovalIn" parameterType="int">
-        update approval set approval_status='rejected'
-        where inbound_id=#{inbound_id}
-    </update>
-
-    <!-- 승인된 상품이 있는 출고 요청 건에 반려 상품이 추가되었을 때 승인 상태 수정 -->
-    <update id="updateApprovalOut" parameterType="int">
-        update approval set approval_status='rejected'
-        where outbound_id=#{outbound_id}
-    </update>
-
     <!-- ===============================
          8. 단건 조회
          =============================== -->
-
-    <!-- 입고 번호로 입고 테이블 조회 -->
-    <select id="selectInboundId" parameterType="int" resultType="InboundDto">
-        select * from inbound where inbound_id=#{value}
-    </select>
-
-    <!-- 출고 번호로 출고 테이블 조회 -->
-    <select id="selectOutboundId" parameterType="int" resultType="OutboundDto">
-        select * from outbound where outbound_id=#{value}
-    </select>
 
     <select id="inboundAppList" parameterType="int" resultType="Inbound_detailDto">
         select * from inbound_detail where inbound_id=#{value} and approval_status='APPROVED'

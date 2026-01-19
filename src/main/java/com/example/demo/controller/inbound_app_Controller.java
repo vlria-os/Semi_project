@@ -48,38 +48,6 @@ public class inbound_app_Controller {
         return "/admin/inbound_app";
     }
 
-//    @GetMapping("/goinbound")
-//    @ResponseBody
-//    public Map<String,Object> goinbound(HttpSession session,
-//                                        Model model,
-//                                        @RequestParam(name = "pageNum",defaultValue = "1") int pageNum){
-//        int role_id = (int) session.getAttribute("role_id");
-//        int webuser_id = (int) session.getAttribute("webuser_id");
-//        if(role_id == 1){
-//            Map<String,Object> map=requestService.inboundAll(pageNum);
-//            return map;
-//        }else {
-//            Map<String,Object> map=requestService.selectInbound(pageNum,webuser_id);
-//            return map;
-//        }
-//
-//    }
-//
-//    @GetMapping("/gooutbound")
-//    @ResponseBody
-//    public Map<String,Object> gooutbound(HttpSession session,
-//                                         @RequestParam(name = "pageNum",defaultValue = "1") int pageNum){
-//        int role_id = (int) session.getAttribute("role_id");
-//        int webuser_id = (int) session.getAttribute("webuser_id");
-//        if(role_id == 1){
-//            Map<String,Object> map=requestService.outboundAll(pageNum);
-//            return map;
-//        }else {
-//            Map<String,Object> map=requestService.selectOutbound(pageNum,webuser_id);
-//            return map;
-//        }
-//    }
-
     @PostMapping("/admin/inbound_app")
     @ResponseBody
     public Map<String,Object> inbound_app(int inbound_id,

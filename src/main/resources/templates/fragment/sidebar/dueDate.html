@@ -1,0 +1,137 @@
+<section xmlns:th="http://www.thymeleaf.org" th:fragment="content">
+    <link rel="stylesheet" th:href="@{/css/sidebar/duedatelist.css}">
+<div class="container">
+
+  <!--유통기한 임박-->
+    <div class="main">
+        <div class="main-title">
+            <span class="main-icon">⚠️</span>
+            유통기한 임박 상품 관리
+        </div>
+        <!--이동 버튼-->
+        <div class="view-toggle">
+            <button class="view-btn active" data-view=""><a th:href="@{/fragment/sidebar/dueDate}">유통기한 임박</a></button>
+            <button class="view-btn"><a th:href="@{/fragment/sidebar/expiredList}">폐기 내역</a></button>
+        </div>
+
+        <!-- 검색 + 필터 -->
+       <div class="filter-container">
+            <form class="filter">
+                <input type="text" id="keyword" name="keyword" th:value="${searchDto.keyword}" placeholder="상품 또는 창고 이름 검색">
+                <div class="btn-group">
+                    <button type="button" class="filter-btn" value="all" th:classappend="${typeFilter == 'all'} ? 'active' : ''">전체</button>
+                    <button type="button" class="filter-btn" value="COLD" th:classappend="${typeFilter == 'COLD'} ? 'active' : ''">냉장</button>
+                    <button type="button" class="filter-btn" value="FROZEN" th:classappend="${typeFilter == 'FROZEN'} ? 'active' : ''">냉동</button>
+                    <button type="button" class="filter-btn" value="ROOM" th:classappend="${typeFilter == 'ROOM'} ? 'active' : ''">상온</button>
+                </div>
+
+                <select name="warehouseFilter" id="warehouseFilter">
+                    <option value="">창고 선택</option>
+                    <option th:each="w : ${warehouseList}" th:value="${w.warehouse_id}" th:text="${w.warehouse_name}" th:selected="${warehouseFilter == w.warehouse_id.toString()}"></option>
+                </select>
+            </form>
+        </div>
+
+        <!--유통기한 임박 리스트-->
+        <div id="dueDateContainer">
+            <table class="dueDateTable">
+                <tr>
+                    <th>상품명</th><th>보관상태</th><th>창고</th><th>재고수량</th><th>만료일</th><th>남은기한</th>
+                </tr>
+                <tr th:each=" list : ${list}">
+                    <td th:text="${list.product_name}"></td>
+                    <td th:text="${list.product_type}"></td>
+                    <td th:text="${list.warehouse_name}"></td>
+                    <td th:text="${list.quantity}"></td>
+                    <td th:text="${list.expiration_date}"></td>
+                    <td>
+                        <span th:text="'D-' + ${list.days_left}" th:classappend="${list.days_left} ? 'alert' : ''"></span>
+                    </td>
+                </tr>
+            </table>
+
+            <!-- 페이징 처리-->
+            <div class="pagination_wrap">
+                <ul>
+                    <li th:if="${pageInfo.startPageNum > 1}">
+                        <a th:href="@{/sidebar/dueDate(pageNum=${pageInfo.startPageNum -1}, field=${searchDto.field}, keyword=${searchDto.keyword})}">[이전]</a>
+                    </li>
+
+                    <li th:each="num : ${#numbers.sequence(pageInfo.startPageNum, pageInfo.endPageNum)}">
+                        <a class="page-link" th:data-page="${num}" th:href="@{/sidebar/dueDate(pageNum=${num}, field=${searchDto.field}, keyword=${searchDto.keyword})}">
+                            [[ ${num} ]]
+                        </a>
+                    </li>
+
+                    <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
+                        <a th:href="@{/sidebar/dueDate(pageNum=${pageInfo.endPageNum +1}, field=${searchDto.field}, keyword=${searchDto.keyword})}">[다음]</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+        const searchBar=document.getElementById("keyword");
+        const typeButtons=document.querySelectorAll(".filter-btn");
+        const warehouseSelect=document.getElementById("warehouseFilter");
+        const container=document.getElementById("dueDateContainer");
+
+        let debounceTimer;
+
+        async function updateTable(pageNum =1){
+            const keyword=searchBar.value;
+            const warehouseFilter=warehouseSelect.value;
+            const typeFilter=document.querySelector(".filter-btn.active").value;
+            const viewType=document.querySelector(".view-btn.active").dataset.view;
+
+            container.style.opacity="0.5";
+
+            const url=`/sidebar/dueDate?pageNum=${pageNum}&typeFilter=${typeFilter}&warehouseFilter=${warehouseFilter}&keyword=${encodeURIComponent(keyword)}&viewType=${viewType}&isAjax=true`;
+            try{
+                const response=await fetch(url);
+                if(!response.ok) throw new Error("Network Error");
+
+                const html=await response.text();
+
+                const parser=new DOMParser();
+                const doc=parser.parseFromString(html, "text/html");
+                const newList=doc.getElementById("dueDateContainer");
+                if(newList){
+                    container.innerHTML=newList.innerHTML;
+                    container.style.opacity="1";
+                    paginationFunc();
+                }
+            }catch(error){
+                console.error("Fetch error:", error);
+                container.style.opacity="1";
+            }
+        }
+        searchBar.addEventListener("input", ()=>{
+            clearTimeout(debounceTimer);
+            debounceTimer=setTimeout(()=>updateTable(1), 300);
+        });
+        typeButtons.forEach(btn=>{
+            btn.addEventListener("click", ()=>{
+                typeButtons.forEach(b=>b.classList.remove("active"));
+                btn.classList.add("active");
+                updateTable(1);
+            });
+        });
+
+        warehouseSelect.addEventListener("change", ()=> updateTable(1));
+
+        function paginationFunc(){
+            document.querySelectorAll(".page-link").forEach(link=>{
+                link.addEventListener("click", (e)=>{
+                    e.preventDefault();
+                    updateTable(link.dataset.page);
+                });
+            });
+        }
+        paginationFunc();
+    })
+</script>
+</section>

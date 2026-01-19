@@ -215,6 +215,10 @@ public class RequestService {
         return map;
     }
 
+    public List<InboundDetailDto> inboundDetailList(int inbound_id){
+        return mapper.inboundDetailList(inbound_id);
+    }
+
     public Map<String,Object> inboundAppList(int inbound_id){
         List<Inbound_detailDto> list=mapper.inboundAppList(inbound_id);
 
@@ -251,6 +255,10 @@ public class RequestService {
         return map;
     }
 
+    public List<OutboundDetailDto> outboundDetailList(int outbound_id){
+        return mapper.outboundDetailList(outbound_id);
+    }
+
     public Map<String,Object> outboundAppList(int outbound_id){
         List<Outbound_detailDto> list=mapper.outboundAppList(outbound_id);
 
@@ -273,88 +281,6 @@ public class RequestService {
     // 출고 상세 번호로 상세 상품 조회
     public Outbound_detailDto selectDetailOut(int outbound_detail_id){
         return mapper.selectDetailOut(outbound_detail_id);
-    }
-
-    /* ===============================
-       3. 승인 / 반려 처리 (요청 단위)
-       =============================== */
-
-    // 입고 요청 승인
-    public boolean approvalIn(int approver_id, int inbound_id, String approval_status){
-        Map<String,Object> map = new HashMap<>();
-        map.put("approver_id", approver_id);
-        map.put("inbound_id", inbound_id);
-        map.put("approval_status", approval_status);
-        return mapper.approvalIn(map) > 0;
-    }
-
-    // 출고 요청 승인
-    public boolean approvalOut(int approver_id, int outbound_id, String approval_status){
-        Map<String,Object> map = new HashMap<>();
-        map.put("approver_id", approver_id);
-        map.put("outbound_id", outbound_id);
-        map.put("approval_status", approval_status);
-        return mapper.approvalOut(map) > 0;
-    }
-
-    // 입고 요청 반려
-    public boolean rejectionIn(int approver_id, int inbound_id, String approval_status){
-        Map<String,Object> map = new HashMap<>();
-        map.put("approver_id", approver_id);
-        map.put("inbound_id", inbound_id);
-        map.put("approval_status", approval_status);
-        return mapper.rejectionIn(map) > 0;
-    }
-
-    // 출고 요청 반려
-    public boolean rejectionOut(int approver_id, int outbound_id, String approval_status){
-        Map<String,Object> map = new HashMap<>();
-        map.put("approver_id", approver_id);
-        map.put("outbound_id", outbound_id);
-        map.put("approval_status", approval_status);
-        return mapper.rejectionOut(map) > 0;
-    }
-
-    /* ===============================
-       4. 상세 승인 상태 변경 (상품 단위)
-       =============================== */
-
-    // 입고 상세 승인 상태 변경
-    public boolean inboundDetailStatus(int inbound_detail_id, String approval_status, String reason){
-        Map<String,Object> map = new HashMap<>();
-        map.put("inbound_detail_id", inbound_detail_id);
-        map.put("approval_status", approval_status);
-        map.put("reason", reason);
-        return mapper.inboundDetailStatus(map) > 0;
-    }
-
-    // 출고 상세 승인 상태 변경
-    public boolean outboundDetailStatus(int outbound_detail_id, String approval_status, String reason){
-        Map<String,Object> map = new HashMap<>();
-        map.put("outbound_detail_id", outbound_detail_id);
-        map.put("approval_status", approval_status);
-        map.put("reason", reason);
-        return mapper.outboundDetailStatus(map) > 0;
-    }
-
-    /* ===============================
-       5. 입출고 테이블 승인 상태 변경
-       =============================== */
-
-    // 입고 승인 상태 변경
-    public boolean inboundStatus(int inbound_id, String approval_status){
-        Map<String,Object> map = new HashMap<>();
-        map.put("inbound_id", inbound_id);
-        map.put("approval_status", approval_status);
-        return mapper.inboundStatus(map) > 0;
-    }
-
-    // 출고 승인 상태 변경
-    public boolean outboundStatus(int outbound_id, String approval_status){
-        Map<String,Object> map = new HashMap<>();
-        map.put("outbound_id", outbound_id);
-        map.put("approval_status", approval_status);
-        return mapper.outboundStatus(map) > 0;
     }
 
     /* ===============================
@@ -438,43 +364,5 @@ public class RequestService {
         }
         System.out.println(result);
         return result;
-    }
-
-    // 입고 번호로 승인 내역 조회
-    public ApprovalDto selectApprovalIn(int inbound_id){
-        return mapper.selectApprovalIn(inbound_id);
-    }
-
-    // 출고 번호로 승인 내역 조회
-    public ApprovalDto selectApprovalOut(int outbound_id){
-        return mapper.selectApprovalOut(outbound_id);
-    }
-
-    /* ===============================
-       7. 승인 상태 보정
-       =============================== */
-
-    // 승인된 입고 요청에 반려 상품이 추가되었을 때 상태 수정
-    public boolean updateApprovalIn(int inbound_id){
-        return mapper.updateApprovalIn(inbound_id) > 0;
-    }
-
-    // 승인된 출고 요청에 반려 상품이 추가되었을 때 상태 수정
-    public boolean updateApprovalOut(int outbound_id){
-        return mapper.updateApprovalOut(outbound_id) > 0;
-    }
-
-    /* ===============================
-       8. 단건 조회
-       =============================== */
-
-    // 입고 단건 조회
-    public InboundDto selectInboundId(int inbound_id){
-        return mapper.selectInboundId(inbound_id);
-    }
-
-    // 출고 단건 조회
-    public OutboundDto selectOutboundId(int outbound_id){
-        return mapper.selectOutboundId(outbound_id);
     }
 }
