@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.ProgressMapper">
+    <select id="select_in" resultType="ProgressInDto">
+        SELECT
+        i.inbound_id,
+        d.inbound_detail_id,
+        p.product_name,
+        d.quantity,
+        i.is_refund,
+        w.warehouse_name,
+
+        req.webuser_name        AS requester_name,
+        app.webuser_name        AS approver_name,
+        conf.webuser_name       AS confirmer_name,
+
+        i.request_date            AS requested_date,
+        a.created_at           AS approved_date,
+        l.received_date,
+        d.reason
+
+        FROM inbound_detail d
+        JOIN inbound i ON i.inbound_id = d.inbound_id
+        JOIN product p ON p.product_id = d.product_id
+        JOIN warehouse w ON w.warehouse_id = d.warehouse_id
+
+        JOIN webuser req ON req.webuser_id = i.webuser_id
+
+        LEFT JOIN approval a ON a.inbound_id = i.inbound_id
+        LEFT JOIN webuser app ON app.webuser_id = a.approver_id
+
+        LEFT JOIN lot_in l ON l.inbound_detail_id = d.inbound_detail_id
+        LEFT JOIN webuser conf ON conf.webuser_id = l.confirmer_id
+    </select>
+</mapper>
