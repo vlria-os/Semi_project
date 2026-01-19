@@ -4,7 +4,7 @@
         <div>
             <button type="button" onclick="goAll()">전체</button>
             <button type="button" onclick="goIn()">입고</button>
-            <button type="button" onclick="goOut('OUT')">출고</button>
+            <button type="button" onclick="goOut()">출고</button>
         </div>
         <table id="table">
             <thead>
@@ -36,7 +36,6 @@
                         placeholder="검색어를 입력하세요.">
         <input type="submit" value="검색">
     </form>
-    <form th:action="@{/approval/list/btn}" method="get" id="ajaxForm" style="display: none;"></form>
     <div id="pagingArea" th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
         <ul id="serverPaging">
             <li th:if="${pageInfo.startPageNum > 1}">
@@ -54,96 +53,85 @@
     </div>
 
 <script>
-    let ajaxBoundType = null;
-    let ajaxPageNum = 1;
 
     function goAll(){
         location.href="/approval/list";
     }
 
     function goIn(){
-        ajaxBoundType="IN";
-        loadBtnPage(1);
+        loadApproval('IN',1);
     }
 
     function goOut(){
-        ajaxBoundType = "OUT";
-        loadBtnPage(1);
+        loadApproval('OUT',1);
     }
 
-    function loadBtnPage(pageNum){
-        ajaxPageNum = pageNum;
-
-        const tbody = document.getElementById("tableBody");
-        const ajaxPaging=document.getElementById("ajaxPaging");
-        const serverPaging=document.getElementById("serverPaging");
-
-        if(serverPaging) serverPaging.style.display="none";
-        ajaxPaging.style.display="block";
-
-        const params=new URLSearchParams();
-        params.set("pageNum",pageNum);
-        params.set("boundType",ajaxBoundType);
-
-        fetch(`/approval/list/btn?` + params.toString())
+    function loadApproval(boundType, pageNum){
+        fetch(`/approval/list/btn?boundType=${boundType}&pageNum=${pageNum}`)
             .then(resp => resp.json())
             .then(data => {
-                const list = data.list || [];
+
+                console.log("data:", data);
+                const list=data.list || [];
                 const pageInfo = data.pageInfo;
 
-                tbody.innerHTML="";
+                const table=document.getElementById("tableBody");
 
-                if(list.length === 0){
-                    tbody.innerHTML = `<tr><td colspan="6">조회 결과 없음</td></tr>`;
-                    ajaxPaging.innerHTML = "";
-                    return;
-                }else {
-                    list.forEach(l => {
-                        const boundId = (l.bound_type === 'IN') ? l.inbound_id : l.outbound_id;
-                        tbody.innerHTML += `
-                                             <tr onclick="showDetail(this)">
-                                                <td>${l.approval_id}</td>
-                                                <td>${l.approver_id}</td>
-                                                <td>${l.bound_type}</td>
-                                                <td>${boundId ?? ''}</td>
-                                                <td>${l.approval_status}</td>
-                                                <td>${l.created_at}</td>
-                                             </tr>
+                const serverPaging=document.getElementById("serverPaging");
+                const ajaxPaging=document.getElementById("ajaxPaging");
+
+                table.innerHTML="";
+                ajaxPaging.innerHTML="";
+
+                list.forEach(l => {
+                    const id= (boundType === 'IN') ? l.inbound_id : l.outbound_id;
+
+                    table.innerHTML += `
+                                        <tr onclick="showDetail(this)">
+                                            <td>${l.approval_id}</td><td>${l.approver_id}</td>
+                                            <td>${l.bound_type}</td><td>${id}</td>
+                                            <td>${l.approval_status}</td><td>${l.created_at}</td>
+                                        </tr>
+                                        `;
+                });
+
+                // 이전
+                if(pageInfo.startPageNum > 1){
+                    ajaxPaging.innerHTML += `
+                                             <li>
+                                                <a href="#" onclick="loadApproval('${boundType}',
+                                                    ${pageInfo.startPageNum - 1}); return false;">이전</a>
+                                             </li>
                                             `;
-                    });
                 }
 
-                renderAjaxPaging(pageInfo);
+                // 페이지 번호
+                for(let i = pageInfo.startPageNum; i <= pageInfo.endPageNum; i++){
+                    ajaxPaging.innerHTML += `
+                                            <li>
+                                                <a href="#"
+                                                    onclick="loadApproval('${boundType}', ${i}); return false;">
+                                                        ${i}
+                                                </a>
+                                            </li>
+                                            `;
+                }
+
+                // 다음
+                if(pageInfo.endPageNum < pageInfo.totalPageCount){
+                    ajaxPaging.innerHTML += `
+                                            <li>
+                                                <a href="#" onclick="loadApproval('${boundType}',
+                                                ${pageInfo.endPageNum + 1}); return false;">다음</a>
+                                            </li>
+                                            `;
+                }
+
+                serverPaging.style.display="none";
+                ajaxPaging.style.display="block";
             })
-            .catch(console.error);
+            .catch(e => console.error("fetch error:", e));
     }
-
-    function renderAjaxPaging(pageInfo){
-        const ajaxPaging=document.getElementById("ajaxPaging");
-        ajaxPaging.innerHTML="";
-
-        //이전
-        if(pageInfo.startPageNum > 1){
-            ajaxPaging.innerHTML +=`<li><a href="#" onclick="loadBtnPage(${pageInfo.startPageNum - 1})">이전</a></li>`;
-        }
-
-        for(let n = pageInfo.startPageNum; n <= pageInfo.endPageNum; n++){
-            const active = (n === ajaxPageNum) ? 'style="font-weight:bold;"' : '';
-            ajaxPaging.innerHTML += `
-                                     <li><a ${active} href="#" onclick="loadBtnPage(${n}); return false;">${n}</a></li>
-                                    `;
-        }
-
-        //다음
-        if(pageInfo.endPageNum < pageInfo.totalPageCount){
-            ajaxPaging.innerHTML += `
-                                    <li><a href="#" onclick="loadBtnPage(${pageInfo.endPageNum + 1}); return false;">
-                                        다음</a>
-                                    </li>
-                                    `;
-        }
-    }
-
 
     function showDetail(btn){
         const currentTr=btn.closest("tr");

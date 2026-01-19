@@ -305,8 +305,11 @@
     <select id="approvalAll" resultType="ApprovalDto">
         select * from
         (
-        select rownum rn, p.* from approval p
-        order by approval_id desc
+        select  rownum rn, p.* from
+        (
+        select * from approval
+        order by created_at desc
+        ) p
         )
         <![CDATA[
         where rn >= #{startRow} and rn <= #{endRow}
@@ -322,9 +325,12 @@
     <select id="approvalList" resultType="ApprovalDto">
         select * from
         (
-        select rownum rn, p.* from approval p
+        select  rownum rn, p.* from
+        (
+        select * from approval
         where bound_type = #{boundType}
-        order by approval_id desc
+        order by created_at desc
+        ) p
         )
         <![CDATA[
         where rn >= #{startRow} and rn <= #{endRow}
@@ -332,7 +338,7 @@
     </select>
 
     <!-- 승인 내역 전체 갯수 -->
-    <select id="approvaLlistCount" resultType="int">
+    <select id="approvalListCount" resultType="int">
         select count(*) from approval
         where bound_type = #{boundType}
     </select>

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class LoginController {
     private final LoginService service;
 
-    @GetMapping("/")
+    @GetMapping("/login")
     public String loginForm(){
         return "login/form";
     }

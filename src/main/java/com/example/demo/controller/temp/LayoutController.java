@@ -24,9 +24,13 @@ public class LayoutController {
         return "layout";
     }
 
-    @GetMapping("/notice")
+    @GetMapping("/")
     public String notice(Model model,
                          HttpSession session){
+        if(session.getAttribute("webuser_id") == null){
+            return "redirect:/login";
+        }
+
         if((int)session.getAttribute("role_id")==1){
             model.addAttribute("navFragment", "fragment/nav/adminNav");
             model.addAttribute("content", "content/notice");
