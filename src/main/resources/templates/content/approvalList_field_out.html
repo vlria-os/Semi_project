@@ -6,13 +6,12 @@
     </div>
     <table>
       <tr>
-        <th>승인 번호</th><th>승인자</th><th>상품명</th><th>반품 여부</th><th>승인일</th>
+        <th>승인 번호</th><th>승인자</th><th>상품명</th><th>승인일</th>
       </tr>
-      <tr th:each="l:${list}" th:attr="data-inbound-id=${l.inbound_id}" onclick="showDetail(this)">
+      <tr th:each="l:${list}" th:attr="data-outbound-id=${l.outbound_id}" onclick="showDetail(this)">
         <td th:text="${l.approval_id}"></td>
         <td th:text="${l.approver_name}"></td>
         <td th:text="${l.product_name}"></td>
-        <td th:text="${l.is_refund}"></td>
         <td th:text="${#temporals.format(l.created_at, 'yyyy-MM-dd HH:mm:ss')}"></td>
       </tr>
     </table>
@@ -37,8 +36,8 @@
         return;
       }
 
-      const bound_type="IN";
-      const bound_id=currentTr.dataset.inboundId;
+      const bound_type="OUT";
+      const bound_id=currentTr.dataset.outboundId;
 
       fetch(`/field_staff/bound_conf/detailList?bound_type=${bound_type}&bound_id=${bound_id}`)
               .then(resp=>resp.json())
@@ -106,7 +105,7 @@
                   <td colspan="${colCount}">
                      <table>
                      <tr>
-                        <th>상품명</th><th>수량</th><th>승인 상태</th><th>유통기한 / 수량</th><th>처리</th>
+                        <th>상품명</th><th>수량</th><th>승인 상태</th><th>수량</th><th>처리</th>
                      </tr>
                      ${rows}
                      </table>

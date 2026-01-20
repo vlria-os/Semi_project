@@ -19,9 +19,9 @@ public class inbound_conf_Controller {
     private final InboundService inboundService;
     private final RequestService requestService;
 
-    @GetMapping("/field_staff/bound_conf")
-    public String bound_confFrom(Model model){
-        List<ApprovalDto> list=requestService.approvalconfAll();
+    @GetMapping("/field_staff/inbound_conf")
+    public String inbound_confFrom(Model model){
+        List<ApprovalConfDto> list=requestService.getApprovalConfIn();
 
         model.addAttribute("list", list);
         model.addAttribute("navFragment", "fragment/nav/fieldNav");

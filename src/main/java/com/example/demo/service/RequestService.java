@@ -335,34 +335,43 @@ public class RequestService {
         return result;
     }
 
-    public List<ApprovalDto> approvalconfAll(){
-        List<ApprovalDto> approvalDtos=mapper.approvalconfAll();
-        List<ApprovalDto> result = new ArrayList<>();
+//    public List<ApprovalDto> approvalconfAll(){
+//        List<ApprovalDto> approvalDtos=mapper.approvalconfAll();
+//        List<ApprovalDto> result = new ArrayList<>();
+//
+//        for(ApprovalDto a:approvalDtos){
+//            boolean hasRequest = false;
+//            if(a.getBound_type().equals("IN")){
+//                List<String> list=inbound_detailMapper.select_detail_status(a.getInbound_id());
+//                for(String s:list){
+//                    if ("REQUEST".equals(s)) {
+//                        hasRequest = true;
+//                        break;
+//                    }
+//                }
+//            }else{
+//                List<String> list=outbound_detailMapper.select_detail_status(a.getOutbound_id());
+//                for(String s:list){
+//                    if ("REQUEST".equals(s)) {
+//                        hasRequest = true;
+//                        break;
+//                    }
+//                }
+//            }
+//            if (hasRequest) {
+//                result.add(a);
+//            }
+//        }
+//        System.out.println(result);
+//        return result;
+//    }
 
-        for(ApprovalDto a:approvalDtos){
-            boolean hasRequest = false;
-            if(a.getBound_type().equals("IN")){
-                List<String> list=inbound_detailMapper.select_detail_status(a.getInbound_id());
-                for(String s:list){
-                    if ("REQUEST".equals(s)) {
-                        hasRequest = true;
-                        break;
-                    }
-                }
-            }else{
-                List<String> list=outbound_detailMapper.select_detail_status(a.getOutbound_id());
-                for(String s:list){
-                    if ("REQUEST".equals(s)) {
-                        hasRequest = true;
-                        break;
-                    }
-                }
-            }
-            if (hasRequest) {
-                result.add(a);
-            }
-        }
-        System.out.println(result);
-        return result;
+
+    public List<ApprovalConfDto> getApprovalConfIn(){
+        return mapper.approvalConfIn();
+    }
+
+    public List<ApprovalConfDto> getApprovalConfOut(){
+        return mapper.approvalConfOut();
     }
 }

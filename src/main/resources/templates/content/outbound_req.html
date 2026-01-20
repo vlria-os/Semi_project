@@ -158,7 +158,28 @@
 
             if(!confirm('출고 요청 하시겠습니까?')) return;
 
-            document.getElementById('outboundForm').submit();
+            const form = document.getElementById('outboundForm');
+            const formData = new FormData(form);
+
+            fetch(form.action, {
+                method: 'POST',
+                body: formData
+            })
+                .then(resp => resp.json())
+                .then(data => {
+                    if(data.result==='success'){
+                        alert("출고 요청이 완료되었습니다.");
+                    }
+                    else{
+                        alert("출고 요청 중 오류가 발생했습니다.");
+                    }
+                    location.reload();
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('출고 요청 중 오류가 발생했습니다.');
+                });
+
         }
 
     </script>
