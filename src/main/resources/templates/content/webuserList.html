@@ -3,7 +3,7 @@
     <link rel="stylesheet" th:href="@{/css/content/webuserlist.css}">
     <div class="main">
         <div>
-            <button onclick="insertWebuser()">계정 추가</button> <span id="span" style="color: red;font-size: 11px;"></span>
+            <button onclick="insertWebuser()">계정 추가</button>
             <!-- 숨긴 파일 input -->
             <input type="file" id="fileInput" accept=".csv,.xlsx" style="display: none;">
 
@@ -15,8 +15,13 @@
         <form th:action="@{/webuser/insert}" method="post" style="display: none;" id="insertForm">
             <table>
                 <tr>
-                    <th>ID</th><td><input type="text" name="id" id="id">
-                        <button type="button" onclick="idcheck()">중복 체크</button>
+                    <th>ID</th>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <input type="text" name="id" id="id">
+                            <button type="button" onclick="idcheck()" class="check-btn">중복 체크</button>
+                            <span id="span" style="color: red;font-size: 11px; white-space: nowrap;"></span>
+                        </div>
                     </td>
                 </tr>
                 <tr>
@@ -45,7 +50,7 @@
             </table>
         </form>
         <div class="search-container">
-            <form th:action="@{/webuser/list}" method="get">
+            <form th:action="@{/webuser/list}" method="get" class="search-bar">
             <select name="field">
                 <option value="webuser_name"
                         th:selected="${field == 'webuser_name'}">이름</option>
