@@ -32,19 +32,9 @@ public class ApiAdsController {
     private final RestTemplate restTemplate = new RestTemplate();
 
     private static final Map<String,String> REGION_AREA = Map.ofEntries(
-            Map.entry("gwangju", "광주광역시"),
-            Map.entry("jeonnam", "전라남도"),
             Map.entry("daejeon", "대전광역시"),
-            Map.entry("busan", "부산광역시"),
-            Map.entry("daegu", "대구광역시"),
-            Map.entry("incheon", "인천광역시"),
-            Map.entry("ulsan", "울산광역시"),
             Map.entry("jeonbuk", "전북특별자치도"),
-            Map.entry("gyeonggi", "경기도"),
-            Map.entry("chungbuk", "충청북도"),
             Map.entry("chungnam", "충청남도"),
-            Map.entry("gyeongbuk", "경상북도"),
-            Map.entry("gyeongnam", "경상남도"),
             Map.entry("gangwon", "강원특별자치도")
     );
 
@@ -57,7 +47,7 @@ public class ApiAdsController {
     @ResponseBody
     public List<LocalProductDto> getGwangjuLocalProducts() throws Exception {
         String url = "http://api.nongsaro.go.kr/service/localSpcprd/localSpcprdLst"
-                + "?apiKey=20260119CYKS5JEK0DAA7TJFM5HVG"
+                + "?apiKey=내_키"
                 + "&sAreaNm=광주광역시";
 
         //xml을 문자열로 받기
