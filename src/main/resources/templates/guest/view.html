@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>글상세보기</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+    <div class="container">
+        <h1 th:text="${board.title}">제목</h1>
+
+        <p><strong>작성자:</strong> <span th:text="${board.name}"></span> </p>
+        <p><strong>작성일:</strong>
+            <span th:text="${#dates.format(board.createdAt,'yyyy-MM-dd ')}"></span></p>
+        <p><strong>조회수:</strong> <span th:text="${board.viewCount}"></span> </p>
+        <p th:text="${board.content}">내용</p>
+
+        <form th:action="@{/guest/delete}" method="post">
+            <input type="hidden" name="id" th:value="${board.id}"/>
+            비밀번호: <input type="password" name="password" required/>
+            <p th:if="${error}" th:text="${error}" class="error"></p>
+
+        <div class="button-group">
+            <a th:href="@{/guest/edit/check/{id}(id=${board.id})}">
+                <button type="button">수정</button>
+            </a>
+            <button type="submit" class="btn-danger">삭제</button>
+            <a th:href="@{/guest/list}">목록으로</a>
+        </div>
+    </form>
+</div>
+
+</body>
+</html>
+

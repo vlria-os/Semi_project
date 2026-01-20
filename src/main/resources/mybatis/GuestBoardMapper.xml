@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.GuestBoardMapper">
+
+    <select id="selectList" resultType="GuestBoardDto">
+        select id, category,name, title, content, created_at AS createdAt, view_count as viewCount
+        FROM guest_board  order by id desc
+    </select>
+    <select id="selectOne" resultType="GuestBoardDto">
+        select id,category,name,title,content,created_at AS createdAt,view_count as viewcount
+        from guest_board where id=#{id}
+    </select>
+
+    <insert id="insert">
+        insert into guest_board(id,category,name,password,title,content,created_at,view_count)
+        values(guest_board_seq.nextval,#{category}, #{name},#{password},#{title},#{content},sysdate,0)
+    </insert>
+    <delete id="delete">
+        delete from guest_board where id=#{id} and password=#{password}
+    </delete>
+    <!--조회수-->
+    <update id="increaseViewCount">
+        UPDATE guest_board  SET view_count = view_count + 1 WHERE id = #{id}
+    </update>
+
+    <!--글 상세 조회-->
+    <select id="selectId" parameterType="long" resultType="com.example.demo.dto.GuestBoardDto">
+        select id,category,name,password,title,content,created_at,view_count
+        from guest_board where id=#{id}
+    </select>
+
+    <!--글 수정-->
+    <update id="updateBoard" parameterType="com.example.demo.dto.GuestBoardDto">
+        update guest_board set category=#{category}, title=#{title}, content=#{content}
+        where id=#{id} and password=#{password} <!--비밀번호 확인 필수 -->
+    </update>
+
+    <!--카테고리 검색-->
+    <select id="searchByCategory" parameterType="GuestBoardDto" resultType="com.example.demo.dto.GuestBoardDto">
+        select id,category,name,title,content,view_count as viewCount,created_at as createdAt
+        from guest_board
+        where category = #{category}
+        order by id desc
+    </select>
+
+    <!--    제목 검색-->
+    <select id="searchByTitle" parameterType="String" resultType="com.example.demo.dto.GuestBoardDto">
+        select id,category,name,title,content, view_count as viewCount, created_at as createdAt
+        from guest_board
+        where title like concat('%', #{keyword}, '%')
+        ORDER BY id DESC
+    </select>
+    <select id="checkPassword" resultType="int">
+        select count(*) from guest_board where id=#{id} and password=#{password}
+    </select>
+    <select id="searchAll" resultType="com.example.demo.dto.GuestBoardDto">
+        select * from guest_board
+        where title like '%' || #{keyword} || '%'
+            or name like '%' || #{keyword} || '%'
+            or content like '%' || #{keyword} || '%'
+        order by id desc
+    </select>
+</mapper>
