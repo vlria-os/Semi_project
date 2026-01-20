@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/css/statistics/statlist.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="container">
+
+    <!--기간별 매출 통계-->
+    <div class="storage">
+        <div class="main">
+            <div class="main-title">
+                <span class="main-icon">📊</span>
+                기간별 매출
+            </div>
+            <!--이동 버튼-->
+            <div class="view-toggle">
+                <button class="view-btn"><a th:href="@{/stats/statistics}">품목별</a></button>
+                <button class="view-btn active" data-view=""><a th:href="@{/stats/period}">기간별</a></button>
+                <button class="view-btn"><a th:href="@{/stats/waste}">폐기율</a></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="total-stats">
+        <div class="stat-card">
+            <span class="label">총 기간 매출</span>
+            <div class="value" th:text="${#numbers.formatInteger(totalRev, 3, 'COMMA')} + '원'">0원</div>
+        </div>
+        <div class="stat-card">
+            <span class="label">총 기간 판매량</span>
+            <div class="value" th:text="${totalQty} + '개'">0개</div>
+        </div>
+    </div>
+    <!--통계 차트-->
+    <div class="chart-container" style="position: relative; height:400px; margin-bottom: 20px;">
+        <canvas id="periodChart"></canvas>
+    </div>
+    <!--통계 게시판-->
+    <div class="item-list">
+        <table class="stats-table">
+            <tr>
+                <th>날짜</th><th>판매량</th><th>매출액</th>
+            </tr>
+            <tr th:each="item : ${periodList}">
+                <td th:text="${item.sale_date}">2026-01-01</td>
+                <td th:text="${item.quantity}">0</td>
+                <td th:text="${#numbers.formatInteger(item.revenue, 3, 'COMMA')} + '원'">0원</td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function (){
+        const data= /*[[${periodList}]]*/ [];
+        if(!data || data.length === 0) return;
+
+        const labels=data.map(item => item.sale_date);
+        const revenues=data.map(item => item.revenu);
+
+        const ctx=document.getElementById('periodChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '일변 매출액',
+                    data: revenues,
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { callback : (val) => val.toLocaleString() + '원' }
+                    }
+                }
+            }
+        });
+    });
+</script>
+</html>

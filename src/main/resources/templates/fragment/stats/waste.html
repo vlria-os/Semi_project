@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" th:href="@{/css/statistics/statlist.css}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="container">
+
+    <!--폐기율 통계-->
+    <div class="storage">
+        <div class="main">
+            <div class="main-title">
+                <span class="main-icon">📊</span>
+                폐기율 통계
+            </div>
+            <!--이동 버튼-->
+            <div class="view-toggle">
+                <button class="view-btn"><a th:href="@{/stats/statistics}">품목별</a></button>
+                <button class="view-btn"><a th:href="@{/stats/period}">기간별</a></button>
+                <button class="view-btn active"><a th:href="@{/stats/waste}">폐기율</a></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="total-stats">
+        <div class="stat-card">
+            <span class="label">평균 폐기율</span>
+            <div class="value" th:text="${avgWasteRate} + '%'"></div>
+        </div>
+        <div class="stat-card">
+            <span class="label">총 기간 판매량</span>
+            <div class="value" th:text="${totalQty} + '개'">0개</div>
+        </div>
+    </div>
+    <!--통계 차트-->
+    <div class="chart-container" style="position: relative; height:400px; margin-bottom: 20px;">
+        <canvas id="wasteChart"></canvas>
+    </div>
+    <!--통계 게시판-->
+    <div class="item-list">
+        <table class="stats-table">
+            <tr>
+                <th>품목별</th><th>폐기 수량</th><th>전체 출고량</th><th>폐기율 (%)</th>
+            </tr>
+            <tr th:each="item : ${wasteList}">
+                <td th:text="${item.product_name}">2026-01-01</td>
+                <td th:text="${item.waste_quantity} + '개'"></td>
+                <td th:text="${item.total_quantity} + '개'"></td>
+                <td>
+                    <div class="progress-bar">
+                        <div class="progress" th:style="'width:' + ${item.waste_rate} + '%; background-color: #ef4444'"></div>
+                    </div>
+                    <span th:test="${item.waste_rate} + '%'"></span>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function(){
+        const data=/*[[${wasteList}]]*/ [];
+        if(!data || data.length===0) return ;
+
+        const labels=data.map(item => item.product_name);
+        const rates=data.map(item => item.share);
+
+        const ctx=document.getElementById('wasteChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: '품목별 폐기율 (%)',
+                    data: rates,
+                    backgroundColor: 'rgba(239, 68, 68, 0.6)',
+                    borderColor: '#ef4444',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                indexAsix: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {legend: {displayt: false}}
+            }
+        });
+    });
+</script>
+</html>

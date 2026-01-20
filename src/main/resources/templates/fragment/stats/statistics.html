@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <link rel="stylesheet" th:href="@{/css/statistics/statlist.css}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="container">
+
+  <!--품목별 통계-->
+  <div class="storage">
+    <div class="main">
+      <div class="main-title">
+        <span class="main-icon">📊</span>
+        매출 통계
+      </div>
+      <!--이동 버튼-->
+      <div class="view-toggle">
+        <button class="view-btn active" data-view=""><a th:href="@{/stats/statistics}">품목별</a></button>
+        <button class="view-btn"><a th:href="@{/stats/period}">기간별</a></button>
+        <button class="view-btn"><a th:href="@{/stats/waste}">폐기율</a></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="total-stats">
+    <div class="stat-card">
+      <span class="label">총 매출액</span>
+      <div class="value" th:text="${#numbers.formatInteger(stats.total_revenue, 3, 'COMMA')} + '원'">0원</div>
+    </div>
+    <div class="stat-card">
+      <span class="label">총 판매량</span>
+      <div class="value" th:text="${stats.total_quantity} + '개'">0개</div>
+    </div>
+    <div class="stat-card">
+      <span class="label">평균 단가</span>
+      <div class="value" th:text="${#numbers.formatInteger(stats.avg_price, 3, 'COMMA')} + '원'">0원</div>
+    </div>
+  </div>
+  <!--통계 차트-->
+  <div class="chart-container" style="position: relative; height:400px; margin-bottom: 20px;">
+    <canvas id="salesChart"></canvas>
+  </div>
+  <!--통계 게시판-->
+  <div class="item-list">
+    <table class="stats-table">
+      <tr>
+        <th>순위</th><th>품목명</th><th>판매량</th><th>단가</th><th>매출액</th><th>점유율</th>
+      </tr>
+      <tr th:each="item, stat : ${rankList}">
+        <td th:text="${stat.count}"></td>
+        <td th:text="${item.product_name}"></td>
+        <td th:text="${item.quantity}"></td>
+        <td th:text="${#numbers.formatInteger(item.price, 3, 'COMMA')} + '원'"></td>
+        <td th:text="${#numbers.formatInteger(item.revenue, 3, 'COMMA')} + '원'"></td>
+        <td>
+          <div class="progress-bar">
+            <div class="progress" th:style="'width:' + ${item.share} + '%'"></div>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>
+</body>
+<script th:inline="javascript">
+  document.addEventListener("DOMContentLoaded", function(){
+    const data=/*[[${rankList}]]*/'[]';
+    if(!data || data.length===0) return;
+
+    const labels=data.map(item=>item.product_name);
+    const revenues=data.map(item=>item.revenue);
+    const ctx=document.getElementById('salesChart').getContext('2d');
+    new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: '품목별 매출액 (원)',
+        data: revenues,
+        backgroundColor: [
+                'rgba(37, 99, 235, 0.6)',
+                'rgba(59, 130, 246, 0.6)',
+                'rgba(147, 197, 253, 0.6)',
+                'rgba(191, 219, 254, 0.6)'
+        ],
+        borderColor: 'rgba(37, 99, 235, 1)',
+        borderWidth: 1
+      }]
+    },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          y: {
+            beginAtZero: true,
+            ticks: {
+              callback: function (value) {
+                return value.toLocaleString() + '원';
+              }
+            }
+          }
+        },
+        plugins: {
+          legend: {display: false}
+        }
+      }
+      });
+  });
+
+</script>
+</html>
