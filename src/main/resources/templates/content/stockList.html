@@ -2,6 +2,12 @@
          th:fragment="content">
     <h1>재고확인목록</h1>
     <div>
+        <div>
+            <form th:action="@{/stockList}" method="get">
+                <input type="text" placeholder="상품명 또는 카테고리" name="keyword">
+                <input type="submit" value="검색">
+            </form>`
+        </div>
         <form th:action="@{/stockList}" method="get">
             <button type="submit">전체</button>
             <button type="submit" name="status" value="COLD">냉장</button>
@@ -46,12 +52,6 @@
             <td th:text="${ps.status}"></td>
         </tr>
     </table>
-    <div>
-        <form th:action="@{/stockList}" method="get">
-            <input type="text" placeholder="상품명 또는 카테고리" name="keyword">
-            <input type="submit" value="검색">
-        </form>`
-    </div>
     <div th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
         <ul>
             <li th:if="${pageInfo.startPageNum > 1}">
