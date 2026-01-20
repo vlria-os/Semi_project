@@ -58,6 +58,16 @@ public class OutboundService {
         int product_id=outbound_detailMapper.select_product(outbound_detailDto.getOutbound_detail_id());
         outbound_detailDto.setQuantity(outbound_detailMapper.select_quantity(outbound_detailDto.getOutbound_detail_id()));
 
+        //재고 확인
+        List<Select_outboundDto> select_outboundDtos=stockMapper.select_outbound(product_id);
+        int totalStock = 0;
+        for (Select_outboundDto s : select_outboundDtos) {
+            totalStock += s.getQuantity();
+        }
+        if (totalStock < outbound_detailDto.getQuantity()) {
+            return -1;
+        }
+
         int n=outbound_detailMapper.update_appStatus(outbound_detailDto);
         int m=outboundMapper.update_status(outbound_id);
         String status=outboundMapper.select_status(outbound_id);
@@ -71,16 +81,6 @@ public class OutboundService {
 
         if(outbound_detailDto.getApproval_status().equals("REJECTED")){
             int c=outbound_detailMapper.update_reason(outbound_detailDto);
-        }
-
-        //재고 확인
-        List<Select_outboundDto> select_outboundDtos=stockMapper.select_outbound(product_id);
-        int totalStock = 0;
-        for (Select_outboundDto s : select_outboundDtos) {
-            totalStock += s.getQuantity();
-        }
-        if (totalStock < outbound_detailDto.getQuantity()) {
-            return -1;
         }
 
         //출고 확인 예정 로직

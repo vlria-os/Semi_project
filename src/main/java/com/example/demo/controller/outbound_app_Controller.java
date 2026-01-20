@@ -38,7 +38,13 @@ public class outbound_app_Controller {
         Map<Integer,String> names=(Map<Integer,String>) map.get("names");
 
         Map<String,Object> result = new HashMap<>();
-        result.put("success", n>0);
+        if(n>0){
+            result.put("success", true);
+        }else{
+            result.put("success", false);
+            result.put("reason", "재고 부족");
+        }
+
         result.put("detailList", detailList); // 최신 상세 리스트 반환
         result.put("names",names);
 
@@ -63,6 +69,7 @@ public class outbound_app_Controller {
             result.put("success", n);
         }else{
             result.put("success",-1);
+            result.put("reason", "재고 부족");
         }
         return result;
     }

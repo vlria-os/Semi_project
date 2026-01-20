@@ -180,7 +180,7 @@
                             newDetailRow.appendChild(td);
                             tr.insertAdjacentElement("afterend", newDetailRow);
                         } else {
-                            alert("승인 실패");
+                            alert("승인 실패: "+data.reason);
                         }
                         location.reload();
                     })
@@ -364,7 +364,7 @@
                             tr.insertAdjacentElement("afterend", newDetailRow);
 
                         } else {
-                            alert("승인 실패");
+                            alert("승인 실패: "+data.reason);
                         }
 
                     })
