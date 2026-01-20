@@ -87,7 +87,8 @@
     <button><a th:href="@{/progress(my='true')}">나의 내역보기</a></button>
     <button><a th:href="@{/progress(my='false')}">입고</a></button>
     <button><a th:href="@{/progress/out(my='false')}">출고</a></button>
-    <button><a th:href="@{/download}">내역 다운로드</a></button>
+
+    <button th:if="${session.role_id == 1}"><a th:href="@{/download}">내역 다운로드</a></button>
     <table class="inbound-table">
         <thead>
         <tr>

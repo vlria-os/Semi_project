@@ -277,7 +277,7 @@
         LEFT JOIN webuser app ON app.webuser_id = a.approver_id
         LEFT JOIN lot_in l ON l.inbound_detail_id = d.inbound_detail_id
         LEFT JOIN webuser conf ON conf.webuser_id = l.confirmer_id
-        where o.webuser_id=${webuser_id} or a.approver_id=${webuser_id} or l.confirmer_id=${webuser_id}
+        where i.webuser_id=${webuser_id} or a.approver_id=${webuser_id} or l.confirmer_id=${webuser_id}
         ORDER BY i.inbound_id DESC
         ) t
         where product_name like '%'||#{keyword}||'%' or
