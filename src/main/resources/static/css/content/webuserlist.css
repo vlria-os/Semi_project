@@ -28,11 +28,32 @@ button[onclick*="triggerFile"] {
     background-color: #3b82f6;
     color: white;
 }
+.check-btn {
+    padding: 6px 12px;
+    background-color: #64748b; /* Grayish blue to differentiate from main Blue */
+    color: white;
+    font-size: 12px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+.check-btn:hover {
+    background-color: #475569;
+}
+#span {
+    font-weight: 600;
+    margin-left: 5px;
+}
 
 button:hover {
     opacity: 0.9;
 }
 
+#insertForm td div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 #insertForm, .updateTr form {
     background: #f8fafc;
     padding: 20px;
@@ -78,25 +99,84 @@ input[type="submit"] {
     margin: 25px 0;
     display: flex;
     justify-content: flex-end;
+    background-color: #f8fafc;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
 }
 
 .search-bar {
     display: flex;
-    gap: 8px;
+    gap: 10px;
+    align-items: center;
 }
 
 .search-bar select {
-    padding: 8px;
-    border: 1px solid #e2e8f0;
+    padding: 10px 15px;
+    border: 1px solid #cbd5e1;
     border-radius: 8px;
-    background: white;
+    background-color: white;
+    font-size: 14px;
+    color: #334155;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.search-bar select:focus {
+    border-color: #3b82f6;
 }
 
 .search-bar input[type="text"] {
-    padding: 8px 15px;
+    padding: 10px 15px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    width: 250px;
+    font-size: 14px;
+    outline: none;
+}
+
+.search-bar input[type="text"]:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+.search-bar input[type="submit"] {
+    background-color: #3b82f6;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.search-bar input[type="submit"]:hover {
+    background-color: #2563eb;
+}
+
+#insertForm table,
+.updateTr table {
+    background-color: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
-    width: 200px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+#insertForm td,
+.updateTr td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+#insertForm th,
+.updateTr th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-weight: 600;
+    width: 120px;
+    border-bottom: 1px solid #f1f5f9;
 }
 
 #webuserTable {
