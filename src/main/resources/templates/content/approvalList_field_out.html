@@ -86,9 +86,8 @@
           data-bound-detail-id="${l.outbound_detail_id}"
           data-bound-type="OUT">
         <td data-product-id="${l.product_id}">${name}</td>
-        <td>${l.quantity}</td>
         <td>${l.outbound_status}</td>
-        <td>—</td>
+        <td>${l.quantity}</td>
         <td>
           <button type="button"
                   onclick="confirmApprove(event,this)">승인</button>
@@ -105,7 +104,7 @@
                   <td colspan="${colCount}">
                      <table>
                      <tr>
-                        <th>상품명</th><th>수량</th><th>승인 상태</th><th>수량</th><th>처리</th>
+                        <th>상품명</th><th>승인 상태</th><th>수량</th><th>처리</th>
                      </tr>
                      ${rows}
                      </table>
