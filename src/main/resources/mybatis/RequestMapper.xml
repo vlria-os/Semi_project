@@ -228,8 +228,11 @@
         p.product_name as product_name,
         i.save_name as save_name,
         d.quantity as quantity,
+        w.warehouse_name as warehouse_name,
         d.approval_status as approval_status
         from inbound_detail d
+        join warehouse w
+        on d.warehouse_id=w.warehouse_id
         join product p
         on d.product_id = p.product_id
         join product_image i

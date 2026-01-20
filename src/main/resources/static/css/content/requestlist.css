@@ -110,17 +110,7 @@ body {
     padding: 12px !important;
 }
 
-button[onclick*="showInDetail"] {
-    background-color: #3b82f6;
-    color: white;
-    border: none;
-    padding: 6px 14px;
-    border-radius: 6px;
-    font-size: 13px;
-    font-weight: 500;
-    cursor: pointer;
-}
-button[onclick*="showOutDetail"] {
+button[onclick*="showInDetail"], button[onclick*="showOutDetail"] {
     background-color: #3b82f6;
     color: white;
     border: none;

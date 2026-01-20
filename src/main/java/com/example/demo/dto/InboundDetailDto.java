@@ -13,5 +13,6 @@ public class InboundDetailDto {
     private String product_name;
     private String save_name;
     private int quantity;
+    private String warehouse_name;
     private String approval_status;
 }

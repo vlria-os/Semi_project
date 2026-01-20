@@ -80,6 +80,7 @@
                                     <th>상품명</th>
                                     <th>상품 이미지</th>
                                     <th>수량</th>
+                                    <th>창고</th>
                                     <th>요청 상세</th>
                                     <th>승인/반려</th>
                                 </tr>`;
@@ -92,6 +93,7 @@
                                     <td>${l.product_name}</td>
                                     <td><img src="/image/${l.save_name}" style="width:50px; height:50px; border-radius: 4px; object-fit: cover;"></td>
                                     <td>${l.quantity}</td>
+                                    <td>${l.warehouse_name}</td>
                                     <td>${l.approval_status}</td>
                                     <td>
                                         <button type="button" onclick="approveItem(this)">승인</button>
