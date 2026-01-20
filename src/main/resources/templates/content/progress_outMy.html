@@ -121,11 +121,11 @@
                             <span class="point"
                                   th:classappend="${
                                       l.reason != null
-                                          ? (l.approved_date == null and l.received_date == null ? ' fail' : ' done')
+                                          ? (l.approved_date == null and l.shipped_date == null ? ' fail' : ' done')
                                           : (l.requested_date != null ? ' done' : '')
                                   }"
                                   th:text="${
-                                      l.reason != null and l.approved_date == null and l.received_date == null
+                                      l.reason != null and l.approved_date == null and l.shipped_date == null
                                           ? '✖'
                                           : (l.requested_date != null ? '✔' : '')
                                   }">
@@ -133,11 +133,11 @@
               <span class="point"
                     th:classappend="${
                                       l.reason != null
-                                          ? (l.approved_date != null and l.received_date == null ? ' fail' : (l.approved_date != null ? ' done' : ''))
+                                          ? (l.approved_date != null and l.shipped_date == null ? ' fail' : (l.approved_date != null ? ' done' : ''))
                                           : (l.approved_date != null ? ' done' : '')
                                   }"
                     th:text="${
-                                      l.reason != null and l.approved_date != null and l.received_date == null
+                                      l.reason != null and l.approved_date != null and l.shipped_date == null
                                           ? '✖'
                                           : (l.approved_date != null ? '✔' : '')
                                   }">
@@ -145,13 +145,13 @@
               <span class="point"
                     th:classappend="${
                                       l.reason != null
-                                          ? (l.received_date != null ? ' fail' : '')
-                                          : (l.received_date != null ? ' done' : '')
+                                          ? (l.shipped_date != null ? ' fail' : '')
+                                          : (l.shipped_date != null ? ' done' : '')
                                   }"
                     th:text="${
-                                      l.reason != null and l.received_date != null
+                                      l.reason != null and l.shipped_date != null
                                           ? '✖'
-                                          : (l.received_date != null ? '✔' : '')
+                                          : (l.shipped_date != null ? '✔' : '')
                                   }">
                         </span>
 
@@ -167,7 +167,7 @@
           <div class="row date">
             <span th:text="${l.requested_date}"></span>
             <span th:text="${l.approved_date}"></span>
-            <span th:text="${l.received_date}"></span>
+            <span th:text="${l.shipped_date}"></span>
           </div>
         </div>
       </td>
