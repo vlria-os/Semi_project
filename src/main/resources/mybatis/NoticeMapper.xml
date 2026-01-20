@@ -21,7 +21,7 @@
             AND CREATED_AT <![CDATA[>=]]> TO_DATE(#{startDate}, 'YYYY-MM-DD')
         </if>
         <if test="endDate != null and endDate != ''">
-            AND CREATED_AT <![CDATA[<=]]> TO_DATE(#{endDate}, 'YYYY-MM-DD')
+            AND CREATED_AT <![CDATA[<=]]> TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
         </if>
         ORDER BY NOTICE_ID DESC
         OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
