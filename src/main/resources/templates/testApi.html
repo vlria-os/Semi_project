@@ -3,57 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <title>API</title>
+    <style>
+        /* (B안) footer 영역: 여러 줄로 wrap */
+        .footer-ads{
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: flex-start; /* 줄 간격 자연스럽게 */
+        }
+
+        /* 카드: 높이 고정 X (내용에 맞게) */
+        .ad-box{
+            opacity: 1;
+            transition: opacity 300ms ease, transform 150ms ease, box-shadow 150ms ease;
+
+            display: inline-block;     /* 내용 크기 기반 */
+            border: 1px solid #eaeaea;
+            border-radius: 12px;
+            background: #fff;
+
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .ad-box.fading{ opacity: 0; }
+
+        .ad-box:hover{
+            transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.10);
+        }
+
+        /* 카드 내부: 가로 정렬 + 세로 가운데 정렬 */
+        .ad-content{
+            display: flex;
+            align-items: center;   /* ✅ 이미지/글 세로 가운데 */
+            gap: 8px;
+            padding: 6px 8px;      /* ✅ 카드 여백 줄임 */
+        }
+
+        /* 이미지: baseline 문제 방지 + 크기 고정 */
+        .ad-content img{
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            object-fit: cover;
+            flex: 0 0 auto;
+            display: block;        /* ✅ inline baseline 문제 제거 */
+        }
+
+        /* 텍스트: 말줄임 되게 */
+        .ad-text{
+            min-width: 0;
+            max-width: 140px;      /* ✅ 카드가 너무 길어지지 않게 제한 (원하면 120~160 조절) */
+        }
+
+        /* 제목 1줄 말줄임 */
+        .ad-title{
+            font-weight: 700;
+            font-size: 12px;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 지역명도 1줄 말줄임 */
+        .ad-meta{
+            margin-top: 2px;
+            font-size: 10px;
+            color: #666;
+            line-height: 1.2;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* 혹시 p 태그 기본 마진이 남아있을 때 대비 */
+        .ad-content p{ margin: 0; }
+
+    </style>
 </head>
 <body>
-<h1>전북특별자치도 특산물</h1>
-<div id="result"></div>
-<h1>전라남도 해남군 특산물</h1>
-<div id="result2"></div>
+<div class="footer-ads">
+    <div id="resultGwangju" class="ad-box"></div>
+    <div id="resultJeonbuk" class="ad-box"></div>
+</div>
 <script>
-    function loadJeonbuk(){
-        fetch('/jeonbuk')
-            .then(resp => resp.json())
-            .then(json => {
-                const data=json.data || [];
-                let html = "";
-
-                data.forEach(item => {
-                    html +=`
-                            <p><b>${item["식재료"]}</b></p>
-                            <p>${item["특성"]}</p>
-                            <p>${item["문의"]}</p>
-                          `;
-                })
-
-                document.getElementById("result").innerHTML = html;
-            })
-            .catch(console.error);
+    function escapeHtml(text) {
+        if (!text) return "";
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     }
 
-    loadJeonbuk();
-
-    function loadHaenam(){
-        fetch(`/haenam`)
-            .then(resp => resp.json())
-            .then(json => {
-                const result=document.getElementById("result2");
-                let html="";
-
-                const data=json.data || [];
-
-                data.forEach(item => {
-                    html +=`
-                            <p><b>${item["특산물명"]}</b></p>
-                            <p>${item["연락처"]}</p>
-                            <p>${item["홈페이지"]}</p>
-                          `;
-                });
-                result.innerHTML=html;
-            })
-            .catch(console.error);
+    function renderAd(item){
+        return `<div class="ad-content" data-link="${item.linkUrl}">
+                    <img src="${item.imgUrl}" onerror="this.src='/images/no-image.png'">
+                    <div class="ad-text">
+                        <div class="ad-title">${escapeHtml(item.cntntsSj)}</div>
+                        <div class="ad-meta">${escapeHtml(item.areaNm)}</div>
+                    </div>
+                </div>
+                `;
     }
 
-    loadHaenam();
+    function adClick(el){
+        el.onclick = () => {
+            const content = el.querySelector(".ad-content");
+            if(!content) return;
+
+            const link=content.dataset.link;
+            if(link){
+                window.open(link, "_blank");
+            }
+        }
+    }
+
+    function loadRandomAd(region, targetId){
+        const el = document.getElementById(targetId);
+
+        fetch(`/api/localProducts/randomOne?region=${encodeURIComponent(region)}&ts=${Date.now()}`)
+            .then(res => res.json())
+            .then(item => {
+                if(!item){
+                    // 없을 때도 페이드로 처리(선택)
+                    el.classList.add("fading");
+                    setTimeout(() => {
+                        el.innerHTML = "<p>데이터가 없습니다.</p>";
+                        el.classList.remove("fading");
+                    }, 300);
+                    return;
+                }
+
+                // 1) 먼저 페이드아웃
+                el.classList.add("fading");
+
+                // 2) 페이드아웃 끝난 뒤에 내용 교체 후 페이드인
+                setTimeout(() => {
+                    el.innerHTML = renderAd(item);
+                    el.classList.remove("fading");
+                    adClick(el);
+                }, 300); // CSS transition 시간과 맞추기
+            })
+            .catch(err => {
+                console.error(err);
+                el.classList.add("fading");
+                setTimeout(() => {
+                    el.innerHTML = "<p>불러오기 실패</p>";
+                    el.classList.remove("fading");
+                }, 300);
+            });
+    }
+
+
+    const timers=new Map();
+
+    function startAuto(region, targetId, interval = 3000){
+        if(timers.has(targetId)) return;
+
+        loadRandomAd(region, targetId);
+
+        const id = setInterval(() => {
+            loadRandomAd(region, targetId);
+        }, interval);
+
+        timers.set(targetId, id);
+    }
+
+    function stopAuto(targetId){
+        const id = timers.get(targetId);
+
+        if(id){
+            clearInterval(id);
+            timers.delete(targetId);
+        }
+    }
+
+    //광주광역시
+    const gwangjuEl = document.getElementById("resultGwangju");
+    startAuto("gwangju","resultGwangju");
+
+    gwangjuEl.addEventListener("mouseenter", () => {
+        stopAuto("resultGwangju");
+    });
+    gwangjuEl.addEventListener("mouseleave", () => {
+        startAuto("gwangju","resultGwangju");
+    });
+
+    //전북특별자치도
+    const jeonbukEl = document.getElementById("resultJeonbuk");
+    startAuto("jeonbuk","resultJeonbuk");
+
+    jeonbukEl.addEventListener("mouseenter", () => {
+        stopAuto("resultJeonbuk");
+    });
+    jeonbukEl.addEventListener("mouseleave", () => {
+        startAuto("jeonbuk", "resultJeonbuk");
+    })
+
+
+
+    // function loadGwangju(){
+    //     const result=document.getElementById("result");
+    //
+    //     fetch('/api/localProducts/gwangju')
+    //         .then(resp => resp.json())
+    //         .then(data => {
+    //             data.forEach(item => {
+    //                 result.innerHTML += `
+    //                                       <img src="${item.imgUrl}"
+    //                                         style="width:200px; height:150px; object-fit:cover;"
+    //                                         onerror="this.src='/images/no-image.png'"><br>
+    //                                       <p><b>${item.cntntsSj}</b></p>
+    //                                       <p>${item.areaNm}</p>
+    //                                       <a href="${item.linkUrl}" target="_blank">자세히 보기</a>
+    //                                       <hr>
+    //                                     `;
+    //             })
+    //         })
+    //         .catch(err => {
+    //             console.error(err);
+    //             result.innerHTML = "<p>특산물 정보를 불러오지 못했습니다.</p>";
+    //         });
+    // }
+
+
+
+    // function loadJeonbuk(){
+    //     fetch('/jeonbuk')
+    //         .then(resp => resp.json())
+    //         .then(json => {
+    //             const data=json.items || [];
+    //             let html = "";
+    //
+    //             data.forEach(item => {
+    //                 html +=`
+    //                         <p><b>${item["식재료"]}</b></p>
+    //                         <p>${item["특성"]}</p>
+    //                         <p>${item["문의"]}</p>
+    //                       `;
+    //             })
+    //
+    //             document.getElementById("result").innerHTML = html;
+    //         })
+    //         .catch(console.error);
+    // }
+    //
+    // loadJeonbuk();
 </script>
 
 </body>
