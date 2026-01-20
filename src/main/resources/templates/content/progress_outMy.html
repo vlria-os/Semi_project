@@ -1,0 +1,192 @@
+<section xmlns:th="http://www.thymeleaf.org"
+         th:fragment="content">
+  <style>
+    .progress-cell {
+      min-width: 360px;
+      vertical-align: top;
+      padding: 8px;              /* td 기본 padding 보정 */
+    }
+
+    /* 전체 진행 영역 */
+    .progress {
+      display: grid;
+      grid-template-rows: auto 30px auto auto auto;
+      row-gap: 6px;
+      font-size: 12px;
+
+      width: 360px;              /* 🔥 고정 */
+      margin: 0 auto;
+    }
+
+    /* 모든 행을 동일 grid 기준으로 */
+    .row,
+    .reason {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      text-align: center;
+      align-items: center;
+    }
+
+    .row.bar {
+      display: block;
+    }
+
+    .bar-inner {
+      position: relative;
+      height: 30px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      align-items: center;
+    }
+
+    .bar-inner::before {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 16.66%;
+      width: 66.66%;
+      height: 4px;
+      background: #e0e0e0;
+      transform: translateY(-50%);
+      z-index: 0;
+    }
+
+    .point {
+      z-index: 1;
+      width: 20px;
+      height: 20px;
+      margin: 0 auto;
+      border-radius: 50%;
+      line-height: 20px;
+      background: #bdbdbd;
+      color: #fff;
+    }
+
+
+    .point.done { background: #2e7d32; }
+    .point.fail { background: #d32f2f; }
+
+    /* 날짜 */
+    .date { color: #555; }
+
+    /* 사유는 마지막 칸 중앙 */
+    .reason span {
+      grid-column: 3;
+      justify-self: center;
+      font-size: 11px;
+      color: #666;
+    }
+
+
+  </style>
+  <input type="text" id="keyword" placeholder="출고 번호, 상품명 또는 아이디 검색">
+  <button><a th:href="@{/progress(my='false')}">전체 내역보기</a></button>
+  <button><a th:href="@{/progress(my='true')}">입고</a></button>
+  <button><a th:href="@{/progress/out(my='true')}">출고</a></button>
+  <label>
+
+  <table class="outbound-table">
+    <thead>
+    <tr>
+      <th>출고번호</th>
+      <th>상품명</th>
+      <th>수량</th>
+      <th>폐기/반품여부</th>
+      <th>창고명</th>
+      <th>진행상황</th>
+      <th>사유</th>
+    </tr>
+    </thead>
+
+    <tbody th:each="l:${list}">
+    <tr>
+      <td th:text="${l.outbound_detail_id}"></td>
+      <td th:text="${l.product_name}"></td>
+      <td th:text="${l.quantity}"></td>
+      <td th:text="${l.is_expired}"></td>
+      <td th:text="${l.warehouse_name}"></td>
+
+      <!-- 🔥 진행바 td -->
+      <td class="progress-cell">
+        <div class="progress">
+
+          <div class="row label">
+            <span>요청</span>
+            <span>승인</span>
+            <span>확인</span>
+          </div>
+
+          <div class="row bar">
+            <div class="bar-inner">
+                            <span class="point"
+                                  th:classappend="${
+                                      l.reason != null
+                                          ? (l.approved_date == null and l.received_date == null ? ' fail' : ' done')
+                                          : (l.requested_date != null ? ' done' : '')
+                                  }"
+                                  th:text="${
+                                      l.reason != null and l.approved_date == null and l.received_date == null
+                                          ? '✖'
+                                          : (l.requested_date != null ? '✔' : '')
+                                  }">
+                            </span>
+              <span class="point"
+                    th:classappend="${
+                                      l.reason != null
+                                          ? (l.approved_date != null and l.received_date == null ? ' fail' : (l.approved_date != null ? ' done' : ''))
+                                          : (l.approved_date != null ? ' done' : '')
+                                  }"
+                    th:text="${
+                                      l.reason != null and l.approved_date != null and l.received_date == null
+                                          ? '✖'
+                                          : (l.approved_date != null ? '✔' : '')
+                                  }">
+                            </span>
+              <span class="point"
+                    th:classappend="${
+                                      l.reason != null
+                                          ? (l.received_date != null ? ' fail' : '')
+                                          : (l.received_date != null ? ' done' : '')
+                                  }"
+                    th:text="${
+                                      l.reason != null and l.received_date != null
+                                          ? '✖'
+                                          : (l.received_date != null ? '✔' : '')
+                                  }">
+                        </span>
+
+            </div>
+          </div>
+
+          <div class="row user">
+            <span th:text="${l.requester_name}"></span>
+            <span th:text="${l.approver_name}"></span>
+            <span th:text="${l.confirmer_name}"></span>
+          </div>
+
+          <div class="row date">
+            <span th:text="${l.requested_date}"></span>
+            <span th:text="${l.approved_date}"></span>
+            <span th:text="${l.received_date}"></span>
+          </div>
+        </div>
+      </td>
+      <td th:text="${l.reason}"></td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div>
+    <ul id="pagingArea" th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
+      <li th:if="${pageInfo.startPageNum > 1}">
+        <a th:href="@{/progress(pageNum=${pageInfo.startPageNum - 1})}">[이전]</a>
+      </li>
+      <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
+        <a th:href="@{/progress(pageNum=${num}, my=${my})}">[[${num}]]</a>
+      </li>
+      <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
+        <a th:href="@{/progress(pageNum=${pageInfo.endPageNum + 1})}">[다음]</a>
+      </li>
+    </ul>
+  </div>
+</section>

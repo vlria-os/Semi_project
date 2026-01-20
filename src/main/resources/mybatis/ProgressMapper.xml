@@ -4,7 +4,177 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.demo.mapper.ProgressMapper">
-    <select id="select_in" resultType="ProgressInDto">
+    <select id="select_in" parameterType="map" resultType="ProgressInDto">
+        select * from (
+            select rownum rn, t.*
+            from (
+                SELECT
+                i.inbound_id,
+                d.inbound_detail_id,
+                p.product_name,
+                d.quantity,
+                i.is_refund,
+                w.warehouse_name,
+
+                req.webuser_name AS requester_name,
+                app.webuser_name AS approver_name,
+                conf.webuser_name AS confirmer_name,
+
+                i.request_date AS requested_date,
+                a.created_at   AS approved_date,
+                l.received_date,
+                d.reason
+                FROM inbound_detail d
+                    JOIN inbound i ON i.inbound_id = d.inbound_id
+                    JOIN product p ON p.product_id = d.product_id
+                    JOIN warehouse w ON w.warehouse_id = d.warehouse_id
+                    JOIN webuser req ON req.webuser_id = i.webuser_id
+                    LEFT JOIN approval a ON a.inbound_id = i.inbound_id
+                    LEFT JOIN webuser app ON app.webuser_id = a.approver_id
+                    LEFT JOIN lot_in l ON l.inbound_detail_id = d.inbound_detail_id
+                    LEFT JOIN webuser conf ON conf.webuser_id = l.confirmer_id
+                    ORDER BY i.inbound_id DESC
+            ) t
+        where product_name like '%'||#{keyword}||'%' or
+        requester_name like '%'||#{keyword}||'%' or
+        approver_name like '%'||#{keyword}||'%' or
+        confirmer_name like '%'||#{keyword}||'%' or
+        inbound_detail_id like '%'||#{keyword}||'%'
+        )
+        <![CDATA[where rn >= #{startRow} and rn <= #{endRow}]]>
+    </select>
+    <select id="select_inMy" parameterType="map" resultType="ProgressInDto">
+        select * from (
+            select rownum rn,t.*
+                from (
+                    SELECT
+                    i.inbound_id,
+                    d.inbound_detail_id,
+                    p.product_name,
+                    d.quantity,
+                    i.is_refund,
+                    w.warehouse_name,
+
+                    req.webuser_name AS requester_name,
+                    app.webuser_name AS approver_name,
+                    conf.webuser_name AS confirmer_name,
+
+                    i.request_date AS requested_date,
+                    a.created_at   AS approved_date,
+                    l.received_date,
+                    d.reason
+                        FROM inbound_detail d
+                        JOIN inbound i ON i.inbound_id = d.inbound_id
+                        JOIN product p ON p.product_id = d.product_id
+                        JOIN warehouse w ON w.warehouse_id = d.warehouse_id
+                        JOIN webuser req ON req.webuser_id = i.webuser_id
+                        LEFT JOIN approval a ON a.inbound_id = i.inbound_id
+                        LEFT JOIN webuser app ON app.webuser_id = a.approver_id
+                        LEFT JOIN lot_in l ON l.inbound_detail_id = d.inbound_detail_id
+                        LEFT JOIN webuser conf ON conf.webuser_id = l.confirmer_id
+                        where i.webuser_id=#{webuser_id} or a.approver_id=#{webuser_id} or l.confirmer_id=#{webuser_id}
+                        ORDER BY i.inbound_id DESC
+                )t
+        where product_name like '%'||#{keyword}||'%' or
+        requester_name like '%'||#{keyword}||'%' or
+        approver_name like '%'||#{keyword}||'%' or
+        confirmer_name like '%'||#{keyword}||'%' or
+        inbound_detail_id like '%'||#{keyword}||'%'
+            )
+        <![CDATA[where rn >= #{startRow} and rn <= #{endRow}]]>
+    </select>
+    <select id="select_out" parameterType="map" resultType="ProgressOutDto">
+        select * from (
+         select rownum rn, t.*
+            from (
+                SELECT
+                o.outbound_id,
+                d.outbound_detail_id,
+                p.product_name,
+                d.quantity,
+                l.is_expired,
+                w.warehouse_name,
+
+                req.webuser_name        AS requester_name,
+                app.webuser_name        AS approver_name,
+                conf.webuser_name       AS confirmer_name,
+
+                o.request_date            AS requested_date,
+                a.created_at           AS approved_date,
+                l.shipped_date,
+                d.reason
+
+                FROM outbound_detail d
+                JOIN outbound o ON o.outbound_id = d.outbound_id
+                JOIN product p ON p.product_id = d.product_id
+
+                JOIN webuser req ON req.webuser_id = o.webuser_id
+
+                LEFT JOIN approval a ON a.outbound_id = o.outbound_id
+                LEFT JOIN webuser app ON app.webuser_id = a.approver_id
+
+                LEFT JOIN lot_out l ON l.outbound_detail_id = d.outbound_detail_id
+                LEFT JOIN webuser conf ON conf.webuser_id = l.confirmer_id
+
+                JOIN warehouse w ON w.warehouse_id = l.warehouse_id
+                order by o.outbound_id desc
+            )t
+        where product_name like '%'||#{keyword}||'%' or
+        requester_name like '%'||#{keyword}||'%' or
+        approver_name like '%'||#{keyword}||'%' or
+        confirmer_name like '%'||#{keyword}||'%' or
+        outbound_detail_id like '%'||#{keyword}||'%'
+        )
+        <![CDATA[where rn >= #{startRow} and rn <= #{endRow}]]>
+    </select>
+    <select id="select_outMy" parameterType="map" resultType="ProgressOutDto">
+        select * from (
+            select rownum rn, t.*
+            from (
+                SELECT
+                o.outbound_id,
+                d.outbound_detail_id,
+                p.product_name,
+                d.quantity,
+                l.is_expired,
+                w.warehouse_name,
+
+                req.webuser_name        AS requester_name,
+                app.webuser_name        AS approver_name,
+                conf.webuser_name       AS confirmer_name,
+
+                o.request_date            AS requested_date,
+                a.created_at           AS approved_date,
+                l.shipped_date,
+                d.reason
+
+                    FROM outbound_detail d
+                    JOIN outbound o ON o.outbound_id = d.outbound_id
+                    JOIN product p ON p.product_id = d.product_id
+
+                    JOIN webuser req ON req.webuser_id = o.webuser_id
+
+                    LEFT JOIN approval a ON a.outbound_id = o.outbound_id
+                    LEFT JOIN webuser app ON app.webuser_id = a.approver_id
+
+                    LEFT JOIN lot_out l ON l.outbound_detail_id = d.outbound_detail_id
+                    LEFT JOIN webuser conf ON conf.webuser_id = l.confirmer_id
+
+                    JOIN warehouse w ON w.warehouse_id = l.warehouse_id
+                    where o.webuser_id=#{webuser_id} or a.approver_id=#{webuser_id} or l.confirmer_id=#{webuser_id}
+                    order by o.outbound_id desc
+                )t
+        where product_name like '%'||#{keyword}||'%' or
+        requester_name like '%'||#{keyword}||'%' or
+        approver_name like '%'||#{keyword}||'%' or
+        confirmer_name like '%'||#{keyword}||'%' or
+        outbound_detail_id like '%'||#{keyword}||'%'
+            )
+        <![CDATA[where rn >= #{startRow} and rn <= #{endRow}]]>
+    </select>
+    <select id="count_in" parameterType="String" resultType="int">
+        select count(*)
+        from (
         SELECT
         i.inbound_id,
         d.inbound_detail_id,
@@ -13,26 +183,149 @@
         i.is_refund,
         w.warehouse_name,
 
-        req.webuser_name        AS requester_name,
-        app.webuser_name        AS approver_name,
-        conf.webuser_name       AS confirmer_name,
+        req.webuser_name AS requester_name,
+        app.webuser_name AS approver_name,
+        conf.webuser_name AS confirmer_name,
 
-        i.request_date            AS requested_date,
-        a.created_at           AS approved_date,
+        i.request_date AS requested_date,
+        a.created_at   AS approved_date,
         l.received_date,
         d.reason
-
         FROM inbound_detail d
         JOIN inbound i ON i.inbound_id = d.inbound_id
         JOIN product p ON p.product_id = d.product_id
         JOIN warehouse w ON w.warehouse_id = d.warehouse_id
-
         JOIN webuser req ON req.webuser_id = i.webuser_id
-
         LEFT JOIN approval a ON a.inbound_id = i.inbound_id
         LEFT JOIN webuser app ON app.webuser_id = a.approver_id
-
         LEFT JOIN lot_in l ON l.inbound_detail_id = d.inbound_detail_id
         LEFT JOIN webuser conf ON conf.webuser_id = l.confirmer_id
+        ORDER BY i.inbound_id DESC
+        ) t
+        where product_name like '%'||#{keyword}||'%' or
+        requester_name like '%'||#{keyword}||'%' or
+        approver_name like '%'||#{keyword}||'%' or
+        confirmer_name like '%'||#{keyword}||'%' or
+        inbound_detail_id like '%'||#{keyword}||'%'
+    </select>
+    <select id="count_out" parameterType="String" resultType="int">
+        select count(*)
+        from (
+        SELECT
+        o.outbound_id,
+        d.outbound_detail_id,
+        p.product_name,
+        d.quantity,
+        l.is_expired,
+        w.warehouse_name,
+
+        req.webuser_name        AS requester_name,
+        app.webuser_name        AS approver_name,
+        conf.webuser_name       AS confirmer_name,
+
+        o.request_date            AS requested_date,
+        a.created_at           AS approved_date,
+        l.shipped_date,
+        d.reason
+
+        FROM outbound_detail d
+        JOIN outbound o ON o.outbound_id = d.outbound_id
+        JOIN product p ON p.product_id = d.product_id
+
+        JOIN webuser req ON req.webuser_id = o.webuser_id
+
+        LEFT JOIN approval a ON a.outbound_id = o.outbound_id
+        LEFT JOIN webuser app ON app.webuser_id = a.approver_id
+
+        LEFT JOIN lot_out l ON l.outbound_detail_id = d.outbound_detail_id
+        LEFT JOIN webuser conf ON conf.webuser_id = l.confirmer_id
+
+        JOIN warehouse w ON w.warehouse_id = l.warehouse_id
+        order by o.outbound_id desc
+        )
+        where product_name like '%'||#{keyword}||'%' or
+        requester_name like '%'||#{keyword}||'%' or
+        approver_name like '%'||#{keyword}||'%' or
+        confirmer_name like '%'||#{keyword}||'%' or
+        outbound_detail_id like '%'||#{keyword}||'%'
+    </select>
+    <select id="count_inMy" parameterType="map" resultType="int">
+        select count(*)
+        from (
+        SELECT
+        i.inbound_id,
+        d.inbound_detail_id,
+        p.product_name,
+        d.quantity,
+        i.is_refund,
+        w.warehouse_name,
+
+        req.webuser_name AS requester_name,
+        app.webuser_name AS approver_name,
+        conf.webuser_name AS confirmer_name,
+
+        i.request_date AS requested_date,
+        a.created_at   AS approved_date,
+        l.received_date,
+        d.reason
+        FROM inbound_detail d
+        JOIN inbound i ON i.inbound_id = d.inbound_id
+        JOIN product p ON p.product_id = d.product_id
+        JOIN warehouse w ON w.warehouse_id = d.warehouse_id
+        JOIN webuser req ON req.webuser_id = i.webuser_id
+        LEFT JOIN approval a ON a.inbound_id = i.inbound_id
+        LEFT JOIN webuser app ON app.webuser_id = a.approver_id
+        LEFT JOIN lot_in l ON l.inbound_detail_id = d.inbound_detail_id
+        LEFT JOIN webuser conf ON conf.webuser_id = l.confirmer_id
+        where i.webuser_id=${webuser_id} or a.approver_id=${webuser_id} or l.confirmer_id=${webuser_id}
+        ORDER BY i.inbound_id DESC
+        ) t
+        where product_name like '%'||#{keyword}||'%' or
+        requester_name like '%'||#{keyword}||'%' or
+        approver_name like '%'||#{keyword}||'%' or
+        confirmer_name like '%'||#{keyword}||'%' or
+        inbound_detail_id like '%'||#{keyword}||'%'
+    </select>
+    <select id="count_outMy" parameterType="map" resultType="int">
+        select count(*)
+        from (
+        SELECT
+        o.outbound_id,
+        d.outbound_detail_id,
+        p.product_name,
+        d.quantity,
+        l.is_expired,
+        w.warehouse_name,
+
+        req.webuser_name        AS requester_name,
+        app.webuser_name        AS approver_name,
+        conf.webuser_name       AS confirmer_name,
+
+        o.request_date            AS requested_date,
+        a.created_at           AS approved_date,
+        l.shipped_date,
+        d.reason
+
+        FROM outbound_detail d
+        JOIN outbound o ON o.outbound_id = d.outbound_id
+        JOIN product p ON p.product_id = d.product_id
+
+        JOIN webuser req ON req.webuser_id = o.webuser_id
+
+        LEFT JOIN approval a ON a.outbound_id = o.outbound_id
+        LEFT JOIN webuser app ON app.webuser_id = a.approver_id
+
+        LEFT JOIN lot_out l ON l.outbound_detail_id = d.outbound_detail_id
+        LEFT JOIN webuser conf ON conf.webuser_id = l.confirmer_id
+
+        JOIN warehouse w ON w.warehouse_id = l.warehouse_id
+        where o.webuser_id=${webuser_id} or a.approver_id=${webuser_id} or l.confirmer_id=${webuser_id}
+        order by o.outbound_id desc
+        )
+        where product_name like '%'||#{keyword}||'%' or
+        requester_name like '%'||#{keyword}||'%' or
+        approver_name like '%'||#{keyword}||'%' or
+        confirmer_name like '%'||#{keyword}||'%' or
+        outbound_detail_id like '%'||#{keyword}||'%'
     </select>
 </mapper>

@@ -16,10 +16,11 @@ public class ProgressOutDto {
     private int quantity;
     private String is_expired;
     private String warehouse_name;
-    private String webuser_name;
+    private String requester_name;
     private String approver_name;
     private String confirmer_name;
-    private LocalDate request_date;
-    private LocalDate created_at;
+    private LocalDate requested_date;
+    private LocalDate approved_date;
     private LocalDate received_date;
+    private String reason;
 }
