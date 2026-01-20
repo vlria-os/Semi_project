@@ -6,7 +6,15 @@
     <select id="webuserList" parameterType="map"
             resultType="WebuserDto">
         select * from
-        (select rownum rn, m.* from (select * from webuser <include refid="search"/> order by webuser_id) m )
+        (
+        select rownum rn, m.* from
+        (
+        select * from webuser
+        <include refid="search"/>
+        order by webuser_id
+        ) m
+        where m.webuser_id != 0
+        )
         <![CDATA[ where rn >=#{startRow} and rn <=#{endRow} ]]>
     </select>
     <select id="count" resultType="int" parameterType="map">
