@@ -182,7 +182,7 @@
                         tr.insertAdjacentElement("afterend", newDetailRow);
 
                     } else {
-                        alert("승인 실패");
+                        alert("승인 실패: "+data.reason);
                     }
                     location.reload();
                 });
@@ -324,11 +324,8 @@
                     if (data.success) {
                         alert("승인 완료");
 
-                        // 기존 상세 행 삭제
                         const detailRow = tr.closest("tr.detailRow");
                         if (detailRow) detailRow.remove();
-
-                        // 새로 받아온 상세 리스트로 다시 추가
                         const list = data.detailList;
                         const name = data.names;
 
@@ -366,8 +363,8 @@
                         newDetailRow.appendChild(td);
                         tr.insertAdjacentElement("afterend", newDetailRow);
 
-                    } else {
-                        alert("승인 실패");
+                    }else{
+                        alert("승인 실패: "+data.reason);
                     }
                     location.reload();
                 });

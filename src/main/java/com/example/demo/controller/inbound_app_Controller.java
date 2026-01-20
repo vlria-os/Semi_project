@@ -63,7 +63,12 @@ public class inbound_app_Controller {
         Map<Integer,String> names=(Map<Integer,String>) map.get("names");
 
         Map<String,Object> result = new HashMap<>();
-        result.put("success", n>0);
+        if(n>0){
+            result.put("success", true);
+        }else{
+            result.put("success", false);
+            result.put("reason", "창고 한계 초과");
+        }
         result.put("detailList", detailList); // 최신 상세 리스트 반환
         result.put("names",names);
         return result;
@@ -87,6 +92,7 @@ public class inbound_app_Controller {
             result.put("success", n);
         }else{
             result.put("success",-1);
+            result.put("reason", "창고 한계 초과");
         }
 
         return result;

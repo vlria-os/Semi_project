@@ -7,12 +7,11 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -30,20 +29,23 @@ public class outbound_req_Controller {
     }
 
     @PostMapping("/content/outbound_req")
-    public String outbound_req(@ModelAttribute Outbound_reqListDto outbound_reqListDto,
-                               HttpSession session,
-                               Model model){
+    @ResponseBody
+    public Map<String,Object> outbound_req(@ModelAttribute Outbound_reqListDto outbound_reqListDto,
+                               HttpSession session){
         List<Outbound_reqDto> outbound_reqDtos=outbound_reqListDto.getOutbound_reqDtos();
         int webuser_id=(int)session.getAttribute("webuser_id");
         int n=outboundService.insert_request(outbound_reqDtos, webuser_id);
 
+        Map<String,Object> map=new HashMap<>();
         if(n==1){
-            model.addAttribute("result","success");
-            model.addAttribute("size",outbound_reqDtos.size());
+            map.put("result","success");
+            map.put("size",outbound_reqDtos.size());
         }else{
-            model.addAttribute("result","failure");
+            map.put("result","failure");
         }
 
-        return "redirect:/content/outbound_req";
+        map.put("navFragment", "fragment/nav/officeNav");
+        map.put("content", "content/outbound_req");
+        return map;
     }
 }
