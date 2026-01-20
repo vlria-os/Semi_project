@@ -21,6 +21,6 @@ public class ProgressOutDto {
     private String confirmer_name;
     private LocalDate requested_date;
     private LocalDate approved_date;
-    private LocalDate received_date;
+    private LocalDate shipped_date;
     private String reason;
 }

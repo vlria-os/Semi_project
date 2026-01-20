@@ -6,7 +6,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -111,7 +113,6 @@ public class OutboundService {
             int m=outbound_detailMapper.update_outStatus_rej(outbound_detail_id);
             for (Lot_outDto l : lot_outDtos) {
                 int product_id=outbound_detailMapper.select_product(outbound_detail_id);
-                System.out.println("---->"+l.getQuantity());
                 stockMapper.update_in(new StockDto(l.getStock_id(),0,l.getQuantity(), product_id));
                 int q=lot_outMapper.delete(l.getLot_out_id());
                 Outbound_detailDto outbound_detailDto=new Outbound_detailDto();
@@ -123,6 +124,10 @@ public class OutboundService {
             for (Lot_outDto l : lot_outDtos) {
                 int b=outbound_detailMapper.update_outStatus_conf(outbound_detail_id);
                 int n=lot_outMapper.insert_date(l.getLot_out_id());
+                Map<String,Object> map=new HashMap<>();
+                map.put("lot_out_id",l.getLot_out_id());
+                map.put("confirmer_id",confirmer_id);
+                int a=lot_outMapper.insert_confirmer(map);
             }
         }
 
