@@ -176,13 +176,13 @@
     <div>
         <ul th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
             <li th:if="${pageInfo.startPageNum > 1}">
-                <a th:href="@{/progress(pageNum=${pageInfo.startPageNum - 1})}">[이전]</a>
+                <a th:href="@{/progress(pageNum=${pageInfo.startPageNum - 1}, my=${my})}">[이전]</a>
             </li>
             <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
                 <a th:href="@{/progress(pageNum=${num}, my=${my})}">[[${num}]]</a>
             </li>
             <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
-                <a th:href="@{/progress(pageNum=${pageInfo.endPageNum + 1})}">[다음]</a>
+                <a th:href="@{/progress(pageNum=${pageInfo.endPageNum + 1}, my=${my})}">[다음]</a>
             </li>
         </ul>
     </div>
