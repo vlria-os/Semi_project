@@ -1,0 +1,158 @@
+.main {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.main > div:first-child {
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+button {
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+}
+
+button[onclick*="insertWebuser"],
+button[onclick*="triggerFile"] {
+    background-color: #3b82f6;
+    color: white;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+#insertForm, .updateTr form {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    margin: 20px 0;
+}
+
+#insertForm table, .updateTr table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#insertForm th, .updateTr th {
+    text-align: left;
+    padding: 12px;
+    color: #475569;
+    width: 150px;
+    font-size: 13px;
+}
+
+#insertForm input[type="text"],
+#insertForm input[type="password"],
+.updateTr input[type="text"],
+.updateTr input[type="password"] {
+    padding: 8px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    width: 250px;
+}
+
+input[type="submit"] {
+    background-color: #10b981;
+    color: white;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.search-container {
+    margin: 25px 0;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.search-bar {
+    display: flex;
+    gap: 8px;
+}
+
+.search-bar select {
+    padding: 8px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: white;
+}
+
+.search-bar input[type="text"] {
+    padding: 8px 15px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    width: 200px;
+}
+
+#webuserTable {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 10px;
+}
+
+#webuserTable th {
+    background-color: #f1f5f9;
+    color: #64748b;
+    padding: 15px;
+    font-size: 13px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+#webuserTable td {
+    padding: 15px;
+    border-bottom: 1px solid #f1f5f9;
+    text-align: center;
+    font-size: 14px;
+    color: #334155;
+}
+
+.updateTr td {
+    background-color: #fcfdfe !important;
+    padding: 0 !important;
+}
+
+td span[th\:case] {
+    padding: 4px 10px;
+    background: #f1f5f9;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+ul {
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    gap: 8px;
+    margin-top: 30px;
+}
+
+ul li a {
+    padding: 8px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #64748b;
+    font-weight: 600;
+}
+
+ul li a:hover {
+    background-color: #3b82f6;
+    color: white;
+}
