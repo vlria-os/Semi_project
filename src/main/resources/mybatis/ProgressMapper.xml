@@ -247,7 +247,7 @@
         requester_name like '%'||#{keyword}||'%' or
         approver_name like '%'||#{keyword}||'%' or
         confirmer_name like '%'||#{keyword}||'%' or
-        outbound_detail_id like '%'||#{keyword}||'%';
+        outbound_detail_id like '%'||#{keyword}||'%'
     </select>
     <select id="count_inMy" parameterType="map" resultType="int">
         select count(*)
@@ -326,6 +326,6 @@
         requester_name like '%'||#{keyword}||'%' or
         approver_name like '%'||#{keyword}||'%' or
         confirmer_name like '%'||#{keyword}||'%' or
-        outbound_detail_id like '%'||#{keyword}||'%';
+        outbound_detail_id like '%'||#{keyword}||'%'
     </select>
 </mapper>
