@@ -6,13 +6,14 @@
             <div class="search-container">
                 <div class="search-bar">
                     <form th:action="@{/stockList}" method="get">
-                        <input type="text" placeholder="상품명 또는 카테고리" name="keyword">
+                        <input type="hidden" name="status" th:value="${status}">
+                        <input type="text" placeholder="상품명 또는 카테고리" name="keyword" th:value="${keyword}">
                         <input type="submit" value="검색">
                     </form>
                 </div>
                 <div class="nav-toggle">
                     <form th:action="@{/stockList}" method="get">
-                        <button type="submit" class="view-btn" th:classappend="${status == null} ? 'active' : ''">전체</button>
+                        <button type="submit" class="view-btn" th:classappend="${status == null || status == ''} ? 'active' : ''">전체</button>
                         <button type="submit" name="status" value="COLD" class="view-btn" th:classappend="${status == 'COLD'} ? 'active' : ''">냉장</button>
                         <button type="submit" name="status" value="ROOM" class="view-btn" th:classappend="${status == 'ROOM'} ? 'active' : ''">실온</button>
                         <button type="submit" name="status" value="FROZEN" class="view-btn" th:classappend="${status == 'FROZEN'} ? 'active' : ''">냉동</button>
@@ -48,7 +49,7 @@
                                style="width:60px; text-align:center;"
                                readonly
                         >
-                        <button type="button" th:data-product-id="${ps.product_id}" onclick="quantityUpdate(this)">수정</button>
+                        <button type="button" th:data-product-id="${ps.product_id}" onclick="quantityUpdate(this)" class="action-btn">수정</button>
                     </td>
 
                     <td th:text="${ps.unit}"></td>
@@ -56,20 +57,26 @@
                         <img th:src="@{'/image/' + ${ps.save_name}}" style="width:100px;">
                     </td>
 
-                    <td><span class="status-tag" th:text="${ps.status}"/></td>
+                    <td>
+                        <span class="status-tag"
+                              th:classappend="${ps.status == 'COLD' ? 'status-cold' :
+                              ps.status == 'FROZEN' ? 'status-frozen' :
+                              ps.status == 'ROOM' ? 'status-room' : ''}"
+                              th:text="${ps.status}"></span>
+                    </td>
                 </tr>
             </tbody>
         </table>
         <div th:if="${pageInfo != null and pageInfo.totalPageCount > 1}" id="pagingArea">
             <ul>
                 <li th:if="${pageInfo.startPageNum > 1}">
-                    <a th:href="@{/stockList(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
+                    <a th:href="@{/stockList(pageNum=${pageInfo.startPageNum - 1}, status=${status}, keyword=${keyword})}">이전</a>
                 </li>
                 <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
                     <a th:href="@{/stockList(pageNum=${num},status=${status},keyword=${keyword})}">[[${num}]]</a>
                 </li>
                 <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
-                    <a th:href="@{/stockList(pageNum=${pageInfo.endPageNum + 1})}">다음</a>
+                    <a th:href="@{/stockList(pageNum=${pageInfo.endPageNum + 1}, status=${status}, keyword=${keyword})}">다음</a>
                 </li>
             </ul>
         </div>
