@@ -1,69 +1,78 @@
 <section xmlns:th="http://www.thymeleaf.org"
          th:fragment="content">
-    <h1>재고확인목록</h1>
-    <div>
-        <div>
-            <form th:action="@{/stockList}" method="get">
-                <input type="text" placeholder="상품명 또는 카테고리" name="keyword">
-                <input type="submit" value="검색">
-            </form>`
+    <link rel="stylesheet" th:href="@{/css/content/stocklist.css}">
+    <div class="main">
+        <h1>재고확인목록</h1>
+            <div class="search-container">
+                <div class="search-bar">
+                    <form th:action="@{/stockList}" method="get">
+                        <input type="text" placeholder="상품명 또는 카테고리" name="keyword">
+                        <input type="submit" value="검색">
+                    </form>
+                </div>
+                <div class="nav-toggle">
+                    <form th:action="@{/stockList}" method="get">
+                        <button type="submit" class="view-btn" th:classappend="${status == null} ? 'active' : ''">전체</button>
+                        <button type="submit" name="status" value="COLD" class="view-btn" th:classappend="${status == 'COLD'} ? 'active' : ''">냉장</button>
+                        <button type="submit" name="status" value="ROOM" class="view-btn" th:classappend="${status == 'ROOM'} ? 'active' : ''">실온</button>
+                        <button type="submit" name="status" value="FROZEN" class="view-btn" th:classappend="${status == 'FROZEN'} ? 'active' : ''">냉동</button>
+                    </form>
+                </div>
         </div>
-        <form th:action="@{/stockList}" method="get">
-            <button type="submit">전체</button>
-            <button type="submit" name="status" value="COLD">냉장</button>
-            <button type="submit" name="status" value="ROOM">실온</button>
-            <button type="submit" name="status" value="FROZEN">냉동</button>
-        </form>
-    </div>
-    <table>
-        <tr>
-            <th>재고번호</th>
-            <th>재고이름</th>
-            <th>카테고리</th>
-            <th>가격</th>
-            <th>수량</th>
-            <th>단위</th>
-            <th>이미지</th>
-            <th>제품종류</th>
 
-        </tr>
-        <tr th:each="ps : ${p}">
-            <td th:text="${ps.product_id}"></td>
-            <td th:text="${ps.product_name}"></td>
-            <td th:text="${ps.category_path}"></td>
-            <td th:text="${ps.price}"></td>
+        <table id="Table">
+            <thead>
+                <tr>
+                    <th>재고번호</th>
+                    <th>재고이름</th>
+                    <th>카테고리</th>
+                    <th>가격</th>
+                    <th>수량</th>
+                    <th>단위</th>
+                    <th>이미지</th>
+                    <th>제품종류</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="ps : ${p}">
+                    <td th:text="${ps.product_id}"></td>
+                    <td th:text="${ps.product_name}"></td>
+                    <td th:text="${ps.category_path}"></td>
+                    <td th:text="${ps.price}"></td>
 
-            <!-- 수량 수정 폼 -->
-            <td>
-                <input type="text"
-                       name="quantity"
-                       th:value="${ps.quantity}"
-                       style="width:60px; text-align:center;"
-                       readonly
-                >
-                <button type="button" th:data-product-id="${ps.product_id}" onclick="quantityUpdate(this)">수정</button>
-            </td>
+                    <!-- 수량 수정 폼 -->
+                    <td>
+                        <input type="text"
+                               name="quantity"
+                               th:value="${ps.quantity}"
+                               style="width:60px; text-align:center;"
+                               readonly
+                        >
+                        <button type="button" th:data-product-id="${ps.product_id}" onclick="quantityUpdate(this)">수정</button>
+                    </td>
 
-            <td th:text="${ps.unit}"></td>
-            <td>
-                <img th:src="@{'/image/' + ${ps.save_name}}" style="width:100px;">
-            </td>
+                    <td th:text="${ps.unit}"></td>
+                    <td>
+                        <img th:src="@{'/image/' + ${ps.save_name}}" style="width:100px;">
+                    </td>
 
-            <td th:text="${ps.status}"></td>
-        </tr>
-    </table>
-    <div th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
-        <ul>
-            <li th:if="${pageInfo.startPageNum > 1}">
-                <a th:href="@{/stockList(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
-            </li>
-            <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
-                <a th:href="@{/stockList(pageNum=${num},status=${status},keyword=${keyword})}">[[${num}]]</a>
-            </li>
-            <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
-                <a th:href="@{/stockList(pageNum=${pageInfo.endPageNum + 1})}">다음</a>
-            </li>
-        </ul>
+                    <td><span class="status-tag" th:text="${ps.status}"/></td>
+                </tr>
+            </tbody>
+        </table>
+        <div th:if="${pageInfo != null and pageInfo.totalPageCount > 1}" id="pagingArea">
+            <ul>
+                <li th:if="${pageInfo.startPageNum > 1}">
+                    <a th:href="@{/stockList(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
+                </li>
+                <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
+                    <a th:href="@{/stockList(pageNum=${num},status=${status},keyword=${keyword})}">[[${num}]]</a>
+                </li>
+                <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
+                    <a th:href="@{/stockList(pageNum=${pageInfo.endPageNum + 1})}">다음</a>
+                </li>
+            </ul>
+        </div>
     </div>
 </section>
 <script>
