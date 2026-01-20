@@ -17,15 +17,15 @@ import java.util.Map;
 public class RefundController {
     private final Ref_ExpService ref_ExpService;
 
-    @GetMapping("/office_staff/refund")
+    @PostMapping("/refund")
     @ResponseBody
-    public Map<String, Object> refund_req(int lot_out_id,
+    public Map<String, Object> refund_req(int outbound_detail_id,
                                           HttpSession session){
-        int n=ref_ExpService.insert_refund(lot_out_id, (int)session.getAttribute("webuser_id"));
+        int n=ref_ExpService.insert_refund(outbound_detail_id, (int)session.getAttribute("webuser_id"));
         Map<String, Object> result = new HashMap<>();
 
         if(n==-1){
-            result.put("success", false);
+            result.put("success", "이미 반품 요청된 항목입니다.");
         }else{
             result.put("success", true);
         }

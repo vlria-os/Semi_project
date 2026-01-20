@@ -4,7 +4,7 @@
     <div class="main">
         <div class="nav-toggle">
             <button onclick="goinbound()" class="view-btn active">입고</button>
-            <button onclick="gooutbound()"class="view-btn">출고</button>
+            <button onclick="gooutbound()" class="view-btn">출고</button>
         </div>
         <table id="Table">
             <tr>
@@ -98,22 +98,14 @@
                                         <button type="button" onclick="rejectItem(this)">반려</button>
                                     </td>
                                 </tr>`;
-                                /*<tr>
-                                    <th colspan="4"><button data-inbound-id="${l.outbound_id}"
-                                            onclick="allApprove(this)">전체 수락</button></th>
-                                </tr>*/ <!-- 이거 옮겼습니다 (✨프론트 노예가) 굿!-->
-
-
                 });
-
-
                 innerTable += `
                                 <tr class="detail-footer">
                                     <td colspan="5" style="text-align: right; padding: 15px;">
                                         <button type="button" class="all-approve-btn" data-inbound-id="${inboundId}" onclick="allApprove(this)">✨ 전체 수락</button>
                                     </td>
                                 </tr>
-                                </table>`; <!-- 여기로 -->
+                                </table>`;
                 td.innerHTML = innerTable;
                 detailRow.appendChild(td);
                 currentTr.insertAdjacentElement("afterend", detailRow);
@@ -123,16 +115,12 @@
     function approveItem(btn){
         const tr = btn.closest("tr");
 
-        const detailRow = tr.closest("tr.detailRow");
-
             const detailId = tr.dataset.detailId;
             const quantity = tr.dataset.quantity;
-            // const inboundId = tr.closest("tr.detailRow").previousElementSibling.children[1].innerText.trim(); // 상위 inbound ID
             const inboundId=tr.dataset.inboundId;
 
             if (!confirm("이 항목을 승인하시겠습니까?")) return;
 
-            // form-urlencoded 형식으로 보내기
             const params = new URLSearchParams();
             params.append("inbound_id", inboundId);
             params.append("inbound_detail_id", detailId);
@@ -198,11 +186,9 @@
                 });
     }
 
-
     function rejectItem(btn){
             const tr = btn.closest("tr");
 
-            // 이미 텍스트박스 있으면 중복 생성 방지
             if (tr.nextElementSibling && tr.nextElementSibling.classList.contains("rejectRow")) {
                 return;
             }
@@ -229,14 +215,9 @@
         const rejectRow = btn.closest("tr");
         const reason = rejectRow.querySelector("#rejectReason").value;
 
-        const detailRowContainer = rejectRow.closest("tr.detailRow");
-        const parentRow = detailRowContainer.previousElementSibling;
-        const ioType = parentRow.children[0].innerText.trim();
-
-        if (ioType === "IN") {
             const detailRow = rejectRow.previousElementSibling; // 상세 테이블 행
             const detailId = detailRow.dataset.detailId; // inbound_detail_id
-            const inboundId = detailRow.closest("tr.detailRow").previousElementSibling.children[1].innerText.trim(); // 상위 inbound ID
+            const inboundId = detailRow.dataset.inboundId; // 상위 inbound ID
 
             if (!reason.trim()) {
                 alert("사유를 입력하세요.");
@@ -308,82 +289,6 @@
                     }
                     location.reload();
                 });
-        }else{
-            const detailRow = rejectRow.previousElementSibling; // 상세 테이블 행
-            const detailId = detailRow.dataset.detailId; // inbound_detail_id
-            const outboundId = detailRow.closest("tr.detailRow").previousElementSibling.children[1].innerText.trim(); // 상위 inbound ID
-
-            if (!reason.trim()) {
-                alert("사유를 입력하세요.");
-                return;
-            }
-
-            // form-urlencoded 형식으로 보내기 (승인 함수와 동일 구조)
-            const params = new URLSearchParams();
-            params.append("outbound_id", outboundId);          // 쿼리 파라미터로 넘어가는 inbound_id
-            params.append("outbound_detail_id", detailId);    // DTO 필드
-            params.append("approval_status", "REJECTED");    // DTO 필드
-            params.append("reason", reason);                 // DTO 필드
-
-            fetch(`/admin/outbound_app`, {
-                method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                body: params.toString()
-            })
-                .then(resp => resp.json())
-                .then(data => {
-                    if (data.success) {
-                        alert("반려 완료");
-
-                        // 기존 상세 행 삭제
-                        const detailRowContainer = detailRow.closest("tr.detailRow");
-                        if (detailRowContainer) detailRowContainer.remove();
-
-                        // 새로 받아온 상세 리스트로 다시 추가
-                        const list = data.detailList;
-                        const name = data.names;
-
-                        const newDetailRow = document.createElement("tr");
-                        newDetailRow.classList.add("detailRow");
-
-                        const td = document.createElement("td");
-                        td.setAttribute("colspan", detailRow.children.length);
-
-                        let innerTable = `<table class="detailTable" border="1" style="width:100%;">
-                                <tr>
-                                    <th>상품명</th>
-                                    <th>수량</th>
-                                    <th>요청 상세</th>
-                                    <th>승인/반려</th>
-                                </tr>`;
-
-                        list.forEach(item => {
-                            const d = item.outbound_detail_id;
-                            const n = name[String(d)];
-
-                            innerTable += `<tr data-detail-id="${item.outbound_detail_id}"
-                                                data-quantity="${item.quantity}>
-                                    <td>${n}</td>
-                                    <td>${item.quantity}</td>
-                                    <td>${item.approval_status}</td>
-                                    <td>
-                                        <button type="button" onclick="approveItem(this)">승인</button>
-                                        <button type="button" onclick="rejectItem(this)">반려</button>
-                                    </td>
-                                </tr>`;
-                        });
-
-                        innerTable += `</table>`;
-                        td.innerHTML = innerTable;
-                        newDetailRow.appendChild(td);
-                        detailRow.closest("tr.detailRow").insertAdjacentElement("afterend", newDetailRow);
-
-                    } else {
-                        alert("반려 실패");
-                    }
-                    location.reload();
-                });
-        }
     }
 
     function cancelReject(btn){
@@ -395,29 +300,14 @@
         if (!confirm("정말 전체 승인하시겠습니까?")) return;
 
         const tr = btn.closest("tr");
-        const detailRow = tr.closest("tr.detailRow");
-        const parentRow = detailRow.previousElementSibling;
-        const ioType = parentRow.children[0].innerText.trim();
+        const detailRow = tr.closest("table").querySelectorAll("tr[data-detail-id]");
+        const approveList = [];
 
-        if (ioType === "IN") {
-            const inboundId = parentRow.children[1].innerText.trim();
-            const approveList = [];
-
-            detailRow
-                .querySelectorAll("table.detailTable tr[data-detail-id]")
-                .forEach(row => {
-                    const detailId = row.dataset.detailId;
-                    const quantity = row.dataset.quantity;
-
-                    if (!detailId || !quantity) {
-                        console.error("누락된 데이터", row);
-                        return;
-                    }
-
+        detailRow.forEach(r => {
                     approveList.push({
-                        inbound_id: inboundId,
-                        inbound_detail_id: Number(detailId),
-                        quantity: Number(quantity),
+                        inbound_id: r.dataset.inboundId,
+                        inbound_detail_id: Number(r.dataset.detailId),
+                        quantity: Number(r.dataset.quantity),
                         approval_status: "APPROVED"
                     });
                 });
@@ -479,84 +369,6 @@
                     }
                     location.reload();
                 });
-        }else {
-            const outboundId = parentRow.children[1].innerText.trim();
-            const approveList = [];
-
-            detailRow
-                .querySelectorAll("table.detailTable tr[data-detail-id]")
-                .forEach(row => {
-                    const detailId = row.dataset.detailId;
-                    const quantity = row.dataset.quantity;
-
-                    approveList.push({
-                        outbound_id: outboundId,
-                        outbound_detail_id: Number(detailId),
-                        quantity: Number(quantity),
-                        approval_status: "APPROVED"
-                    });
-                });
-
-            console.log(approveList);
-
-            fetch(`/admin/outbound_app/all`, {
-                method: 'POST',
-                headers: {"Content-Type": "application/json"},
-                body: JSON.stringify(approveList)
-            })
-                .then(resp => resp.json())
-                .then(data => {
-                    if (data.success) {
-                        alert("승인 완료");
-
-                        // 기존 상세 행 삭제
-                        const detailRow = tr.closest("tr.detailRow");
-                        if (detailRow) detailRow.remove();
-
-                        // 새로 받아온 상세 리스트로 다시 추가
-                        const list = data.detailList;
-                        const name = data.names;
-
-                        const newDetailRow = document.createElement("tr");
-                        newDetailRow.classList.add("detailRow");
-
-                        const td = document.createElement("td");
-                        td.setAttribute("colspan", tr.children.length);
-
-                        let innerTable = `<table class="detailTable" border="1" style="width:100%;">
-                                    <tr>
-                                        <th>상품명</th>
-                                        <th>수량</th>
-                                        <th>요청 상세</th>
-                                        <th>승인/반려</th>
-                                    </tr>`;
-
-                        list.forEach(item => {
-                            const d = item.outbound_detail_id;
-                            const n = name[String(d)];
-
-                            innerTable += `<tr data-item-id="${item.outbound_detail_id}">
-                                    <td>${n}</td>
-                                    <td>${item.quantity}</td>
-                                    <td>${item.approval_status}</td>
-                                    <td>
-                                        <button type="button" onclick="approveItem(this)">승인</button>
-                                        <button type="button" onclick="rejectItem(this)">반려</button>
-                                    </td>
-                                </tr>`;
-                        });
-
-                        innerTable += `</table>`;
-                        td.innerHTML = innerTable;
-                        newDetailRow.appendChild(td);
-                        tr.insertAdjacentElement("afterend", newDetailRow);
-
-                    } else {
-                        alert("승인 실패");
-                    }
-
-                })
-        }
     }
 
 </script>

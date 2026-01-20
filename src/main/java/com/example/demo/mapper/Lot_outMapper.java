@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface Lot_outMapper {
@@ -16,4 +17,5 @@ public interface Lot_outMapper {
     int delete(int lot_out_id);
     List<Lot_outDto> select_lot(int outbound_detail_id);
     RefundDto select_refund(int lot_out_id);
+    int insert_confirmer(Map<String,Object> map);
 }

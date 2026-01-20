@@ -41,22 +41,28 @@ public class Ref_ExpService {
     }
 
     @Transactional
-    public int insert_refund(int lot_out_id,
+    public int insert_refund(int outbound_detail_id,
                               int webuser_id){
-        int already_refunded=inboundMapper.is_refunded(lot_out_id);
-
-        if(already_refunded==1){
+        List<Lot_outDto> list=lot_outMapper.select_lot(outbound_detail_id);
+        int already_refunded=0;
+        for(Lot_outDto l:list){
+            already_refunded+=inboundMapper.is_refunded(l.getLot_out_id());
+        }
+        if(already_refunded>=1){
             return -1;
         }
 
-        InboundDto inboundDto=new InboundDto(0,webuser_id,null,null,"Y",lot_out_id);
-        inboundMapper.insert(inboundDto);
-        RefundDto refundDto=lot_outMapper.select_refund(lot_out_id);
+        for(Lot_outDto l:list) {
+            int lot_out_id=l.getLot_out_id();
+            InboundDto inboundDto = new InboundDto(0, webuser_id, null, null, "Y", lot_out_id);
+            inboundMapper.insert(inboundDto);
+            RefundDto refundDto = lot_outMapper.select_refund(lot_out_id);
 
-        Inbound_detailDto inbound_detailDto=new Inbound_detailDto(0, inboundDto.getInbound_id(), refundDto.getProduct_id(),
-                refundDto.getWarehouse_id(),null,null,null, refundDto.getQuantity());
+            Inbound_detailDto inbound_detailDto = new Inbound_detailDto(0, inboundDto.getInbound_id(), refundDto.getProduct_id(),
+                    refundDto.getWarehouse_id(), null, null, null, refundDto.getQuantity());
 
-        inbound_detailMapper.insert(inbound_detailDto);
+            inbound_detailMapper.insert(inbound_detailDto);
+        }
 
         return 1;
     }

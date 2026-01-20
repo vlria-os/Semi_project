@@ -83,10 +83,6 @@
     <button><a th:href="@{/progress(my='true')}">나의 내역보기</a></button>
     <button><a th:href="@{/progress}">입고</a></button>
     <button><a th:href="@{/progress/out}">출고</a></button>
-    <label>
-        <input type="checkbox" th:value="${session.webuser_id}" name="selectedItems"/>
-        나의 내역 보기
-    </label>
 
     <table class="outbound-table">
         <thead>
@@ -97,7 +93,7 @@
             <th>폐기/반품여부</th>
             <th>창고명</th>
             <th>진행상황</th>
-            <th>사유</th>
+            <th>사유/반품요청</th>
         </tr>
         </thead>
 
@@ -124,11 +120,11 @@
                             <span class="point"
                                   th:classappend="${
                                       l.reason != null
-                                          ? (l.approved_date == null and l.received_date == null ? ' fail' : ' done')
+                                          ? (l.approved_date == null and l.shipped_date == null ? ' fail' : ' done')
                                           : (l.requested_date != null ? ' done' : '')
                                   }"
                                   th:text="${
-                                      l.reason != null and l.approved_date == null and l.received_date == null
+                                      l.reason != null and l.approved_date == null and l.shipped_date == null
                                           ? '✖'
                                           : (l.requested_date != null ? '✔' : '')
                                   }">
@@ -136,11 +132,11 @@
                             <span class="point"
                                   th:classappend="${
                                       l.reason != null
-                                          ? (l.approved_date != null and l.received_date == null ? ' fail' : (l.approved_date != null ? ' done' : ''))
+                                          ? (l.approved_date != null and l.shipped_date == null ? ' fail' : (l.approved_date != null ? ' done' : ''))
                                           : (l.approved_date != null ? ' done' : '')
                                   }"
                                   th:text="${
-                                      l.reason != null and l.approved_date != null and l.received_date == null
+                                      l.reason != null and l.approved_date != null and l.shipped_date == null
                                           ? '✖'
                                           : (l.approved_date != null ? '✔' : '')
                                   }">
@@ -148,13 +144,13 @@
                             <span class="point"
                                   th:classappend="${
                                       l.reason != null
-                                          ? (l.received_date != null ? ' fail' : '')
-                                          : (l.received_date != null ? ' done' : '')
+                                          ? (l.shipped_date != null ? ' fail' : '')
+                                          : (l.shipped_date != null ? ' done' : '')
                                   }"
                                   th:text="${
-                                      l.reason != null and l.received_date != null
+                                      l.reason != null and l.shipped_date != null
                                           ? '✖'
-                                          : (l.received_date != null ? '✔' : '')
+                                          : (l.shipped_date != null ? '✔' : '')
                                   }">
                         </span>
 
@@ -170,11 +166,19 @@
                     <div class="row date">
                         <span th:text="${l.requested_date}"></span>
                         <span th:text="${l.approved_date}"></span>
-                        <span th:text="${l.received_date}"></span>
+                        <span th:text="${l.shipped_date}"></span>
                     </div>
                 </div>
             </td>
-            <td th:text="${l.reason}"></td>
+            <td>
+                <span th:text="${l.reason}"></span>
+                <button th:if="${l.reason == null}"
+                        type="button"
+                        th:onclick="'requestReturn(' + ${l.outbound_detail_id} + ')'"
+                        th:disabled="${l.shipped_date == null}">
+                    반품요청
+                </button>
+            </td>
         </tr>
         </tbody>
     </table>
@@ -182,15 +186,50 @@
     <div>
         <ul id="pagingArea" th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
             <li th:if="${pageInfo.startPageNum > 1}">
-                <a th:href="@{/progress(pageNum=${pageInfo.startPageNum - 1})}">[이전]</a>
+                <a th:href="@{/progress/out(pageNum=${pageInfo.startPageNum - 1})}">[이전]</a>
             </li>
             <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
-                <a th:href="@{/progress(pageNum=${num}, my=${my})}">[[${num}]]</a>
+                <a th:href="@{/progress/out(pageNum=${num}, my=${my})}">[[${num}]]</a>
             </li>
             <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
-                <a th:href="@{/progress(pageNum=${pageInfo.endPageNum + 1})}">[다음]</a>
+                <a th:href="@{/progress/out(pageNum=${pageInfo.endPageNum + 1})}">[다음]</a>
             </li>
         </ul>
     </div>
+
+    <script>
+        function requestReturn(outboundDetailId) {
+            if(!confirm('정말 반품 요청을 하시겠습니까?')) return;
+
+            const params = new URLSearchParams();
+            params.append("outbound_detail_id", outboundDetailId);
+
+            fetch('/refund', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: params
+            })
+                .then(response => {
+                    if (!response.ok) throw new Error('서버 에러');
+                    return response.json();
+                })
+                .then(data => {
+                    if(data.success){
+                        alert('반품 요청이 완료되었습니다.');
+                        const btn = document.querySelector(`button[onclick="requestReturn(${outboundDetailId})"]`);
+                        if(btn){
+                            btn.disabled = true;
+                            btn.textContent = '요청 완료';
+                        }
+                    } else {
+                        alert('반품 요청 실패: ' + data.success);
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert('반품 요청 중 오류가 발생했습니다.');
+                });
+        }
+    </script>
 
 </section>
