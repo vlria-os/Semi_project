@@ -48,7 +48,7 @@ body{
     border: 1px solid var(--line);
     border-radius: 22px;
     box-shadow: var(--shadow);
-    overflow: visible;
+    overflow: visible; /* 드롭다운이 잘리지 않게 */
 }
 
 /* ---------- header (list) ---------- */
@@ -77,6 +77,12 @@ body{
     box-shadow: 0 0 0 6px rgba(47, 107, 255, 0.10);
 }
 
+.header-actions{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+}
+
 /* ---------- buttons ---------- */
 .btn{
     border: 1px solid var(--line);
@@ -88,6 +94,7 @@ body{
     cursor:pointer;
     box-shadow: var(--shadow-soft);
     transition: transform .08s ease, background .15s ease, box-shadow .15s ease;
+    white-space: nowrap;
 }
 .btn:hover{ transform: translateY(-1px); }
 .btn:active{ transform: translateY(0); box-shadow: none; }
@@ -116,6 +123,65 @@ body{
 }
 .btn-danger:hover{
     background: rgba(255,59,48,.08);
+}
+
+/* ---------- 새 채팅 드롭다운 ---------- */
+.menu-wrap{
+    position: relative; /* dropdown 기준점 */
+    display: inline-flex;
+    align-items: center;
+}
+
+.menu-dropdown{
+    position: absolute;
+    right: 0;
+    top: calc(100% + 10px);
+    min-width: 160px;
+
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: 6px;
+
+    z-index: 9999;
+}
+
+.menu-item{
+    display:flex;
+    align-items:center;
+    gap: 8px;
+
+    padding: 10px 12px;
+    border-radius: 12px;
+
+    color: var(--text);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 800;
+
+    transition: background .12s ease, color .12s ease, transform .08s ease;
+}
+.menu-item:hover{
+    background: var(--blue-soft);
+    color: var(--blue);
+    transform: translateY(-1px);
+}
+.menu-item:active{
+    transform: translateY(0);
+}
+
+.menu-dropdown::before{
+    content:"";
+    position:absolute;
+    right: 18px;
+    top: -7px;
+    width: 12px;
+    height: 12px;
+    background: #fff;
+    border-left: 1px solid var(--line);
+    border-top: 1px solid var(--line);
+    transform: rotate(45deg);
 }
 
 /* ---------- list ---------- */
@@ -178,7 +244,7 @@ a.room-name:active,
 a.room-name:focus{
     text-decoration: none !important;
     color: #111 !important;
-    font-weight: 700;
+    font-weight: 800;
     outline: none;
     min-width: 0;
 }
@@ -191,7 +257,7 @@ a.room-name:focus{
 /* ✅ 방 이름도 길면 말줄임 */
 a.room-name{
     display: inline-block;
-    max-width: 260px; /* 취향 */
+    max-width: 260px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -274,7 +340,7 @@ a.room-name{
     z-index: 50;
 }
 
-/* ✅ 채팅 목록 버튼을 퇴장 버튼처럼 예쁘게 */
+/* ✅ 채팅 목록 버튼을 예쁘게 */
 .back-btn{
     border: 1px solid rgba(47,107,255,.30) !important;
     background: #fff !important;
@@ -301,7 +367,7 @@ a.room-name{
     font-weight: 900;
     flex: 1;
     min-width: 0;
-    justify-content: center; /* 취향 */
+    justify-content: center;
 }
 
 .room-title .name{
@@ -340,7 +406,7 @@ a.room-name{
 /* ---------- presence line ---------- */
 .presence{
     position: sticky;
-    top: 60px;     /* room-topbar 높이에 맞춰 필요하면 56~70 사이 조절 */
+    top: 60px;
     z-index: 40;
 
     padding: 8px 14px;
@@ -356,7 +422,7 @@ a.room-name{
     padding: 12px 12px 16px;
     overflow-y: auto;
     background: #fafafa;
-    min-height: 0;     /* 스크롤 영역 안정화 */
+    min-height: 0;
     min-width: 0;
 }
 
@@ -365,7 +431,7 @@ a.room-name{
     display:flex;
     flex-direction: column;
     gap: 4px;
-    width: 100%;       /* ✅ 말풍선 max-width 기준이 항상 창 폭 기준이 되게 */
+    width: 100%;
     min-width: 0;
 }
 
@@ -379,7 +445,6 @@ a.room-name{
     margin-left: 6px;
 }
 
-/* ✅ 말풍선: 짧으면 가로로, 길면 적당히 줄바꿈(밖으로 안 튐) */
 .bubble{
     display: inline-block;
     max-width: 72%;
@@ -389,8 +454,8 @@ a.room-name{
     line-height: 1.35;
 
     white-space: pre-wrap;
-    word-break: keep-all;        /* 한글 자연스럽게 */
-    overflow-wrap: break-word;   /* 긴 URL/영문만 끊기 */
+    word-break: keep-all;
+    overflow-wrap: break-word;
 }
 
 /* 내 말풍선 */
