@@ -38,9 +38,6 @@ public class ProductService {
         map.put("endRow",pageInfo.getEndRow());
 
         List<ProductDto> productDtos=productMapper.selectAllKeyword(map);
-//        for(ProductDto p:productDtos){
-//            p.setSave_name(imageMapper.select(p.getProduct_id()));
-//        }
 
         Map<String,Object> result=new HashMap<>();
         result.put("productDtos",productDtos);

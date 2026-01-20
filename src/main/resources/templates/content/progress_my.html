@@ -76,17 +76,12 @@
             font-size: 11px;
             color: #666;
         }
-
-
     </style>
-    <form th:action="@{/progress}" method="get">
-        <input type="text" name="keyword" placeholder="입고 번호, 상품명 또는 아이디 검색"
-               th:value="${keyword}">
-        <button type="submit">검색</button>
-    </form>
-    <button><a th:href="@{/progress(my='true')}">나의 내역보기</a></button>
-    <button><a th:href="@{/progress(my='false')}">입고</a></button>
-    <button><a th:href="@{/progress/out(my='false')}">출고</a></button>
+
+    <input type="text" id="keyword" placeholder="입고 번호, 상품명 또는 아이디 검색">
+    <button><a th:href="@{/progress(my='false')}">전체 내역보기</a></button>
+    <button><a th:href="@{/progress(my='true')}">입고</a></button>
+    <button><a th:href="@{/progress/out(my='true')}">출고</a></button>
     <table class="inbound-table">
         <thead>
         <tr>
@@ -181,18 +176,15 @@
     <div>
         <ul th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
             <li th:if="${pageInfo.startPageNum > 1}">
-                <a th:href="@{/progress(pageNum=${pageInfo.startPageNum - 1}, my=${my}, keyword=${keyword})}">[이전]</a>
+                <a th:href="@{/progress(pageNum=${pageInfo.startPageNum - 1})}">[이전]</a>
             </li>
             <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
-                <a th:href="@{/progress(pageNum=${num}, my=${my}, keyword=${keyword})}">[[${num}]]</a>
+                <a th:href="@{/progress(pageNum=${num}, my=${my})}">[[${num}]]</a>
             </li>
             <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
-                <a th:href="@{/progress(pageNum=${pageInfo.endPageNum + 1}, my=${my}, keyword=${keyword})}">[다음]</a>
+                <a th:href="@{/progress(pageNum=${pageInfo.endPageNum + 1})}">[다음]</a>
             </li>
         </ul>
     </div>
 
-    <script>
-
-    </script>
 </section>

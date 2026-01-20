@@ -16,7 +16,7 @@ import java.nio.file.Paths;
 @RestController
 public class DataURLController {
     //이미지가 있는 폴더 경로
-    private String imageDir="192.168.0.37/image_Semi/";//팀 공유 폴더가..
+    private String imageDir="c:/image_Semi/";//팀 공유 폴더가..
 
     @GetMapping("/image/{save_name}")
     public UrlResource showImage(@PathVariable("save_name") String save_name)
