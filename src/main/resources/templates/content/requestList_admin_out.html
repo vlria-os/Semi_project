@@ -2,8 +2,10 @@
          th:fragment="content">
     <link rel="stylesheet" th:href="@{/css/content/requestlist.css}">
     <div class="main">
-        <button onclick="goinbound()">입고</button>
-        <button onclick="gooutbound()">출고</button>
+        <div class="nav-toggle">
+            <button onclick="goinbound()" class="view-btn">입고</button>
+            <button onclick="gooutbound()" class="view-btn active">출고</button>
+        </div>
         <table id="Table">
             <tr>
                 <th>출고 번호</th><th>요청자</th><th>요청일</th><th>상세보기</th>
@@ -103,7 +105,7 @@
 
                     innerTable += `
                                 <tr class="detail-footer">
-                                    <td colspan="4" style="text-align: right; padding: 15px;">
+                                    <td colspan="5" style="text-align: right; padding: 15px;">
                                         <button type="button" class="all-approve-btn" data-io-id="${outboundId}" onclick="allApprove(this)">✨ 전체 수락</button>
                                     </td>
                                 </tr>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.StatisticsMapper">
+    <select id="selectSalesSummary" resultType="SalesStatsDto">
+        select
+            NVL(sum(lo.quantity * p.price), 0) as total_revenue,
+            NVL(sum(lo.quantity), 0) as total_quantity,
+            case
+                when sum(lo.quantity) > 0
+                then round(sum(lo.quantity * p.price) / sum(lo.quantity), 0)
+                else 0 end as avg_price
+        from lot_out lo
+        join outbound_detail obd on lo.outbound_detail_id = obd.outbound_detail_id
+        join product p on obd.product_id = p.product_id
+        where lo.is_expired= 'N'
+    </select>
+
+    <select id="selectProductRanking" resultType="SalesStatsDto">
+        select
+            p.product_name,
+            p.price,
+            sum(lo.quantity) as quantity,
+            sum(lo.quantity * p.price) as revenue
+        from lot_out lo
+        join outbound_detail obd on lo.outbound_detail_id = obd.outbound_detail_id
+        join product p on obd.product_id = p.product_id
+        where lo.is_expired = 'N'
+        group by p.product_name, p.price
+        order by revenue desc
+    </select>
+
+    <select id="selectPeriodSales" resultType="SalesStatsDto">
+        select
+            sale_date,
+            revenue,
+            quantity
+        from (
+            select
+                to_char(o.request_date, 'YYYY-MM-DD') as sale_date,
+                SUM(lo.quantity * p.price) as revenue,
+                SUM(lo.quantity) as quantity
+            from lot_out lo
+            join outbound_detail od on lo.outbound_detail_id = od.outbound_detail_id
+            join outbound o on od.outbound_id = o.outbound_id
+            join product p on od.product_id = p.product_id
+            where lo.is_expired = 'N'
+            and o.approval_status = 'APPROVED'
+            group by to_char(o.request_date, 'YYYY-MM-DD')
+        )
+        order by sale_date asc
+    </select>
+
+    <select id="selectWasteStats" resultType="SalesStatsDto">
+        select
+            product_name,
+            waste_quantity,
+            total_quantity,
+            CASE
+                when total_quantity > 0
+                then ROUND((waste_quantity * 100.0) / total_quantity, 1)
+                else 0
+            end as waste_rate
+        from (
+            select
+                p.product_name,
+                NVL(SUM(CASE when lo.is_expired = 'Y' then lo.quantity else 0 end), 0) as waste_quantity,
+                NVL(SUM(lo.quantity), 0) as total_quantity
+            from lot_out lo
+            join outbound_detail od on lo.outbound_detail_id = od.outbound_detail_id
+            join product p on od.product_id = p.product_id
+            group by p.product_name
+        )
+        order by waste_rate desc
+    </select>
+</mapper>

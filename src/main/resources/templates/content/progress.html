@@ -1,0 +1,185 @@
+<section xmlns:th="http://www.thymeleaf.org"
+         th:fragment="content">
+    <style>
+        .progress-cell {
+            min-width: 360px;
+            vertical-align: top;
+            padding: 8px;              /* td 기본 padding 보정 */
+        }
+
+        /* 전체 진행 영역 */
+        .progress {
+            display: grid;
+            grid-template-rows: auto 30px auto auto auto;
+            row-gap: 6px;
+            font-size: 12px;
+
+            width: 360px;              /* 🔥 고정 */
+            margin: 0 auto;
+        }
+
+        /* 모든 행을 동일 grid 기준으로 */
+        .row,
+        .reason {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            text-align: center;
+            align-items: center;
+        }
+
+        .row.bar {
+            display: block;
+        }
+
+        .bar-inner {
+            position: relative;
+            height: 30px;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            align-items: center;
+        }
+
+        .bar-inner::before {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 16.66%;
+            width: 66.66%;
+            height: 4px;
+            background: #e0e0e0;
+            transform: translateY(-50%);
+            z-index: 0;
+        }
+
+        .point {
+            z-index: 1;
+            width: 20px;
+            height: 20px;
+            margin: 0 auto;
+            border-radius: 50%;
+            line-height: 20px;
+            background: #bdbdbd;
+            color: #fff;
+        }
+
+
+        .point.done { background: #2e7d32; }
+        .point.fail { background: #d32f2f; }
+
+        /* 날짜 */
+        .date { color: #555; }
+
+        /* 사유는 마지막 칸 중앙 */
+        .reason span {
+            grid-column: 3;
+            justify-self: center;
+            font-size: 11px;
+            color: #666;
+        }
+
+
+    </style>
+    <table class="inbound-table">
+        <thead>
+        <tr>
+            <th>입고번호</th>
+            <th>상품명</th>
+            <th>수량</th>
+            <th>폐기/반품여부</th>
+            <th>창고명</th>
+            <th>진행상황</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr>
+            <td>103</td>
+            <td>리가토니</td>
+            <td>70</td>
+            <td>N</td>
+            <td>실온창고A</td>
+
+            <!-- 🔥 진행바 td -->
+            <td class="progress-cell">
+                <div class="progress">
+
+                    <div class="row label">
+                        <span>요청</span>
+                        <span>승인</span>
+                        <span>확인</span>
+                    </div>
+
+                    <div class="row bar">
+                        <div class="bar-inner">
+                        <span class="point done">✔</span>
+                            <span class="point done">✔</span>
+                            <span class="point fail">✖</span>
+                        </div>
+                    </div>
+
+                    <div class="row user">
+                        <span>Mark</span>
+                        <span>John</span>
+                        <span>Paul</span>
+                    </div>
+
+                    <div class="row date">
+                        <span>26.01.17</span>
+                        <span>26.01.19</span>
+                        <span>26.01.20</span>
+                    </div>
+
+                    <div class="reason">
+                        <span></span>
+                    </div>
+
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+</section>
+
+<!--<td class="progress-cell">-->
+<!--    <div class="progress">-->
+
+<!--        <div class="row label">-->
+<!--            <span>요청</span>-->
+<!--            <span>승인</span>-->
+<!--            <span>확인</span>-->
+<!--        </div>-->
+
+<!--        <div class="row bar">-->
+<!--            <div class="bar-inner">-->
+
+<!--                <span class="point"-->
+<!--                      th:classappend="${row.reqDone} ? ' done' : ''">✔</span>-->
+
+<!--                <span class="point"-->
+<!--                      th:classappend="${row.apprDone} ? ' done' : ''">✔</span>-->
+
+<!--                <span class="point"-->
+<!--                      th:classappend="${row.chkFail} ? ' fail' : ' done'">✖</span>-->
+
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="row user">-->
+<!--            <span th:text="${row.reqUser}"></span>-->
+<!--            <span th:text="${row.apprUser}"></span>-->
+<!--            <span th:text="${row.chkUser}"></span>-->
+<!--        </div>-->
+
+<!--        <div class="row date">-->
+<!--            <span th:text="${row.reqDate}"></span>-->
+<!--            <span th:text="${row.apprDate}"></span>-->
+<!--            <span th:text="${row.chkDate}"></span>-->
+<!--        </div>-->
+
+<!--        <div class="reason">-->
+<!--            <span th:text="${row.reason}"></span>-->
+<!--        </div>-->
+
+<!--    </div>-->
+<!--</td>-->

@@ -55,8 +55,8 @@ body {
 }
 
 .view-btn.active {
-    color: #ef4444; /* Red Text */
-    border-bottom: 3px solid #ef4444; /* Red Underline */
+    color: #ef4444;
+    border-bottom: 3px solid #ef4444;
     background: none;
 }
 

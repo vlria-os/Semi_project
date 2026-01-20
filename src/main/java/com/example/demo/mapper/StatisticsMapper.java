@@ -1,0 +1,14 @@
+package com.example.demo.mapper;
+
+import com.example.demo.dto.SalesStatsDto;
+import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
+
+@Mapper
+public interface StatisticsMapper {
+    SalesStatsDto selectSalesSummary();
+    List<SalesStatsDto> selectProductRanking();
+    List<SalesStatsDto> selectPeriodSales();
+    List<SalesStatsDto> selectWasteStats();
+}
