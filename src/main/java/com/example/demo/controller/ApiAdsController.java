@@ -101,7 +101,7 @@ public class ApiAdsController {
 
     private List<LocalProductDto> fetchListByAreaNm(String areaNm) throws Exception{
         String url = "http://api.nongsaro.go.kr/service/localSpcprd/localSpcprdLst"
-                + "?apiKey=20260119CYKS5JEK0DAA7TJFM5HVG"
+                + "?apiKey=내_키"
                 + "&sAreaNm=" + areaNm
                 + "&pageNo=1" + "&numOfRows=300";
 
