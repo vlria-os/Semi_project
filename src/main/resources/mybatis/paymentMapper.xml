@@ -33,4 +33,25 @@
     <update id="Minus_pay" parameterType="SettlementDto">
         update settlement set total_pay=total_pay-#{total_pay} where settlement_id=#{settlement_id}
     </update>
+    <select id="select_list" resultType="PaymentDto">
+        SELECT
+        s.settlement_id,
+        c.company_name,
+        s.period,
+        s.total_pay,
+        CASE
+        <![CDATA[WHEN s.total_pay < 0 THEN 'out']]>
+        ELSE 'in'
+        END AS inout,
+        s.payment_status,
+        s.payment_date,
+        s.payment_id
+        FROM settlement s
+        JOIN company c ON c.company_id = s.company_id
+        WHERE s.period = TRUNC(SYSDATE, 'MM')
+        ORDER BY s.settlement_id
+    </select>
+    <update id="update" parameterType="SettlementDto">
+        update settlement set payment_status='Y', payment_date=sysdate, payment_id=#{payment_id} where settlement_id=#{settlement_id}
+    </update>
 </mapper>

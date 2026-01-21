@@ -23,7 +23,7 @@ public class RefundController {
                                           HttpSession session){
         int n=ref_ExpService.insert_refund(outbound_detail_id, (int)session.getAttribute("webuser_id"));
         Map<String, Object> result = new HashMap<>();
-
+        System.out.println("===============>"+n);
         if(n==-1){
             result.put("success", "이미 반품 요청된 항목입니다.");
         }else{

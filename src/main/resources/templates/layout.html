@@ -54,124 +54,124 @@
 <!--<footer th:replace="~{fragment/footer :: footer}"></footer>-->
 
 <script>
-    (function () {
-
-        const ads=document.getElementById("resultDaejeon");
-        if(!ads) return;
-
-        //문자열 오류 예방
-        function escapeHtml(text){
-            if(!text) return "";
-            return text
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
-        function renderAd(item){
-            return `
-                    <div class="ad-content" data-link="${item.linkUrl}">
-                        <img src="${item.imgUrl}" onerror="this.src='/images/no-image.png'">
-                        <div class="ad-text">
-                            <div class="ad-title">${escapeHtml(item.cntntsSj)}</div>
-                            <div class="ad-meta">${escapeHtml(item.areaNm)}</div>
-                        </div>
-                    </div>
-                    `;
-        }
-
-        function adClick(el){
-            el.onclick = () => {
-                const content = el.querySelector(".ad-content");
-                if(!content) return;
-                const link=content.dataset.link;
-                if(link){
-                    window.open(link, "_blank");
-                }
-            };
-        }
-
-        function loadRandomAd(region, targetId){
-            const el=document.getElementById(targetId);
-            if(!el) return;
-
-            fetch(`/api/localProducts/randomOne?region=${encodeURIComponent(region)}&ts=${Date.now()}`)
-                .then(resp => resp.json())
-                .then(item => {
-                    // 1) 페이드 아웃 시작
-                    el.classList.add("fading");
-
-                    // 2) 페이드 아웃이 끝난 뒤에 내용 교체
-                    setTimeout(() => {
-                        if(!item){
-                            el.innerHTML = "<p>데이터가 없습니다!</p>";
-                            el.onclick = null;
-                        } else {
-                            el.innerHTML = renderAd(item);
-                            adClick(el);
-                        }
-
-                        // 3) 다음 tick에 페이드 인 시작(갑자기 '팍' 뜨는 느낌 방지)
-                        requestAnimationFrame(() => {
-                            el.classList.remove("fading");
-                        });
-                    }, 600);
-                })
-                .catch(err => {
-                    console.error(err);
-                    el.classList.add("fading");
-                    setTimeout(() => {
-                        el.innerHTML = "<p>불러오기 실패</p>";
-                        el.classList.remove("fading");
-                    }, 600);
-                });
-        }
-
-        const timers=new Map();
-
-        function startAuto(region, targetId, interval = 5000, immediate = true){
-            if (timers.has(targetId)) return;
-
-            if (immediate) loadRandomAd(region, targetId);
-
-            const id=setInterval(() => {
-                loadRandomAd(region, targetId);
-            }, interval);
-
-            timers.set(targetId, id);
-        }
-
-        function stopAuto(targetId){
-            const id = timers.get(targetId);
-            if(id){
-                clearInterval(id);
-                timers.delete(targetId);
-            }
-        }
-
-        const regions = [
-            ["jeonbuk","resultJeonbuk"],
-            ["daejeon","resultDaejeon"],
-            ["chungnam","resultChungnam"],
-            ["gangwon","resultGangwon"]
-        ];
-
-        regions.forEach(([region, targetId]) => {
-            const el=document.getElementById(targetId);
-            if (!el) return;
-
-            const delay = Math.floor(Math.random() * 1500); // 0~1.5초 랜덤
-            setTimeout(() => startAuto(region, targetId, 5000), delay);
-
-            startAuto(region, targetId, 5000, true);
-
-            el.addEventListener("mouseenter", () => stopAuto(targetId));
-            el.addEventListener("mouseleave", () => startAuto(region, targetId, 5000, false));
-        })
-
-    })();
+    // (function () {
+    //
+    //     const ads=document.getElementById("resultDaejeon");
+    //     if(!ads) return;
+    //
+    //     //문자열 오류 예방
+    //     function escapeHtml(text){
+    //         if(!text) return "";
+    //         return text
+    //             .replace(/&/g, "&amp;")
+    //             .replace(/</g, "&lt;")
+    //             .replace(/>/g, "&gt;")
+    //             .replace(/"/g, "&quot;")
+    //             .replace(/'/g, "&#039;");
+    //     }
+    //
+    //     function renderAd(item){
+    //         return `
+    //                 <div class="ad-content" data-link="${item.linkUrl}">
+    //                     <img src="${item.imgUrl}" onerror="this.src='/images/no-image.png'">
+    //                     <div class="ad-text">
+    //                         <div class="ad-title">${escapeHtml(item.cntntsSj)}</div>
+    //                         <div class="ad-meta">${escapeHtml(item.areaNm)}</div>
+    //                     </div>
+    //                 </div>
+    //                 `;
+    //     }
+    //
+    //     function adClick(el){
+    //         el.onclick = () => {
+    //             const content = el.querySelector(".ad-content");
+    //             if(!content) return;
+    //             const link=content.dataset.link;
+    //             if(link){
+    //                 window.open(link, "_blank");
+    //             }
+    //         };
+    //     }
+    //
+    //     function loadRandomAd(region, targetId){
+    //         const el=document.getElementById(targetId);
+    //         if(!el) return;
+    //
+    //         fetch(`/api/localProducts/randomOne?region=${encodeURIComponent(region)}&ts=${Date.now()}`)
+    //             .then(resp => resp.json())
+    //             .then(item => {
+    //                 // 1) 페이드 아웃 시작
+    //                 el.classList.add("fading");
+    //
+    //                 // 2) 페이드 아웃이 끝난 뒤에 내용 교체
+    //                 setTimeout(() => {
+    //                     if(!item){
+    //                         el.innerHTML = "<p>데이터가 없습니다!</p>";
+    //                         el.onclick = null;
+    //                     } else {
+    //                         el.innerHTML = renderAd(item);
+    //                         adClick(el);
+    //                     }
+    //
+    //                     // 3) 다음 tick에 페이드 인 시작(갑자기 '팍' 뜨는 느낌 방지)
+    //                     requestAnimationFrame(() => {
+    //                         el.classList.remove("fading");
+    //                     });
+    //                 }, 600);
+    //             })
+    //             .catch(err => {
+    //                 console.error(err);
+    //                 el.classList.add("fading");
+    //                 setTimeout(() => {
+    //                     el.innerHTML = "<p>불러오기 실패</p>";
+    //                     el.classList.remove("fading");
+    //                 }, 600);
+    //             });
+    //     }
+    //
+    //     const timers=new Map();
+    //
+    //     function startAuto(region, targetId, interval = 5000, immediate = true){
+    //         if (timers.has(targetId)) return;
+    //
+    //         if (immediate) loadRandomAd(region, targetId);
+    //
+    //         const id=setInterval(() => {
+    //             loadRandomAd(region, targetId);
+    //         }, interval);
+    //
+    //         timers.set(targetId, id);
+    //     }
+    //
+    //     function stopAuto(targetId){
+    //         const id = timers.get(targetId);
+    //         if(id){
+    //             clearInterval(id);
+    //             timers.delete(targetId);
+    //         }
+    //     }
+    //
+    //     const regions = [
+    //         ["jeonbuk","resultJeonbuk"],
+    //         ["daejeon","resultDaejeon"],
+    //         ["chungnam","resultChungnam"],
+    //         ["gangwon","resultGangwon"]
+    //     ];
+    //
+    //     regions.forEach(([region, targetId]) => {
+    //         const el=document.getElementById(targetId);
+    //         if (!el) return;
+    //
+    //         const delay = Math.floor(Math.random() * 1500); // 0~1.5초 랜덤
+    //         setTimeout(() => startAuto(region, targetId, 5000), delay);
+    //
+    //         startAuto(region, targetId, 5000, true);
+    //
+    //         el.addEventListener("mouseenter", () => stopAuto(targetId));
+    //         el.addEventListener("mouseleave", () => startAuto(region, targetId, 5000, false));
+    //     })
+    //
+    // })();
 
     function openChatWindow(){
         window.open(

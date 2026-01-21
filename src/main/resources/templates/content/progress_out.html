@@ -189,7 +189,7 @@
                     </td>
                     <td>
                         <span th:text="${l.reason}"></span>
-                        <button th:if="${l.reason == null}"
+                        <button th:if="${l.reason == null && session.get('role_id') == 2}"
                                 type="button"
                                 th:onclick="'requestReturn(' + ${l.outbound_detail_id} + ')'"
                                 th:disabled="${l.shipped_date == null}">
@@ -233,7 +233,7 @@
                     return response.json();
                 })
                 .then(data => {
-                    if(data.success){
+                    if(data.success==='true'){
                         alert('반품 요청이 완료되었습니다.');
                         const btn = document.querySelector(`button[onclick="requestReturn(${outboundDetailId})"]`);
                         if(btn){

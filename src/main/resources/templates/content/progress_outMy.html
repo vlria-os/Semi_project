@@ -187,7 +187,15 @@
               </div>
             </div>
           </td>
-          <td th:text="${l.reason}"></td>
+          <td>
+            <span th:text="${l.reason}"></span>
+            <button th:if="${l.reason == null && session.get('role_id') == 2}"
+                    type="button"
+                    th:onclick="'requestReturn(' + ${l.outbound_detail_id} + ')'"
+                    th:disabled="${l.shipped_date == null}">
+              반품요청
+            </button>
+          </td>
         </tr>
         </tbody>
       </table>
