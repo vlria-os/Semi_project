@@ -18,6 +18,8 @@ public class InboundService {
     private final ApprovalMapper approvalMapper;
     private final Lot_inMapper lot_inMapper;
     private final StockMapper stockMapper;
+    private final PaymentMapper paymentMapper;
+    private final ProductMapper productMapper;
 
     @Transactional
     public int insert_request(List<Inbound_reqDto> inbound_reqDtos,
@@ -108,6 +110,16 @@ public class InboundService {
                 Inbound_detailDto inbound_detailDto=new Inbound_detailDto();
                 inbound_detailDto.setInbound_detail_id(l.getInbound_detail_id());
                 int a=inbound_detailMapper.update_inbStatus_conf(l.getInbound_detail_id());
+
+                //정산
+                int company_id=paymentMapper.select_IN_company(l.getProduct_id());
+                int is_exist=paymentMapper.is_exist(company_id);
+                int total_pay=(int)Math.ceil(l.getQuantity()*productMapper.select_price(l.getProduct_id())*0.8);
+                if(is_exist==0){
+                    int b=paymentMapper.insert_settlement(new SettlementDto(0,null,company_id,-(total_pay),"N",null,0));
+                }else{
+                    int c=paymentMapper.Minus_pay(new SettlementDto(0,null,is_exist,total_pay,"N",null,0));
+                }
             }
         }
 

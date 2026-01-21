@@ -113,6 +113,10 @@
         delete from product where product_id= #{product_id}
     </delete>
 
+    <select id="select_price" parameterType="int" resultType="int">
+        select price from product where product_id=#{value}
+    </select>
+
 <!--    <select id="select_category" parameterType="int" resultType="CategoryDto">-->
 <!--        SELECT *-->
 <!--        FROM (-->

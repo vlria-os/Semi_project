@@ -37,8 +37,7 @@ public class outbound_conf_Controller {
                                HttpSession session){
         int confirmer_id=(int)session.getAttribute("webuser_id");
         int n=outboundService.insert_confirm(outbound_detail_id,"CONFIRMED",null,confirmer_id);
-
-        return "redirect:/field_staff/bound_conf";
+        return "redirect:/field_staff/outbound_conf";
     }
 
     @PostMapping("/field_staff/outbound_conf_rej")
@@ -48,6 +47,6 @@ public class outbound_conf_Controller {
         int confirmer_id=(int)session.getAttribute("webuser_id");
         int n=outboundService.insert_confirm(outbound_detail_id,"REJECTED",reason,confirmer_id);
 
-        return "redirect:/field_staff/bound_conf";
+        return "redirect:/field_staff/outbound_conf";
     }
 }
