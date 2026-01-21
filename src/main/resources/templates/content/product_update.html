@@ -49,20 +49,17 @@
         <label>현제 이미지</label>
         <img th:src="@{'/image/' + *{save_name}}" style="width: 120px; display: block; margin-bottom: 10px; border-radius: 8px;">
         <label>이미지 변경 (선택)</label>
-        <input type="file" th:field="*{file}">
+        <div class="file-upload-wrapper">
+          <label for="file" class="custom-file-upload">
+            <span class="upload-icon">📁</span>파일 선택하기
+          </label>
+          <input type="file" th:field="*{file}" id="file">
+        </div>
       </div>
 
-      <div style="dispaly: flex; gap: 10px; margin-top: 30px;" class="button-area">
+      <div style="display: flex; gap: 10px; margin-top: 30px;" class="button-area">
         <button type="submit" style="flex: 2;" class="btn-submit">수정 완료</button>
-
-        <button type="button" onclick="deleteProduct()" style="flex: 1; background-color: #ef4444; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600;">
-          삭제
-        </button>
-        <form id="deleteForm" th:action="@{/content/product_delete}" method="post" style="display: none;">
-          <input type="hidden" name="product_id" th:value="${productDto.product_id}">
-        </form>
-
-        <a th:href="@{/content/productList}" style="flex: 1; text-align: center; background: #64748b; color: white; padding: 12px; border-radius: 8px; text-decoration: none; font-weight: 600;">뒤로가기</a>
+        <a th:href="@{/content/productList}" class="btn-back" style="flex: 1;">뒤로가기</a>
       </div>
     </form>
   </div>
@@ -71,12 +68,6 @@
     const parentCategory=document.getElementById("parentCategory");
     const childCategory=document.getElementById("childCategory");
     const childBox=document.getElementById("childBox");
-
-    function deleteProduct(){
-      if(confirm("정말로 이 상품을 삭제하시겠습니가?")){
-        document.getElementById("deleteForm").submit();
-      }
-    }
 
     function loadChildCategory(parentId, selectedChildId= null){
       if(!parentId){

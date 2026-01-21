@@ -47,8 +47,12 @@
                     </td>
                 </tr>
                 <tr>
-                    <th colspan="2"><button type="button" onclick="no()">취소</button>
-                        <input type="submit" value="확인"></th>
+                    <th colspan="2">
+                        <div class="button-container">
+                            <button type="button" onclick="no()" class="btn-cancel">취소</button>
+                            <input type="submit" value="확인" class="btn-confirm">
+                        </div>
+                    </th>
                 </tr>
             </table>
         </form>
@@ -88,7 +92,7 @@
                         </td>
                         <td th:text="${webuser.created_at}"></td>
                         <td th:text="${webuser.is_active == 'Y' ? '활성':'비활성'}"></td>
-                        <td><button type="button" onclick="updateForm(this)">수정</button></td>
+                        <td><button type="button" onclick="updateForm(this)" class="btn-edit">수정</button></td>
                 </tr>
                 <tr class="updateTr" style="display: none;">
                     <td colspan="8">
@@ -143,7 +147,7 @@
             </table>
         </div>
         <div th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
-            <ul>
+            <ul class="page-ul">
                 <li th:if="${pageInfo.startPageNum > 1}">
                     <a th:href="@{/webuser/list(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
                 </li>
