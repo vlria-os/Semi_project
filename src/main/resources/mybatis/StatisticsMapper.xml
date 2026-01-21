@@ -30,6 +30,7 @@
         where lo.is_expired = 'N'
         group by p.product_name, p.price
         order by revenue desc
+        fetch first 10 rows only
     </select>
 
     <select id="selectPeriodSales" resultType="SalesStatsDto">
@@ -49,7 +50,11 @@
             where lo.is_expired = 'N'
             and o.approval_status = 'APPROVED'
             group by to_char(o.request_date, 'YYYY-MM-DD')
+            order by sale_date asc
         )
+        <![CDATA[
+        where rownum <= 30
+        ]]>
         order by sale_date asc
     </select>
 
@@ -74,5 +79,6 @@
             group by p.product_name
         )
         order by waste_rate desc
+        fetch first 10 rows only
     </select>
 </mapper>

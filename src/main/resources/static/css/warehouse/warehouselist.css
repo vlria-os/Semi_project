@@ -4,16 +4,31 @@ body {
     color: #333;
     margin: 0;
 }
+.main-card {
+    background-color: #ffffff;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid #edf2f7;
+    margin-top: 20px;
+    min-height: 700px;
+    box-sizing: border-box;
+}
 
 .container {
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 30px;
+    display: block;
+}
+.main {
+    width: 100%;
+    margin: 0;
 }
 
 .main-title {
-    font-size: 20px;
-    font-weight: bold;
+    font-size: 24px;
+    font-weight: 700;
     color: #1a1a1a;
     margin-bottom: 25px;
     display: flex;
@@ -93,8 +108,8 @@ body {
 }
 
 .storage-list li {
-    background: white;
-    border: 1px solid #edf2f7;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
     border-radius: 16px;
     padding: 24px;
     transition: transform 0.2s, box-shadow 0.2s;

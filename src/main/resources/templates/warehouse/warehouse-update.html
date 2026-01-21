@@ -37,7 +37,6 @@
 
                 <label for="is_active">보관식</label>
                 <select id="is_active" th:field="*{is_active}">
-                    <option value="FULL">Full</option>
                     <option value="OPEN">Open</option>
                     <option value="CLOSED">Closed</option>
                 </select>
@@ -49,7 +48,6 @@
         <div class="button-group">
             <form th:action="@{/warehouse/delete}" method="post" onsubmit="return confirm('정말로 삭제하시겠습니까?')">
                 <input type="hidden" name="warehouse_id" th:value="${warehouseDto.warehouse_id}">
-                <button type="submit" class="btn-delete">삭제</button>
             </form>
             <!--뒤로가기 버튼-->
             <a th:href="@{/warehouse/list}" class="btn-back">뒤로가기</a>

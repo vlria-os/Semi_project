@@ -12,6 +12,7 @@ import java.util.Date;
 public class DueDateDto {
     private int stock_id;
     private int lot_in_id;
+    private int lot_out_id;
     private String product_name;
     private String product_type;
     private String warehouse_name;

@@ -1,12 +1,6 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<section xmlns:th="http://www.thymeleaf.org" th:fragment="content">
     <link rel="stylesheet" th:href="@{/css/statistics/statlist.css}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
 <div class="container">
 
     <!--기간별 매출 통계-->
@@ -14,7 +8,7 @@
         <div class="main">
             <div class="main-title">
                 <span class="main-icon">📊</span>
-                기간별 매출
+                매출 통계
             </div>
             <!--이동 버튼-->
             <div class="view-toggle">
@@ -53,14 +47,13 @@
         </table>
     </div>
 </div>
-</body>
 <script th:inline="javascript">
     document.addEventListener("DOMContentLoaded", function (){
         const data= /*[[${periodList}]]*/ [];
         if(!data || data.length === 0) return;
 
         const labels=data.map(item => item.sale_date);
-        const revenues=data.map(item => item.revenu);
+        const revenues=data.map(item => item.revenue);
 
         const ctx=document.getElementById('periodChart').getContext('2d');
         new Chart(ctx, {
@@ -84,10 +77,17 @@
                     y: {
                         beginAtZero: true,
                         ticks: { callback : (val) => val.toLocaleString() + '원' }
+                    },
+                    x: {
+                        ticks: {
+                            callback: function(val, index) {
+                                return index % 3 === 0 ? this.getLabelForValue(val) : '';
+                            }
+                        }
                     }
                 }
             }
         });
     });
 </script>
-</html>
+</section>

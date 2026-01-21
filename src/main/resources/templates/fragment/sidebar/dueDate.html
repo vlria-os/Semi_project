@@ -10,14 +10,14 @@
         </div>
         <!--이동 버튼-->
         <div class="view-toggle">
-            <button class="view-btn active" data-view=""><a th:href="@{/fragment/sidebar/dueDate}">유통기한 임박</a></button>
+            <button class="view-btn active" data-view="soon"><a th:href="@{/fragment/sidebar/dueDate}">유통기한 임박</a></button>
             <button class="view-btn"><a th:href="@{/fragment/sidebar/expiredList}">폐기 내역</a></button>
         </div>
 
         <!-- 검색 + 필터 -->
        <div class="filter-container">
             <form class="filter">
-                <input type="text" id="keyword" name="keyword" th:value="${searchDto.keyword}" placeholder="상품 또는 창고 이름 검색">
+                <input type="text" id="keyword" name="keyword" th:value="${searchDto.keyword}" placeholder="상품 이름 검색">
                 <div class="btn-group">
                     <button type="button" class="filter-btn" value="all" th:classappend="${typeFilter == 'all'} ? 'active' : ''">전체</button>
                     <button type="button" class="filter-btn" value="COLD" th:classappend="${typeFilter == 'COLD'} ? 'active' : ''">냉장</button>
@@ -89,7 +89,7 @@
 
             container.style.opacity="0.5";
 
-            const url=`/sidebar/dueDate?pageNum=${pageNum}&typeFilter=${typeFilter}&warehouseFilter=${warehouseFilter}&keyword=${encodeURIComponent(keyword)}&viewType=${viewType}&isAjax=true`;
+            const url=`/fragment/sidebar/dueDate?pageNum=${pageNum}&typeFilter=${typeFilter}&warehouseFilter=${warehouseFilter}&keyword=${encodeURIComponent(keyword)}&viewType=${viewType}&isAjax=true`;
             try{
                 const response=await fetch(url);
                 if(!response.ok) throw new Error("Network Error");

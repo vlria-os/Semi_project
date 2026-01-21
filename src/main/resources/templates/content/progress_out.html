@@ -1,5 +1,6 @@
 <section xmlns:th="http://www.thymeleaf.org"
          th:fragment="content">
+    <link rel="stylesheet" th:href="@{/css/content/progress.css}">
     <style>
         .progress-cell {
             min-width: 360px;
@@ -79,122 +80,140 @@
 
 
     </style>
-    <input type="text" id="keyword" placeholder="출고 번호, 상품명 또는 아이디 검색">
-    <button><a th:href="@{/progress(my='true')}">나의 내역보기</a></button>
-    <button><a th:href="@{/progress}">입고</a></button>
-    <button><a th:href="@{/progress/out}">출고</a></button>
 
-    <table class="outbound-table">
-        <thead>
-        <tr>
-            <th>출고번호</th>
-            <th>상품명</th>
-            <th>수량</th>
-            <th>폐기/반품여부</th>
-            <th>창고명</th>
-            <th>진행상황</th>
-            <th>사유/반품요청</th>
-        </tr>
-        </thead>
+    <div class="container">
+        <div class="main-card">
+            <div class="main-title">
+                <h2>출고내역</h2>
+                <button th:if="${session.role_id == 1}"><a th:href="@{/download}">내역 다운로드</a></button>
+                <div class="search-container">
+                    <form th:action="@{/progress_out}" method="get">
+                        <input type="text" name="keyword" placeholder="입고 번호, 상품명 또는 아이디 검색"
+                               th:value="${keyword}">
+                        <button type="submit">검색</button>
+                    </form>
 
-        <tbody th:each="l:${list}">
-        <tr>
-            <td th:text="${l.outbound_detail_id}"></td>
-            <td th:text="${l.product_name}"></td>
-            <td th:text="${l.quantity}"></td>
-            <td th:text="${l.is_expired}"></td>
-            <td th:text="${l.warehouse_name}"></td>
-
-            <!-- 🔥 진행바 td -->
-            <td class="progress-cell">
-                <div class="progress">
-
-                    <div class="row label">
-                        <span>요청</span>
-                        <span>승인</span>
-                        <span>확인</span>
-                    </div>
-
-                    <div class="row bar">
-                        <div class="bar-inner">
-                            <span class="point"
-                                  th:classappend="${
-                                      l.reason != null
-                                          ? (l.approved_date == null and l.shipped_date == null ? ' fail' : ' done')
-                                          : (l.requested_date != null ? ' done' : '')
-                                  }"
-                                  th:text="${
-                                      l.reason != null and l.approved_date == null and l.shipped_date == null
-                                          ? '✖'
-                                          : (l.requested_date != null ? '✔' : '')
-                                  }">
-                            </span>
-                            <span class="point"
-                                  th:classappend="${
-                                      l.reason != null
-                                          ? (l.approved_date != null and l.shipped_date == null ? ' fail' : (l.approved_date != null ? ' done' : ''))
-                                          : (l.approved_date != null ? ' done' : '')
-                                  }"
-                                  th:text="${
-                                      l.reason != null and l.approved_date != null and l.shipped_date == null
-                                          ? '✖'
-                                          : (l.approved_date != null ? '✔' : '')
-                                  }">
-                            </span>
-                            <span class="point"
-                                  th:classappend="${
-                                      l.reason != null
-                                          ? (l.shipped_date != null ? ' fail' : '')
-                                          : (l.shipped_date != null ? ' done' : '')
-                                  }"
-                                  th:text="${
-                                      l.reason != null and l.shipped_date != null
-                                          ? '✖'
-                                          : (l.shipped_date != null ? '✔' : '')
-                                  }">
-                        </span>
-
-                        </div>
-                    </div>
-
-                    <div class="row user">
-                        <span th:text="${l.requester_name}"></span>
-                        <span th:text="${l.approver_name}"></span>
-                        <span th:text="${l.confirmer_name}"></span>
-                    </div>
-
-                    <div class="row date">
-                        <span th:text="${l.requested_date}"></span>
-                        <span th:text="${l.approved_date}"></span>
-                        <span th:text="${l.shipped_date}"></span>
+                    <div class="btn-group">
+                        <button type="button" class="toggle"><a th:href="@{/progress(my='true')}">나의 내역보기</a></button>
+                        <button type="button" class="filter-btn"><a th:href="@{/progress}">입고</a></button>
+                        <button type="button" class="filter-btn active"><a th:href="@{/progress/out}">출고</a></button>
                     </div>
                 </div>
-            </td>
-            <td>
-                <span th:text="${l.reason}"></span>
-                <button th:if="${l.reason == null}"
-                        type="button"
-                        th:onclick="'requestReturn(' + ${l.outbound_detail_id} + ')'"
-                        th:disabled="${l.shipped_date == null}">
-                    반품요청
-                </button>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+            </div>
 
-    <div>
-        <ul id="pagingArea" th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
-            <li th:if="${pageInfo.startPageNum > 1}">
-                <a th:href="@{/progress/out(pageNum=${pageInfo.startPageNum - 1})}">[이전]</a>
-            </li>
-            <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
-                <a th:href="@{/progress/out(pageNum=${num}, my=${my})}">[[${num}]]</a>
-            </li>
-            <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
-                <a th:href="@{/progress/out(pageNum=${pageInfo.endPageNum + 1})}">[다음]</a>
-            </li>
-        </ul>
+            <table class="outbound-table">
+                <thead>
+                <tr>
+                    <th>출고번호</th>
+                    <th>상품명</th>
+                    <th>수량</th>
+                    <th>폐기/반품여부</th>
+                    <th>창고명</th>
+                    <th>진행상황</th>
+                    <th>사유/반품요청</th>
+                </tr>
+                </thead>
+
+                <tbody th:each="l:${list}">
+                <tr>
+                    <td th:text="${l.outbound_detail_id}"></td>
+                    <td th:text="${l.product_name}"></td>
+                    <td th:text="${l.quantity}"></td>
+                    <td th:text="${l.is_expired}"></td>
+                    <td th:text="${l.warehouse_name}"></td>
+
+                    <!-- 🔥 진행바 td -->
+                    <td class="progress-cell">
+                        <div class="progress">
+
+                            <div class="row label">
+                                <span>요청</span>
+                                <span>승인</span>
+                                <span>확인</span>
+                            </div>
+
+                            <div class="row bar">
+                                <div class="bar-inner">
+                                    <span class="point"
+                                          th:classappend="${
+                                              l.reason != null
+                                                  ? (l.approved_date == null and l.shipped_date == null ? ' fail' : ' done')
+                                                  : (l.requested_date != null ? ' done' : '')
+                                          }"
+                                          th:text="${
+                                              l.reason != null and l.approved_date == null and l.shipped_date == null
+                                                  ? '✖'
+                                                  : (l.requested_date != null ? '✔' : '')
+                                          }">
+                                    </span>
+                                    <span class="point"
+                                          th:classappend="${
+                                              l.reason != null
+                                                  ? (l.approved_date != null and l.shipped_date == null ? ' fail' : (l.approved_date != null ? ' done' : ''))
+                                                  : (l.approved_date != null ? ' done' : '')
+                                          }"
+                                          th:text="${
+                                              l.reason != null and l.approved_date != null and l.shipped_date == null
+                                                  ? '✖'
+                                                  : (l.approved_date != null ? '✔' : '')
+                                          }">
+                                    </span>
+                                    <span class="point"
+                                          th:classappend="${
+                                              l.reason != null
+                                                  ? (l.shipped_date != null ? ' fail' : '')
+                                                  : (l.shipped_date != null ? ' done' : '')
+                                          }"
+                                          th:text="${
+                                              l.reason != null and l.shipped_date != null
+                                                  ? '✖'
+                                                  : (l.shipped_date != null ? '✔' : '')
+                                          }">
+                                </span>
+
+                                </div>
+                            </div>
+
+                            <div class="row user">
+                                <span th:text="${l.requester_name}"></span>
+                                <span th:text="${l.approver_name}"></span>
+                                <span th:text="${l.confirmer_name}"></span>
+                            </div>
+
+                            <div class="row date">
+                                <span th:text="${l.requested_date}"></span>
+                                <span th:text="${l.approved_date}"></span>
+                                <span th:text="${l.shipped_date}"></span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span th:text="${l.reason}"></span>
+                        <button th:if="${l.reason == null && session.get('role_id') == 2}"
+                                type="button"
+                                th:onclick="'requestReturn(' + ${l.outbound_detail_id} + ')'"
+                                th:disabled="${l.shipped_date == null}">
+                            반품요청
+                        </button>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div class="pagination_wrap">
+                <ul id="pagingArea" th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
+                    <li th:if="${pageInfo.startPageNum > 1}">
+                        <a th:href="@{/progress/out(pageNum=${pageInfo.startPageNum - 1})}">[이전]</a>
+                    </li>
+                    <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
+                        <a th:href="@{/progress/out(pageNum=${num}, my=${my})}">[[${num}]]</a>
+                    </li>
+                    <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
+                        <a th:href="@{/progress/out(pageNum=${pageInfo.endPageNum + 1})}">[다음]</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -214,7 +233,7 @@
                     return response.json();
                 })
                 .then(data => {
-                    if(data.success){
+                    if(data.success==='true'){
                         alert('반품 요청이 완료되었습니다.');
                         const btn = document.querySelector(`button[onclick="requestReturn(${outboundDetailId})"]`);
                         if(btn){

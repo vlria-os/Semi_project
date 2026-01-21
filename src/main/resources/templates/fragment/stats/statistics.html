@@ -1,12 +1,6 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<section xmlns:th="http://www.thymeleaf.org" th:fragment="content">
   <link rel="stylesheet" th:href="@{/css/statistics/statlist.css}">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
 <div class="container">
 
   <!--품목별 통계-->
@@ -64,7 +58,6 @@
     </table>
   </div>
 </div>
-</body>
 <script th:inline="javascript">
   document.addEventListener("DOMContentLoaded", function(){
     const data=/*[[${rankList}]]*/'[]';
@@ -111,4 +104,4 @@
   });
 
 </script>
-</html>
+</section>
