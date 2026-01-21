@@ -4,21 +4,38 @@ body {
     color: #333;
     margin: 0;
 }
-
-.container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 30px;
+.main-card {
+    background-color: #ffffff;
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid #edf2f7;
+    margin-top: 20px;
+    min-height: 700px;
+    box-sizing: border-box;
 }
 
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px;
+    display: block;
+}
+.main {
+    width: 100%;
+    margin: 0;
+}
 .main-title {
-    font-size: 20px;
-    font-weight: bold;
+    font-size: 24px;
+    font-weight: 700;
     color: #1a1a1a;
     margin-bottom: 25px;
     display: flex;
     align-items: center;
     gap: 10px;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
 }
 
 .main-option {
@@ -26,6 +43,9 @@ body {
     gap: 30px;
     border-bottom: 1px solid #eee;
     margin-bottom: 30px;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
 }
 
 .main-option div {
@@ -47,12 +67,9 @@ body {
 }
 
 .addWarehouse {
-    background: white;
-    padding: 40px;
-    border-radius: 16px;
-    border: 1px solid #edf2f7;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-    max-width: 600px;
+    background: transparent;
+    padding: 20px 0;
+    max-width: 500px;
     margin: 0 auto;
 }
 

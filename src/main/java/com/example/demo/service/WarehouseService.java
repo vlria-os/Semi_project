@@ -24,7 +24,7 @@ public class WarehouseService {
 
         int totalRowCount=mapper.getWarehouseCount(map);
 
-        PageInfo pageInfo=new PageInfo(pageNum, 3, 3, totalRowCount);
+        PageInfo pageInfo=new PageInfo(pageNum, 6, 3, totalRowCount);
         map.put("startRow", pageInfo.getStartRow());
         map.put("endRow", pageInfo.getEndRow());
 
