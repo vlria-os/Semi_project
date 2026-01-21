@@ -26,6 +26,9 @@ public class StatisticsController {
         model.addAttribute("navFragment", "fragment/nav/adminNav");
         model.addAttribute("content", "fragment/stats/statistics");
 
+        if((int)session.getAttribute("role_id")!=1) {
+            return "redirect:/";
+        }
 //        ObjectMapper mapper=new ObjectMapper();
 //        String Ranking=mapper.writeValueAsString(statsData.get("ranking"));
 //        model.addAttribute("Ranking", Ranking);
@@ -33,8 +36,8 @@ public class StatisticsController {
         return "layout";
     }
 
-    @GetMapping("/period")
-    public String periodStats(Model model){
+    @GetMapping("/stats/period")
+    public String periodStats(Model model, HttpSession session){
         List<SalesStatsDto> periodData= statsService.getPeriodStats();
         long totalRev=0;
         long totalQty=0;
@@ -42,22 +45,35 @@ public class StatisticsController {
             totalRev += dto.getRevenue();
             totalQty += dto.getQuantity();
         }
+        if((int)session.getAttribute("role_id")!=1) {
+            return "redirect:/";
+        }
         model.addAttribute("periodList", periodData);
         model.addAttribute("totalRev", totalRev);
         model.addAttribute("totalQty", totalQty);
         model.addAttribute("avgPrice", totalQty > 0 ? totalRev/totalQty : 0);
-        return "stats/period";
+        model.addAttribute("navFragment", "fragment/nav/adminNav");
+        model.addAttribute("content", "fragment/stats/period");
+        return "layout";
     }
 
-    @GetMapping("/waste")
-    public String wasteStats(Model model){
+    @GetMapping("/stats/waste")
+    public String wasteStats(Model model, HttpSession session){
         List<SalesStatsDto> wasteData=statsService.getWasteStats();
         long totalWaste= wasteData.stream().mapToLong(SalesStatsDto::getWaste_quantity).sum();
         long totalOut= wasteData.stream().mapToLong(SalesStatsDto::getTotal_quantity).sum();
         double avgWasteRate=totalOut > 0 ? (double) totalWaste / totalOut * 100 : 0;
 
+        if((int)session.getAttribute("role_id")!=1) {
+            return "redirect:/";
+        }
+
         model.addAttribute("wasteList", wasteData);
+        model.addAttribute("totalWaste", totalWaste);
+        model.addAttribute("totalQty", totalOut);
         model.addAttribute("avgWasteRate", Math.round(avgWasteRate * 10)/ 10.0);
-        return "stats/waste";
+        model.addAttribute("navFragment", "fragment/nav/adminNav");
+        model.addAttribute("content", "fragment/stats/waste");
+        return "layout";
     }
 }
