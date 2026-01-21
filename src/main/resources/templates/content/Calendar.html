@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>근무 캘린더</title>
+
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.css">
+    <link rel="stylesheet" th:href="@{/css/calendar.css}">
+</head>
+<body>
+
+<div id="calendar"></div>
+
+<!-- ✅ 클릭한 이벤트 옆에 뜨는 작은 팝오버 -->
+<div id="workPopover" class="work-popover hidden">
+    <div class="pop-header">
+        <div class="pop-date" id="popDate">2026-01-21</div>
+        <button class="pop-close" type="button" id="popCloseBtn">×</button>
+    </div>
+
+    <div class="pop-body">
+        <div class="pop-row">
+            <span class="k">상태</span>
+            <span class="v" id="popStatus">정상 근무</span>
+        </div>
+
+        <div class="pop-row">
+            <span class="k">출근</span>
+            <span class="v" id="popCheckIn">10:34</span>
+        </div>
+
+        <div class="pop-row">
+            <span class="k">퇴근</span>
+            <span class="v" id="popCheckOut">18:02</span>
+        </div>
+
+        <div class="pop-row memo">
+            <span class="k">메모</span>
+            <div class="memo-box" id="popMemo">배고파</div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js"></script>
+<script>
+    const statusTextMap = {
+        WORK: '정상 근무',
+        CHECK_IN_ONLY: '출근 (퇴근 미등록)',
+        HALF_AM: '오전 반차',
+        HALF_PM: '오후 반차',
+        ANNUAL: '연차',
+        SICK: '병가',
+        ETC: '기타'
+    };
+
+    function openPopoverAt(element) {
+        const pop = document.getElementById('workPopover');
+
+        // ✅ 일단 보이게 해서 크기 계산 가능하게
+        pop.classList.remove('hidden');
+
+        const rect = element.getBoundingClientRect();
+        const popRect = pop.getBoundingClientRect();
+
+        // 기본 위치: 이벤트 오른쪽
+        let top = window.scrollY + rect.top;
+        let left = window.scrollX + rect.right + 10;
+
+        // 화면 밖으로 나가면 왼쪽으로
+        if (left + popRect.width > window.scrollX + window.innerWidth - 8) {
+            left = window.scrollX + rect.left - popRect.width - 10;
+        }
+
+        // 그래도 왼쪽이 너무 작으면, 아래로 내림
+        if (left < 8) {
+            left = window.scrollX + rect.left;
+            top = window.scrollY + rect.bottom + 10;
+        }
+
+        // 아래로 벗어나면 위로 올림
+        if (top + popRect.height > window.scrollY + window.innerHeight - 8) {
+            top = window.scrollY + window.innerHeight - popRect.height - 8;
+        }
+
+        pop.style.top = top + 'px';
+        pop.style.left = left + 'px';
+    }
+
+    function closePopover() {
+        const pop = document.getElementById('workPopover');
+        pop.classList.add('hidden');
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const calendarEl = document.getElementById("calendar");
+        const pop = document.getElementById('workPopover');
+
+        // 닫기 버튼
+        document.getElementById('popCloseBtn').addEventListener('click', closePopover);
+
+        // 바깥 클릭하면 닫기
+        document.addEventListener('click', (e) => {
+            if (pop.classList.contains('hidden')) return;
+            const clickedInsidePopover = pop.contains(e.target);
+            const clickedOnEvent = e.target.closest('.fc-event');
+            if (!clickedInsidePopover && !clickedOnEvent) closePopover();
+        });
+
+        const calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            height: 'auto',
+
+            events: function (fetchInfo, successCallback, failureCallback) {
+                const params = new URLSearchParams({
+                    startDate: fetchInfo.startStr.slice(0, 10),
+                    endDate: fetchInfo.endStr.slice(0, 10)
+                });
+
+                fetch('/api/work/calendar?' + params.toString())
+                    .then(resp => {
+                        if (!resp.ok) throw new Error('events load fail: ' + resp.status);
+                        return resp.json();
+                    })
+                    .then(data => successCallback(data))
+                    .catch(err => {
+                        console.error(err);
+                        failureCallback(err);
+                    });
+            },
+
+            eventClick: function (info) {
+                // ✅ 날짜칸 클릭(페이지 이동) 막기
+                info.jsEvent.preventDefault();
+                info.jsEvent.stopPropagation();
+
+                const e = info.event;
+                const p = e.extendedProps;
+
+                // 팝오버 값 채우기
+                document.getElementById('popDate').textContent = e.startStr;
+
+                const statusCode = p.attendStatus;
+                document.getElementById('popStatus').textContent =
+                    statusTextMap[statusCode] || '기타';
+
+                document.getElementById('popCheckIn').textContent = p.checkInTime ?? '-';
+                document.getElementById('popCheckOut').textContent = p.checkOutTime ?? '-';
+                document.getElementById('popMemo').textContent = p.memo ?? '';
+
+                // 상태 글자 색을 이벤트 색으로 통일(예쁨)
+                document.getElementById('popStatus').style.color =
+                    e.backgroundColor || e.color || '#5F6368';
+
+                // ✅ 클릭한 “이벤트 DOM” 옆에 띄우기
+                openPopoverAt(info.el);
+            }
+        });
+
+        calendar.render();
+    });
+</script>
+</body>
+</html>
