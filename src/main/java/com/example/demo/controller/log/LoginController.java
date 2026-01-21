@@ -39,6 +39,8 @@ public class LoginController {
                 model.addAttribute("error","비활성 계정입니다.");
                 return "login/form";
             } else {
+                session.setAttribute("lastUserActionTime", System.currentTimeMillis());
+
                 if (userDto.getRole_id() == 1) {
                     session.setAttribute("webuser_id", userDto.getWebuser_id());
                     session.setAttribute("role_id", userDto.getRole_id());
