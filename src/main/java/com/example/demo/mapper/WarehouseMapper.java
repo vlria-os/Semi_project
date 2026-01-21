@@ -17,6 +17,6 @@ public interface WarehouseMapper {
     int deleteWarehouse(int n);
     WarehouseDto selectAll(int n);
     List<WarehouseDto> selectWarehouse();
-    List<WarehouseDto> selectLimit();
+    List<WarehouseDto> getSideWarehouseList();
     List<WarehouseDto> warehouseType(String warehouse_type);
 }

@@ -1,12 +1,34 @@
 
 <aside th:fragment="sidebar" class="sidebar">
+    <style>
+        .progress-container{
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            height: 8px;
+            margin-top: 4px;
+            overflow: hidden;
+        }
+        .progress-bar{
+            height: 100%;
+            transition: width 0.5s ease-in-out;
+        }
+        .storage-limit span{
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .bg-safe{background-color: #4ade80;}
+        .bg-warning{background-color: #fbbf24;}
+        .bg-danger{background-color: #ef4444;}
+    </style>
     <!-- sidebar -->
     <div class="sidebar" th:fragment="sidebarContent">
         <!--유통기한 임박-->
-        <div class="expiration-notif">
+        <div class="expiration-notif" style="margin-bottom: 24px;">
             <div class="side-title">
-                <span class="alert-icon">⚠️</span>
-                <a th:href="@{/fragment/sidebar/dueDate}">유통기한 임박 관리</a>
+                <span class="alert-icon">⚠️유통기한 임박</span>
+                <a th:href="@{/fragment/sidebar/dueDate}" style="font-weight: bold; color: var(--navy); text-decoration: none;">유통기한 임박 목록</a>
             </div>
             <!-- 유통기한 임박 목록(10게(CSS))-->
             <div class="side-content">
@@ -25,15 +47,21 @@
         <!--재고 한계 임박-->
         <div class="storage-limit">
             <div class="side-title">
-                <span class="storage-icon">🏗️</span>
-                <a th:href="@{/warehouse/insert}">+새창고 등록</a>
+                <span class="storage-icon">🏗️창고 한계 임박</span>
+                <a th:href="@{/warehouse/insert}" style="font-weight: bold; color: var(--navy); text-decoration: none;">+새창고 등록</a>
             </div>
             <!-- 재고 한계 임박 목록(10게(CSS))-->
             <div class="side-content">
                 <ul th:if="${not #lists.isEmpty(limitList)}">
-                    <li th:each="w : ${limitList}">
-                        <span th:text="${w.warehouse_name}"></span>
-                        <span th:text="${w.usage_rate} + '%'"></span>
+                    <li th:each="w : ${limitList}" style="margin-bottom: 15px; list-style: none;">
+                        <div style="display: flex; justify-content: space-between;">
+                            <span th:text="${w.warehouse_name}" style="font-weight: 500;"></span>
+                            <span th:text="${w.usage_rate} + '%'" style="font-size: 0.85em;"></span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar" th:style="|width: ${w.usage_rate}%|" th:classappend="${w.usage_rate >=90} ? 'bg-danger' : (${w.usage_rate >= 70} ? 'bg-warning' : 'bg-safe')">
+                            </div>
+                        </div>
                     </li>
                 </ul>
                 <div class="no-data" th:if="${#lists.isEmpty(limitList)}">

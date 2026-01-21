@@ -1,12 +1,6 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+<section xmlns:th="http://www.thymeleaf.org" th:fragment="content">
     <link rel="stylesheet" th:href="@{/css/statistics/statlist.css}">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
 <div class="container">
 
     <!--폐기율 통계-->
@@ -14,7 +8,7 @@
         <div class="main">
             <div class="main-title">
                 <span class="main-icon">📊</span>
-                폐기율 통계
+                매출 통계
             </div>
             <!--이동 버튼-->
             <div class="view-toggle">
@@ -31,8 +25,8 @@
             <div class="value" th:text="${avgWasteRate} + '%'"></div>
         </div>
         <div class="stat-card">
-            <span class="label">총 기간 판매량</span>
-            <div class="value" th:text="${totalQty} + '개'">0개</div>
+            <span class="label">총 폐기 수량</span>
+            <div class="value" th:text="${totalWaste} + '개'">0개</div>
         </div>
     </div>
     <!--통계 차트-->
@@ -50,8 +44,8 @@
                 <td th:text="${item.waste_quantity} + '개'"></td>
                 <td th:text="${item.total_quantity} + '개'"></td>
                 <td>
-                    <div class="progress-bar">
-                        <div class="progress" th:style="'width:' + ${item.waste_rate} + '%; background-color: #ef4444'"></div>
+                    <div class="progress-bar" style="background: #fee2e2; border-radius: 4px; height: 10px; width: 100px; display: inline-block; margin-right: 10px;">
+                        <div class="progress" th:style="'width:' + ${item.waste_rate} + '%; background-color: #ef4444; border-radius: 4px;'"></div>
                     </div>
                     <span th:test="${item.waste_rate} + '%'"></span>
                 </td>
@@ -59,14 +53,13 @@
         </table>
     </div>
 </div>
-</body>
 <script th:inline="javascript">
     document.addEventListener("DOMContentLoaded", function(){
         const data=/*[[${wasteList}]]*/ [];
         if(!data || data.length===0) return ;
 
         const labels=data.map(item => item.product_name);
-        const rates=data.map(item => item.share);
+        const rates=data.map(item => item.waste_rate);
 
         const ctx=document.getElementById('wasteChart').getContext('2d');
         new Chart(ctx, {
@@ -82,12 +75,19 @@
                 }]
             },
             options: {
-                indexAsix: 'y',
+                indexAxis: 'y',
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {legend: {displayt: false}}
+                plugins: {legend: {display: false}},
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: { callback: (val) => val + '%'}
+                    }
+                }
             }
         });
     });
 </script>
-</html>
+</section>

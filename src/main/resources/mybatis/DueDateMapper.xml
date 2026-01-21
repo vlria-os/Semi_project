@@ -13,12 +13,11 @@
             <if test="keyword != null and keyword != ''">
                 and (
                     upper(p.product_name) like upper ('%' || #{keyword} || '%')
-                    or upper(w.warehouse_name) like upper ('%' || #{keyword} || '%')
                     or upper(p.status) like upper ('%' || #{keyword} || '%')
                 )
             </if>
             <if test="typeFilter != null and typeFilter != 'all' ">
-                and upper(p.product_type) = upper(#{typeFilter})
+                and upper(p.status) = upper(#{typeFilter})
             </if>
             <if test="warehouseFilter != null and warehouseFilter != '' ">
                 and li.warehouse_id = #{warehouseFilter}

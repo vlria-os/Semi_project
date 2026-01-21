@@ -11,5 +11,6 @@
         <li><a th:href="@{/warehouse/list}" th:classappend="${#httpServletRequest !=null && #httpServletRequest.requestURI.contains('/warehouse/list')} ? 'active' : ''">창고 관리</a></li>
         <li><a th:href="@{/webuser/list}" th:classappend="${#httpServletRequest !=null && #httpServletRequest.requestURI.contains('/webuser/list')} ? 'active' : ''">계정 관리</a></li>
         <li><a th:href="@{/payment}" th:classappend="${#httpServletRequest !=null && #httpServletRequest.requestURI.contains('/payment')} ? 'active' : ''">월말 정산</a></li>
+        <li><a th:href="@{/stats/statistics}">매출 통계</a></li>
     </ul>
 </nav>

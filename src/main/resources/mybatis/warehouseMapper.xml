@@ -109,19 +109,23 @@
         select warehouse_id, warehouse_name, location, warehouse_type from warehouse order by warehouse_name asc
     </select>
 
-    <select id="selectLimit" resultType="WarehouseDto">
+    <select id="getSideWarehouseList" resultType="WarehouseDto">
         select
-        w.warehouse_id,
-        w.warehouse_name,
-        w.maximum_capacity,
-        NVL(sum_stock.total, 0) as current_stock,
-        ROUND((NVL(sum_stock.total, 0) / w.maximum_capacity) * 100, 1) as usage_rate
+            w.warehouse_id,
+            w.warehouse_name,
+            w.maximum_capacity,
+            NVL( sum_stock.total, 0) as current_stock,
+            CASE
+                when w.maximum_capacity > 0
+                then round ((NVL(sum_stock.total, 0) / w.maximum_capacity) * 100, 1)
+                else 0
+            end as usage_rate
         from warehouse w
         left join (
-        select li.warehouse_id, sum(s.quantity) as total
-        from stock s
-        join lot_in li on s.lot_in_id = li.lot_in_id
-        group by li.warehouse_id
+            select li.warehouse_id, SUM(s.quantity) as total
+            from stock s
+            join lot_in li on s.lot_in_id = li.lot_in_id
+            group by li.warehouse_id
         ) sum_stock on w.warehouse_id = sum_stock.warehouse_id
         order by usage_rate desc
         fetch first 10 rows only

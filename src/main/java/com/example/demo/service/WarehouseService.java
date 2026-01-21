@@ -41,6 +41,6 @@ public class WarehouseService {
     public int deleteWarehouse(int n){return mapper.deleteWarehouse(n);}
     public WarehouseDto selectAll(int n){return mapper.selectAll(n);}
     public List<WarehouseDto> selectWarehouse(){return mapper.selectWarehouse();}
-    public List<WarehouseDto> getSideWarehouseList(){return mapper.selectLimit();}
+    public List<WarehouseDto> getSideWarehouseList(){return mapper.getSideWarehouseList();}
     public List<WarehouseDto> warehouseType(String warehouse_type){return mapper.warehouseType(warehouse_type);}
 }
