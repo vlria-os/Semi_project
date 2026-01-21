@@ -2,32 +2,35 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.SalesStatsDto;
 import com.example.demo.service.StatisticsService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 import java.util.Map;
 
 @Controller
-@RequestMapping("/stats")
 @RequiredArgsConstructor
 public class StatisticsController {
     private final StatisticsService statsService;
 
-    @GetMapping("/statistics")
-    public String itemStats(Model model) throws Exception{
+    @GetMapping("/stats/statistics")
+    public String itemStats(Model model, HttpSession session) throws Exception{
         Map<String, Object> statsData= statsService.getSalesBoard();
         model.addAttribute("stats", statsData.get("summary"));
         model.addAttribute("rankList", statsData.get("ranking"));
+        model.addAttribute("navFragment", "fragment/nav/adminNav");
+        model.addAttribute("content", "fragment/stats/statistics");
 
 //        ObjectMapper mapper=new ObjectMapper();
 //        String Ranking=mapper.writeValueAsString(statsData.get("ranking"));
 //        model.addAttribute("Ranking", Ranking);
 
-        return "stats/statistics";
+        return "layout";
     }
 
     @GetMapping("/period")
