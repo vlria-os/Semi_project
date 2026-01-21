@@ -18,8 +18,10 @@ public class DueDateService {
     private final DueDateMapper dMapper;
     private final WarehouseMapper wMapper;
 
-    public Map<String, Object> getDueDateList(int pageNum ,String typeFilter, String warehouseFilter, String viewType){
+    public Map<String, Object> getDueDateList(int pageNum ,String typeFilter, String warehouseFilter, String viewType, String keyword){
         Map<String, Object> map=new HashMap<>();
+        map.put("keyword", keyword);
+        map.put("viewType", viewType);
         map.put("typeFilter", typeFilter);
         map.put("warehouseFilter", warehouseFilter);
         int totalRowCount=dMapper.getDateCount(map);

@@ -21,6 +21,8 @@ public class ExpiredController {
                               @RequestParam(value = "warehouseFilter", required = false) String warehouseFilter,
                               @RequestParam(value = "isAjax", defaultValue = "false") boolean isAjax,
                               Model model){
+        if(searchDto.getKeyword() == null) searchDto.setKeyword("");
+
         Map<String, Object> result=eService.getExpiredList(pageNum, typeFilter, warehouseFilter, searchDto.getKeyword());
         model.addAttribute("list", result.get("list"));
         model.addAttribute("pageInfo", result.get("pageInfo"));

@@ -81,13 +81,13 @@
         async function updateTable(pageNum =1){
             const keyword=searchBar.value;
             const warehouseFilter=warehouseSelect.value;
-            const activeBtn=document.querySelect(".filter-btn.active");
+            const activeBtn=document.querySelector(".filter-btn.active");
             const typeFilter=activeBtn ? activeBtn.value : "all";
             // const typeFilter=document.querySelector(".filter-btn.active").value;
 
             container.style.opacity="0.5";
 
-            const url=`/sidebar/expiredList?pageNum=${pageNum}&typeFilter=${typeFilter}&warehouseFilter=${warehouseFilter}&keyword=${encodeURIComponent(keyword)}&isAjax=true`;
+            const url=`/fragment/sidebar/expiredList?pageNum=${pageNum}&typeFilter=${typeFilter}&warehouseFilter=${warehouseFilter}&keyword=${encodeURIComponent(keyword)}&isAjax=true`;
             try{
                 const response=await fetch(url);
                 if(!response.ok) throw new Error("Fetch Error");
