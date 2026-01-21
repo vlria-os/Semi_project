@@ -2,15 +2,18 @@
          th:fragment="content">
     <link rel="stylesheet" th:href="@{/css/content/webuserlist.css}">
     <div class="main">
-        <div>
-            <button onclick="insertWebuser()">계정 추가</button>
-            <!-- 숨긴 파일 input -->
-            <input type="file" id="fileInput" accept=".csv,.xlsx" style="display: none;">
+        <div class="btn-group">
 
-            <!-- 사용자에게 보여줄 버튼 -->
-            <button type="button" onclick="triggerFile()">엑셀로 추가하기</button>
-            <span id="span2" style="color: red;font-size: 11px;"></span>
+            <div class="main-title">계정 관리</div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+                <span id="span2" style="color: red;font-size: 11px;"></span>
+                <button onclick="insertWebuser()">계정 추가</button>
+                <!-- 숨긴 파일 input -->
+                <input type="file" id="fileInput" accept=".csv,.xlsx" style="display: none;">
 
+                <!-- 사용자에게 보여줄 버튼 -->
+                <button type="button" onclick="triggerFile()">엑셀로 추가하기</button>
+            </div>
         </div>
         <form th:action="@{/webuser/insert}" method="post" style="display: none;" id="insertForm">
             <table>
