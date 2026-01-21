@@ -22,15 +22,21 @@ public class LoginController {
 
     @PostMapping("/login/ok")
     public String loginOk(LoginDto dto, HttpSession session, Model model) {
-        String id = dto.getId();
+        String id= dto.getId();
 
         WebuserDto userDto = service.selectWebuser(id);
-        if (userDto == null) {
+
+        if(userDto == null){
             model.addAttribute("error", "존재하지 않는 아이디입니다.");
             return "login/form";
-        }
-            if (!userDto.getPassword().equals(dto.getPassword())) {
+        } else if("".equals(userDto.getPassword())){
+          model.addAttribute("비밀번호를 입력하세요.");
+          return "login/form";
+        } else if (!userDto.getPassword().equals(dto.getPassword())) {
                 model.addAttribute("error", "비밀번호가 틀렸습니다!");
+                return "login/form";
+            } else if(!"Y".equals(userDto.getIs_active())){
+                model.addAttribute("error","비활성 계정입니다.");
                 return "login/form";
             } else {
                 session.setAttribute("lastUserActionTime", System.currentTimeMillis());
@@ -58,8 +64,6 @@ public class LoginController {
                     return "layout";
                 }
             }
-
-            return "redirect:/login/form";
-
+        return "login/form";
     }
 }

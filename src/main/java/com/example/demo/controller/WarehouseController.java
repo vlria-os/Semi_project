@@ -19,7 +19,9 @@ public class WarehouseController {
     private final WarehouseService service;
 
     @GetMapping("/warehouse/list")
-    public String warehouselist(HttpSession session, Model model, SearchDto dto, @RequestParam(value="pageNum", defaultValue = "1") int pageNum, @RequestParam(value="isAjax", defaultValue = "false") boolean isAjax){
+    public String warehouselist(HttpSession session, Model model, SearchDto dto,
+                                @RequestParam(value="pageNum", defaultValue = "1") int pageNum,
+                                @RequestParam(value="isAjax", defaultValue = "false") boolean isAjax){
         //Search Bar 값 없을때 오류 방지
         if(dto==null){
             dto = new SearchDto();
