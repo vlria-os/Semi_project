@@ -133,24 +133,39 @@
     background-color: #f1f5f9;
     border: 1px solid #e2e8f0;
     border-radius: 20px;
-    padding: 6px 14px !important;
-    white-space: nowrap;
+    padding: 8px 18px !important;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    height: fit-content;
 }
+
 .toggle a {
     text-decoration: none;
     color: #64748b;
     font-size: 13px;
     font-weight: 600;
+    display: block;
+    width: 100%;
 }
 .toggle.active {
-    background-color: #3b82f6;
-    border-color: #3b82f6;
+    background-color: #3b82f6 !important; /* Solid Blue */
+    border-color: #2563eb !important;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
 }
 
-.toggle.active a { color: white; }
+.toggle.active a {
+    color: #ffffff !important;
+}
 
 .toggle:hover {
     background-color: #e2e8f0;
+}
+.toggle:hover:not(.active) {
+    background-color: #e2e8f0;
+    border-color: #cbd5e1;
 }
 .inbound-table th, .outbound-table th {
     background-color: #f8fafc;
