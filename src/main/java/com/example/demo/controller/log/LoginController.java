@@ -22,46 +22,57 @@ public class LoginController {
 
     @PostMapping("/login/ok")
     public String loginOk(LoginDto dto, HttpSession session, Model model) {
-        String id= dto.getId();
 
-        WebuserDto userDto = service.selectWebuser(id);
-
-        if(userDto == null){
-            model.addAttribute("error", "존재하지 않는 아이디입니다.");
+        if(dto.getId() == null || "".equals(dto.getId())){
+            model.addAttribute("error","아이디를 입력하세요!");
             return "login/form";
-        } else if("".equals(userDto.getPassword())){
-          model.addAttribute("비밀번호를 입력하세요.");
-          return "login/form";
-        } else if (!userDto.getPassword().equals(dto.getPassword())) {
-                model.addAttribute("error", "비밀번호가 틀렸습니다!");
+        }else{
+            if(dto.getPassword() == null || "".equals(dto.getPassword())){
+                model.addAttribute("error","비밀번호를 입력하세요!");
                 return "login/form";
-            } else if(!"Y".equals(userDto.getIs_active())){
-                model.addAttribute("error","비활성 계정입니다.");
-                return "login/form";
-            } else {
-                if (userDto.getRole_id() == 1) {
-                    session.setAttribute("webuser_id", userDto.getWebuser_id());
-                    session.setAttribute("role_id", userDto.getRole_id());
-                    session.setAttribute("roleMsg", "관리자");
-                    model.addAttribute("navFragment", "fragment/nav/adminNav");
-                    model.addAttribute("content", "content/notice");
-                    return "layout";
-                } else if (userDto.getRole_id() == 2) {
-                    session.setAttribute("webuser_id", userDto.getWebuser_id());
-                    session.setAttribute("role_id", userDto.getRole_id());
-                    session.setAttribute("roleMsg", "사무 직원");
-                    model.addAttribute("navFragment", "fragment/nav/officeNav");
-                    model.addAttribute("content", "content/notice");
-                    return "layout";
-                } else if (userDto.getRole_id() == 3) {
-                    session.setAttribute("webuser_id", userDto.getWebuser_id());
-                    session.setAttribute("role_id", userDto.getRole_id());
-                    session.setAttribute("roleMsg", "현장 직원");
-                    model.addAttribute("navFragment", "fragment/nav/fieldNav");
-                    model.addAttribute("content", "content/notice");
-                    return "layout";
+            }else {
+                WebuserDto userDto=service.selectWebuser(dto.getId());
+
+                if(userDto == null){
+                    model.addAttribute("error", "존재하지 않는 아이디입니다.");
+                    return "login/form";
+                }else {
+                    if (!userDto.getPassword().equals(dto.getPassword())){
+                        model.addAttribute("error", "비밀번호가 틀렸습니다!");
+                        return "login/form";
+                    } else {
+                        if (!"Y".equals(userDto.getIs_active())){
+                            model.addAttribute("error","비활성 계정입니다.");
+                            return "login/form";
+                        }else {
+                            if (userDto.getRole_id() == 1) {
+                                session.setAttribute("webuser_id", userDto.getWebuser_id());
+                                session.setAttribute("role_id", userDto.getRole_id());
+                                session.setAttribute("roleMsg", "관리자");
+                                model.addAttribute("navFragment", "fragment/nav/adminNav");
+                                model.addAttribute("content", "content/notice");
+                                return "layout";
+                            } else if (userDto.getRole_id() == 2) {
+                                session.setAttribute("webuser_id", userDto.getWebuser_id());
+                                session.setAttribute("role_id", userDto.getRole_id());
+                                session.setAttribute("roleMsg", "사무 직원");
+                                model.addAttribute("navFragment", "fragment/nav/officeNav");
+                                model.addAttribute("content", "content/notice");
+                                return "layout";
+                            } else if (userDto.getRole_id() == 3) {
+                                session.setAttribute("webuser_id", userDto.getWebuser_id());
+                                session.setAttribute("role_id", userDto.getRole_id());
+                                session.setAttribute("roleMsg", "현장 직원");
+                                model.addAttribute("navFragment", "fragment/nav/fieldNav");
+                                model.addAttribute("content", "content/notice");
+                                return "layout";
+                            }
+
+                            return "login/form";
+                        }
+                    }
                 }
             }
-        return "login/form";
+        }
     }
 }
