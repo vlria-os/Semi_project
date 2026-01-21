@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.PaymentMapper">
+    <select id="select_IN_company" parameterType="int" resultType="int">
+        select c.company_id from company c
+        join product p on c.product_type=p.status
+        where c.payment_type='IN' and p.product_id=#{value}
+    </select>
+    <select id="select_OUT_company" parameterType="int" resultType="int">
+        select c.company_id from company c
+        join product p on c.product_type=p.status
+        where c.payment_type='OUT' and p.product_id=#{value}
+    </select>
+    <select id="is_exist" parameterType="int" resultType="int">
+        SELECT NVL(
+            (SELECT settlement_id
+            FROM settlement
+            WHERE period = TRUNC(SYSDATE, 'MM')
+            AND company_id = #{value}),
+            0
+        ) AS settlement_id
+        FROM dual
+    </select>
+    <insert id="insert_settlement" parameterType="SettlementDto">
+        insert into settlement values(settlement_seq.nextval,TRUNC(SYSDATE, 'MM'),#{company_id}, #{total_pay},'N',null,null)
+    </insert>
+    <update id="Plus_pay" parameterType="SettlementDto">
+        update settlement set total_pay=total_pay+#{total_pay} where settlement_id=#{settlement_id}
+    </update>
+    <update id="Minus_pay" parameterType="SettlementDto">
+        update settlement set total_pay=total_pay-#{total_pay} where settlement_id=#{settlement_id}
+    </update>
+</mapper>

@@ -18,6 +18,8 @@ public class OutboundService {
     private final Lot_outMapper lot_outMapper;
     private final OutboundMapper outboundMapper;
     private final Outbound_detailMapper outbound_detailMapper;
+    private final PaymentMapper paymentMapper;
+    private final ProductMapper productMapper;
 
     @Transactional
     public int insert_request(List<Outbound_reqDto> outbound_reqDtos,
@@ -108,11 +110,22 @@ public class OutboundService {
                               int confirmer_id){
 
         List<Lot_outDto> lot_outDtos=lot_outMapper.select_lot(outbound_detail_id);
+        int quantity1=outbound_detailMapper.select_quantity(outbound_detail_id);
+//        if(lot_outDtos.isEmpty()){
+//            return -1;
+//        }
+        for (Lot_outDto l : lot_outDtos){
+            quantity1-=l.getQuantity();
+        }
+        if(quantity1>0){
+            return -1;
+        }
+
+        int product_id=outbound_detailMapper.select_product(outbound_detail_id);
 
         if(status.equals("REJECTED")){
             int m=outbound_detailMapper.update_outStatus_rej(outbound_detail_id);
             for (Lot_outDto l : lot_outDtos) {
-                int product_id=outbound_detailMapper.select_product(outbound_detail_id);
                 stockMapper.update_in(new StockDto(l.getStock_id(),0,l.getQuantity(), product_id));
                 int q=lot_outMapper.delete(l.getLot_out_id());
                 Outbound_detailDto outbound_detailDto=new Outbound_detailDto();
@@ -128,6 +141,18 @@ public class OutboundService {
                 map.put("lot_out_id",l.getLot_out_id());
                 map.put("confirmer_id",confirmer_id);
                 int a=lot_outMapper.insert_confirmer(map);
+            }
+
+            //정산
+            int quantity=outbound_detailMapper.select_quantity(outbound_detail_id);
+            int company_id=paymentMapper.select_OUT_company(product_id);
+            int is_exist=paymentMapper.is_exist(company_id);
+
+            int total_pay=(int)Math.ceil(quantity*productMapper.select_price(product_id)*0.8);
+            if(is_exist==0){
+                int b=paymentMapper.insert_settlement(new SettlementDto(0,null,company_id,total_pay,"N",null,0));
+            }else{
+                int c=paymentMapper.Plus_pay(new SettlementDto(is_exist,null,0,total_pay,"N",null,0));
             }
         }
 
