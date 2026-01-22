@@ -9,10 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -108,13 +105,14 @@ public class ProductListController {
 //        return "common/product_list";
 //    }
 
-//    @GetMapping("/common/product_search")
-//    @ResponseBody
-//    public Map<String, Object> productSearch(@RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
-//                                             @RequestParam String keyword) {
-//        Map<String, Object> map = productService.productList(pageNum, keyword);
-//        return map;
-//    }
+    @GetMapping("/common/product_search")
+    @ResponseBody
+    public Map<String, Object> productSearch(@RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
+                                             @ModelAttribute SearchDto searchDto) {
+        Map<String, Object> map = productService.productList(pageNum, searchDto);
+        System.out.println("=========================>"+map);
+        return map;
+    }
 
     @GetMapping("/content/product_insert")
     public String product_insertForm(Model model) {

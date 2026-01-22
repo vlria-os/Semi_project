@@ -23,13 +23,15 @@ public class Inbound_req_Controller {
     private final WarehouseService warehouseService;
 
     @GetMapping("/office_staff/inbound_req")
-    public String inbound_reqForm(@RequestParam(name = "pageNum", defaultValue = "1") int pageNum, Model model){
+    public String inbound_reqForm(@RequestParam(name = "pageNum", defaultValue = "1") int pageNum, Model model,
+                                  @ModelAttribute SearchDto searchDto){
         Map<String,Object> map=productService.productList(pageNum, new SearchDto());
 
         model.addAttribute("list", map.get("productDtos"));
         model.addAttribute("pageInfo",map.get("pageInfo"));
         model.addAttribute("navFragment", "fragment/nav/officeNav");
         model.addAttribute("content", "content/inbound_req");
+        model.addAttribute("searchDto", searchDto);
         return "layout";
     }
 
@@ -40,7 +42,6 @@ public class Inbound_req_Controller {
         int webuser_id = (int) session.getAttribute("webuser_id");
         int n=inboundService.insert_request(list, webuser_id);
 
-        System.out.println("======>"+n);
         if(n>0){
             return Map.of("success", true);
         }
