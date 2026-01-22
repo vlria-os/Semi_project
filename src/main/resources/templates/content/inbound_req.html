@@ -48,6 +48,20 @@
 
 <button type="button" onclick="submitSelected()">입고요청</button>
 
+    <div>
+        <ul id="pagingArea" th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
+            <li th:if="${pageInfo.startPageNum > 1}">
+                <a th:href="@{/office_staff/inbound_req(pageNum=${pageInfo.startPageNum - 1}, field=${searchDto.field}, keyword=${searchDto.keyword})}">[이전]</a>
+            </li>
+            <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
+                <a th:href="@{/office_staff/inbound_req(pageNum=${num}, field=${searchDto.field}, keyword=${searchDto.keyword})}">[[${num}]]</a>
+            </li>
+            <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
+                <a th:href="@{/office_staff/inbound_req(pageNum=${pageInfo.endPageNum + 1}, field=${searchDto.field}, keyword=${searchDto.keyword})}">[다음]</a>
+            </li>
+        </ul>
+    </div>
+
 <script>
     const selectedMap = {};
 
@@ -56,7 +70,8 @@
 
         fetch(`/common/product_search?keyword=${encodeURIComponent(keyword)}`)
             .then(res=>res.json())
-            .then(list=>{
+            .then(result=>{
+                const list = result.productDtos;
                 const tbody=document.getElementById('productBody');
                 tbody.innerHTML='';
 
@@ -73,7 +88,7 @@
        ${saved ? 'checked' : ''}>
         </td>
         <td>${p.product_id}</td>
-        <td><img th:src="@{'/image/' + ${p.save_name}}" style="width:100px;"></td>
+        <td><img src="/image/${p.save_name}" style="width:100px;"></td>
         <td>${p.product_name}</td>
         <td>${p.unit}</td>
         <td>${p.price}</td>

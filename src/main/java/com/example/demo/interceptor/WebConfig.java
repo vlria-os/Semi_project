@@ -20,7 +20,8 @@ public class WebConfig implements WebMvcConfigurer {
                         "/css/**",
                         "/js/**",
                         "/images/**",
-                        "/error"
+                        "/error",
+                        "/payment/guest/**"
                 );
     }
 }

@@ -72,13 +72,13 @@
     <div th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
         <ul>
             <li th:if="${pageInfo.startPageNum > 1}">
-                <a th:href="@{/stockList(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
+                <a th:href="@{/content/outbound_req(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
             </li>
             <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
-                <a th:href="@{/stockList(pageNum=${num},status=${status},keyword=${keyword})}">[[${num}]]</a>
+                <a th:href="@{/content/outbound_req(pageNum=${num},status=${status},keyword=${keyword})}">[[${num}]]</a>
             </li>
             <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
-                <a th:href="@{/stockList(pageNum=${pageInfo.endPageNum + 1})}">다음</a>
+                <a th:href="@{/content/outbound_req(pageNum=${pageInfo.endPageNum + 1})}">다음</a>
             </li>
         </ul>
     </div>

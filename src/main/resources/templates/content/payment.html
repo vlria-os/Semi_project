@@ -23,6 +23,10 @@
         <div th:if="${l.payment_status == 'N'}">
            <button th:if="${l.inout == 'out'}" class="payButton">결제하기</button>
             <div th:if="${l.inout == 'in'}">
+              <button class="btn-link"
+                      th:data-settlement_id="${l.settlement_id}">
+                링크 복사
+              </button>
               <button class="btn-check"
                       th:data-settlement_id="${l.settlement_id}">
                 입금 확인
@@ -93,31 +97,23 @@
       });
     });
 
-  //   // 링크 복사 기능
-  //     document.querySelectorAll(".copyLinkButton").forEach(btn => {
-  //       btn.addEventListener("click", async function() {
-  //         const row = btn.closest("tr");
-  //         const amount = Math.abs(parseInt(row.dataset.totalPay));
-  //
-  //         try {
-  //           const response = await fetch(`/generate-link?amount=${amount}`, {
-  //             method: 'POST'
-  //           });
-  //
-  //           if (!response.ok) throw new Error("서버 응답 실패");
-  //
-  //           const data = await response.json();
-  //           const link = data.url;
-  //
-  //           await navigator.clipboard.writeText(link);
-  //           alert("결제 링크가 복사되었습니다!\n" + link);
-  //
-  //         } catch (e) {
-  //           console.error(e);
-  //           alert("결제 링크 생성/복사 실패");
-  //         }
-  //       });
-  //     });
+    // // 링크 복사 기능
+    document.querySelectorAll(".btn-link").forEach(btn => {
+      btn.addEventListener("click", async function () {
+        const settlementId = btn.dataset.settlement_id;
+
+        // 원하는 주소 형식
+        const link = `http://192.168.0.37:8080/payment/guest/${settlementId}`;
+
+        try {
+          await navigator.clipboard.writeText(link);
+          alert("링크가 복사되었습니다!\n" + link);
+        } catch (e) {
+          console.error(e);
+          alert("링크 복사 실패");
+        }
+      });
+    });
 
     document.querySelectorAll(".btn-check").forEach(btn => {
       btn.addEventListener("click", async function() {
