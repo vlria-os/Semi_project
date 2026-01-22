@@ -19,6 +19,8 @@ public class Ref_ExpService {
     private final Lot_outMapper lot_outMapper;
     private final Lot_inMapper lot_inMapper;
     private final StockMapper stockMapper;
+    private final PaymentMapper paymentMapper;
+    private final ProductMapper productMapper;
 
     @Transactional
     @Scheduled(cron = "0 0 0 * * *")
@@ -60,6 +62,14 @@ public class Ref_ExpService {
                     refundDto.getWarehouse_id(), null, null, null, refundDto.getQuantity());
 
             inbound_detailMapper.insert(inbound_detailDto);
+            int price=productMapper.select_price(refundDto.getProduct_id());
+            int company_id=paymentMapper.select_OUT_company(refundDto.getProduct_id());
+
+            SettlementDto settlementDto=new SettlementDto();
+            settlementDto.setSettlement_id(paymentMapper.is_exist(company_id));
+            settlementDto.setTotal_pay((int)Math.ceil(refundDto.getQuantity()*price*0.8));
+
+            paymentMapper.Minus_pay(settlementDto);
         }
 
         return 1;
