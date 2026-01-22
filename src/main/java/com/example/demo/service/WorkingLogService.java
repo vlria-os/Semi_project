@@ -8,6 +8,7 @@ import com.example.demo.mapper.WorkingLogMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -62,19 +63,21 @@ public class WorkingLogService {
             newDto.setId(String.valueOf(dto.getWorkingLogId()));
 
             String attendStatus=dto.getAttendStatus();
-            boolean isCheckInOnly = (attendStatus == null && dto.getCheckInTime() != null && dto.getCheckOutTime() ==null);
-
-            String status = (attendStatus == null ? "ETC" : attendStatus);
+            boolean isCheckInOnly = (dto.getCheckInTime() != null && dto.getCheckOutTime() ==null);
 
             String title = "기타";
             String color = "#5F6368";
+
+            if (!isCheckInOnly && attendStatus == null) {
+                attendStatus = "ETC"; // 데이터 이상 시 fallback
+            }
 
             if(isCheckInOnly){
                 title="출근";
                 color="#F4B400";
             } else {
 
-                switch (status){
+                switch (attendStatus){
                     case "WORK":
                         title = "정상 근무";
                         color = "#1F3C88";
@@ -100,6 +103,11 @@ public class WorkingLogService {
                         color = "#D93025";
                         break;
 
+                    case "CHECK_OUT_LATE":
+                        title = "익일 퇴근 처리";
+                        color = "#000000";
+                        break;
+
                     case "ETC":
                     default:
                         title = "기타";
@@ -108,16 +116,23 @@ public class WorkingLogService {
             }
 
             newDto.setTitle(title);
-            newDto.setColor(color);
+            newDto.setBackgroundColor(color);
+            newDto.setBorderColor(color);
+            newDto.setTextColor("#FFFFFF");
             newDto.setStart(dto.getWorkingDate().toString());
             newDto.setEnd(dto.getWorkingDate().plusDays(1).toString());
             newDto.setAllDay(true);
 
             Map<String,Object> map=new HashMap<>();
-            map.put("attendStatus", isCheckInOnly ? "CHECK_IN_ONLY" : status);
+            map.put("attendStatus", isCheckInOnly ? "CHECK_IN_ONLY" : attendStatus);
             map.put("checkInTime", dto.getCheckInTime() == null ? null : dto.getCheckInTime().toLocalTime().toString());
             map.put("checkOutTime",dto.getCheckOutTime() == null ? null : dto.getCheckOutTime().toLocalTime().toString());
-            map.put("memo",dto.getMemo());
+            map.put("memo",dto.getMemo() == null ? "" : dto.getMemo());
+
+            //퇴근 보정 버튼 노출 여부 결정하는 조건
+            boolean canCheckoutLate = dto.getCanCheckoutLate() != null && dto.getCanCheckoutLate() == 1;
+
+            map.put("canCheckoutLate",canCheckoutLate);
 
             newDto.setExtendedProps(map);
 
@@ -125,5 +140,30 @@ public class WorkingLogService {
         }
 
         return list;
+    }
+
+    //퇴근 보정
+    public boolean updateCheckoutLate(int workingLogId, int webuserId, String checkoutTime){
+        LocalDate workingDate = workingLogMapper.selectWorkingDateById(workingLogId,webuserId);
+        if (workingDate == null) return false;
+
+        LocalTime checkOut;
+        if (checkoutTime == null || checkoutTime.isBlank()){
+            checkOut = LocalTime.of(18, 0);
+        } else {
+            checkOut = LocalTime.parse(checkoutTime);
+        }
+
+        LocalTime start=LocalTime.of(9,0);
+        LocalTime end=LocalTime.of(23,59);
+        if(checkOut.isBefore(start) || checkOut.isAfter(end)){
+            return false;
+        }
+
+        LocalDateTime checkOutTime = workingDate.atTime(checkOut);
+
+        int n=workingLogMapper.updateCheckoutLate(workingLogId, webuserId, checkOutTime);
+
+        return n > 0;
     }
 }

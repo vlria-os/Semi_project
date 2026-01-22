@@ -39,6 +39,19 @@
             <span class="k">메모</span>
             <div class="memo-box" id="popMemo">배고파</div>
         </div>
+
+        <div class="pop-row hidden" id="lateCheckoutRow">
+            <span class="k">퇴근 보정</span>
+            <div class="v" style="display:flex; gap:8px; align-items:center;">
+                <input type="time" id="lateCheckoutTime" value="18:00">
+                <button type="button" id="lateCheckoutBtn">퇴근 보정</button>
+            </div>
+        </div>
+
+        <div class="pop-row hidden" id="lateCheckoutMsgRow">
+            <span class="k"></span>
+            <span class="v" id="lateCheckoutMsg" style="white-space:nowrap;"></span>
+        </div>
     </div>
 </div>
 
@@ -51,6 +64,7 @@
         HALF_PM: '오후 반차',
         ANNUAL: '연차',
         SICK: '병가',
+        CHECK_OUT_LATE: "익일 퇴근 처리",
         ETC: '기타'
     };
 
@@ -95,6 +109,8 @@
     document.addEventListener("DOMContentLoaded", function () {
         const calendarEl = document.getElementById("calendar");
         const pop = document.getElementById('workPopover');
+
+        let currentEvent = null;
 
         // 닫기 버튼
         document.getElementById('popCloseBtn').addEventListener('click', closePopover);
@@ -152,11 +168,79 @@
                 document.getElementById('popStatus').style.color =
                     e.backgroundColor || e.color || '#5F6368';
 
+                //퇴근 보정 버튼
+                currentEvent = e;
+
+                // 보정 UI 토글
+                const canFix = !!p.canCheckoutLate;
+                const lateRow = document.getElementById('lateCheckoutRow');
+                const msgRow = document.getElementById('lateCheckoutMsgRow');
+                const msg = document.getElementById('lateCheckoutMsg');
+
+                msg.textContent = '';
+                msgRow.classList.add('hidden');
+
+                if (canFix) {
+                    lateRow.classList.remove('hidden');
+
+                    // 기본값: 18:00 (원하면 '현재시간'으로 바꿀 수도 있음)
+                    document.getElementById('lateCheckoutTime').value = '18:00';
+                } else {
+                    lateRow.classList.add('hidden');
+                }
+
                 // ✅ 클릭한 “이벤트 DOM” 옆에 띄우기
                 openPopoverAt(info.el);
             }
         });
 
+        document.getElementById("lateCheckoutBtn").addEventListener("click", async () => {
+            if (!currentEvent) return;
+
+            const workingLogId = currentEvent.id;
+            const checkOutTime = document.getElementById("lateCheckoutTime").value;
+
+            const msgRow = document.getElementById('lateCheckoutMsgRow');
+            const msg = document.getElementById('lateCheckoutMsg');
+            msgRow.classList.remove('hidden');
+            msg.textContent = '처리 중...';
+
+            try {
+                const resp = await fetch(`/api/work/${workingLogId}/checkout-late`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ checkOutTime })
+                });
+
+                let result = {};
+                try { result = await resp.json(); } catch (e) { result = {}; }
+
+                if (!resp.ok) {
+                    msg.textContent = result?.message || '실패';
+                    return;
+                }
+
+                currentEvent.setProp('title','익일 퇴근 처리');
+                currentEvent.setProp('backgroundColor', '#000000');
+                currentEvent.setProp('borderColor', '#000000');
+
+                currentEvent.setExtendedProp('attendStatus','CHECK_OUT_LATE');
+                currentEvent.setExtendedProp('checkOutTime', checkOutTime);
+                currentEvent.setExtendedProp('canCheckoutLate',false);
+
+                document.getElementById("popStatus").innerText = "익일 퇴근 처리";
+                document.getElementById("popStatus").style.color = "#000000";
+                document.getElementById("popCheckOut").innerText = checkOutTime;
+
+                document.getElementById("lateCheckoutRow").classList.add("hidden");
+
+                msg.textContent = result.message || '퇴근 보정 성공!';
+            } catch (err) {
+                console.error(err);
+                msgRow.classList.remove('hidden');
+                msg.textContent = '요청 실패: ' + (err.message || '네트워크 오류');
+            }
+        });
         calendar.render();
     });
 </script>

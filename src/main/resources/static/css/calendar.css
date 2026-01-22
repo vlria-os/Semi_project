@@ -1,8 +1,9 @@
-/* ===============================
+/* =========================================================
    FullCalendar Theme (White + Blue)
-   + Center Pill Events
-   + Click Popover (small)
-   =============================== */
+   - Centered pill events (uses server event colors)
+   - Small click popover near event
+   - Memo wraps, never overflows
+   ========================================================= */
 
 /* ---------- Layout ---------- */
 #calendar{
@@ -13,9 +14,9 @@
 /* ---------- Toolbar / Header ---------- */
 .fc .fc-toolbar{
     position: relative;
+    padding: 8px 0 6px;
 }
 
-/* Month title centered */
 .fc .fc-toolbar-title{
     position: absolute;
     left: 50%;
@@ -24,7 +25,7 @@
 
     color: #2f6bff;
     font-weight: 900;
-    font-size: 2.3rem;
+    font-size: 2.2rem;
     margin: 0;
 }
 
@@ -34,6 +35,7 @@
     border-color: #2f6bff;
     color: #ffffff;
     font-weight: 600;
+    border-radius: 10px;
 }
 .fc .fc-button:hover{
     background-color: #2459e6;
@@ -50,114 +52,108 @@
     color: #ffffff;
 }
 
-/* Prev/Next group spacing */
 .fc .fc-toolbar .fc-button-group{
     gap: 8px;
-}
-.fc .fc-toolbar .fc-button-group > .fc-button:last-child{
-    margin-right: 0;
 }
 
 /* ---------- Calendar Grid ---------- */
 .fc .fc-col-header-cell-cushion{
     color: #333;
-    font-weight: 600;
+    font-weight: 700;
 }
 .fc .fc-daygrid-day-number{
     color: #111;
-    font-weight: 600;
+    font-weight: 700;
 }
 .fc .fc-day-today{
     background: rgba(47, 107, 255, 0.08) !important;
 }
 
-/* ===============================
+/* =========================================================
    Event style: Centered Pill Badge
-   =============================== */
+   IMPORTANT:
+   - FullCalendar applies backgroundColor/textColor/borderColor
+     on the event <a> tag (.fc-daygrid-event) as inline style.
+   - So we make THAT tag the pill.
+   ========================================================= */
 
-/* 이벤트 줄(하네스) 자체를 가운데 정렬 */
+/* 이벤트를 날짜칸 가운데로 */
 .fc .fc-daygrid-event-harness{
     margin-top: 3px;
     display: flex;
-    justify-content: center; /* ✅ 가운데 */
+    justify-content: center;
 }
 
-/* 이벤트 wrapper도 가운데 정렬 */
+/* ✅ 여기(a태그)가 알약(배경색도 여기로 들어옴) */
 .fc .fc-daygrid-event{
-    background: transparent !important;
-    border: 0 !important;
-    padding: 0 !important;
-
-    display: flex;
-    justify-content: center; /* ✅ 가운데 */
-    width: 100%;
-}
-
-/*
-  ✅ 색이 네가 정한 값으로 안 나오는 이유:
-  - 우리가 pill 배경을 CSS 변수(--fc-event-bg-color)로만 잡으면,
-    어떤 경우엔 FC가 그 변수를 안 주고 inline/backgroundColor 방식으로만 줄 수 있어.
-  - 그래서 우선순위를 이렇게 잡음:
-    1) --fc-event-bg-color (FC가 주면 최우선)
-    2) --fc-event-border-color (대부분 FC가 잡아줌)
-    3) fallback은 회색(파랑 fallback 제거!)
-*/
-.fc .fc-daygrid-event .fc-event-main{
-    display: inline-flex;
+    display: inline-flex !important;
     align-items: center;
 
-    padding: 2px 10px;
-    border-radius: 999px;
+    padding: 2px 10px !important;
+    border-radius: 999px !important;
+    overflow: hidden !important;
 
-    background: var(--fc-event-bg-color, var(--fc-event-border-color, #5F6368)) !important;
-    color: #ffffff !important;
+    /* 서버에서 borderColor도 내려오면 너무 두껍게 보일 수 있어서 얇게 */
+    border-width: 1px !important;
 
-    font-weight: 800;
-    font-size: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+    text-decoration: none;
+
+    max-width: calc(100% - 6px);
+}
+
+/* ✅ 내부 텍스트는 이 div에 들어옴 (배경/색은 건드리지 않음) */
+.fc .fc-daygrid-event .fc-event-main{
+    font-weight: 900;
+    font-size: 11px;         /* 살짝 줄임 */
     line-height: 18px;
 
-    max-width: 90%;
+    max-width: 100%;         /* 최대폭 더 쓰게 */
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
 }
 
-/* dot 숨김 */
+/* 점(dot) 제거 */
 .fc .fc-daygrid-event-dot{
     display: none !important;
 }
 
 /* hover */
-.fc .fc-daygrid-event:hover .fc-event-main{
-    filter: brightness(0.96);
+.fc .fc-daygrid-event:hover{
+    filter: brightness(0.97);
 }
 
-/* ===============================
+/* =========================================================
    Popover (small modal near click)
-   =============================== */
+   ========================================================= */
 
 .work-popover{
     position: absolute;
-    width: 270px;
+    width: 280px;
+
     background: #ffffff;
     border: 1px solid #e9e9e9;
     border-radius: 14px;
     box-shadow: 0 14px 30px rgba(0,0,0,0.12);
+
     z-index: 9999;
     padding: 12px;
+
+    box-sizing: border-box;
 }
 
 .work-popover.hidden{
     display: none;
 }
 
+/* header */
 .pop-header{
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 10px;
+
     padding-bottom: 8px;
     border-bottom: 1px solid #f0f0f0;
 }
@@ -175,57 +171,72 @@
     border-radius: 10px;
     background: #f2f4f8;
     cursor: pointer;
+
     font-size: 18px;
     line-height: 28px;
     color: #111;
 }
 
-/* ✅ 메모를 맨 위로 올리려면 body를 column으로 */
+/* body */
 .pop-body{
     padding-top: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
 }
 
 .pop-row{
     display: flex;
     justify-content: space-between;
     align-items: center;
+
     padding: 8px 0;
     border-bottom: 1px dashed #f0f0f0;
+    gap: 12px;
 }
 
 .pop-row .k{
     color: #666;
     font-weight: 800;
     font-size: 12px;
+    flex: 0 0 auto;
 }
+
 .pop-row .v{
     color: #111;
     font-weight: 900;
     font-size: 12px;
+
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
-/* ✅ 메모는 가로로 넓게 + 위로 올리기 */
+/* ✅ 메모: 맨 마지막, 라벨 위 / 내용 아래 */
 .pop-row.memo{
-    order: -1;                 /* ✅ 제일 위로 */
-    flex-direction: column;    /* ✅ 세로 배치(라벨 위, 내용 아래) */
+    border-bottom: 0;
+    padding-bottom: 0;
+
+    flex-direction: column;
     align-items: flex-start;
     gap: 6px;
-    border-bottom: 1px solid #f0f0f0; /* 메모는 좀 더 실선이 예쁨 */
 }
 
 .memo-box{
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+
     padding: 10px;
     border-radius: 12px;
     background: #f7f8fa;
     color: #111;
 
     min-height: 44px;
-    white-space: pre-wrap;   /* ✅ 줄바꿈은 자연스럽게 */
-    word-break: break-word;  /* ✅ 글자 세로로 쪼개지는 현상 방지 */
+
+    /* ✅ 긴 글도 무조건 안 튀어나가게 */
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    white-space: pre-wrap;
+
     font-size: 12px;
     font-weight: 700;
 }

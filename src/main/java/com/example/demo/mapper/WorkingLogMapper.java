@@ -4,6 +4,8 @@ import com.example.demo.dto.WorkingLogDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -30,4 +32,12 @@ public interface WorkingLogMapper {
     List<WorkingLogDto> selectMyWorkingLog(@Param("webuserId") int webuserId,
                                            @Param("startDate") String startDate,
                                            @Param("endDate") String endDate);
+
+    //퇴근 보정
+    int updateCheckoutLate(@Param("workingLogId") int workingLogId,
+                           @Param("webuserId") int webuserId,
+                           @Param("checkOutTime") LocalDateTime checkOutTime);
+
+    LocalDate selectWorkingDateById(@Param("workingLogId") int workingLogId,
+                                    @Param("webuserId") int webuserId);
 }
