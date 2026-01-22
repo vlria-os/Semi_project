@@ -18,7 +18,10 @@
         <![CDATA[ where rn >=#{startRow} and rn <=#{endRow} ]]>
     </select>
     <select id="count" resultType="int" parameterType="map">
+        select * from (
         select NVL(count(*),0) from webuser
+        where webuser_id != 0
+        )
         <include refid="search"/>
     </select>
     <!-- 검색 조건문 -->

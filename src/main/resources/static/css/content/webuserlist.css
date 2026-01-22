@@ -312,3 +312,35 @@ td span[th\:case] {
     transition: all 0.2s;
 }
 .btn-edit:hover{background-color: #3b82f6; color: white;}
+.password-wrapper {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 250px;
+}
+
+.password-wrapper input[type="password"],
+.password-wrapper input[type="text"] {
+    width: 100% !important;
+    padding-right: 35px !important;
+    margin: 0 !important;
+}
+
+.btn-view {
+    position: absolute;
+    right: 8px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    z-index: 10;
+}
+
+.btn-view:hover {
+    color: #3b82f6;
+    opacity: 1;
+}
