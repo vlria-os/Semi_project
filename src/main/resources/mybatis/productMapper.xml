@@ -56,23 +56,35 @@
 
     <select id="count" resultType="int" parameterType="map">
         select count(*)
-        from product p
-        join (
-            select category_id, category_name from category
-            start with parent_id is null
-            connect by prior category_id = parent_id
-        ) c on p.category_id = c.category_id
-        <where>
-            <if test="searchDto.field != null and searchDto.field != '' and searchDto.field != 'all' ">
-                and p.status = upper(#{searchDto.field})
-            </if>
-            <if test="searchDto.keyword != null and searchDto.keyword != '' ">
-                and (
-                    upper(p.product_name) like '%' || upper(#{searchDto.keyword}) || '%'
-                    or p.product_id like '%' || #{searchDto.keyword} || '%'
-                )
-            </if>
-        </where>
+            from product p
+                join (
+                select
+                category_id,
+                ltrim(sys_connect_by_path(category_name,'>'),'>') as category_path
+                from category
+                start with parent_id is null
+                connect by prior category_id = parent_id
+                ) c on p.category_id = c.category_id
+            left join product_image i on p.image_id = i.image_id
+        <include refid="productSearch"/>
+<!--        select count(*)-->
+<!--        from product p-->
+<!--        join (-->
+<!--            select category_id, category_name from category-->
+<!--            start with parent_id is null-->
+<!--            connect by prior category_id = parent_id-->
+<!--        ) c on p.category_id = c.category_id-->
+<!--        <where>-->
+<!--            <if test="searchDto.field != null and searchDto.field != '' and searchDto.field != 'all' ">-->
+<!--                and p.status = upper(#{searchDto.field})-->
+<!--            </if>-->
+<!--            <if test="searchDto.keyword != null and searchDto.keyword != '' ">-->
+<!--                and (-->
+<!--                    upper(p.product_name) like '%' || upper(#{searchDto.keyword}) || '%'-->
+<!--                    or p.product_id like '%' || #{searchDto.keyword} || '%'-->
+<!--                )-->
+<!--            </if>-->
+<!--        </where>-->
     </select>
 
     <update id="updateProduct" parameterType="ProductDto">

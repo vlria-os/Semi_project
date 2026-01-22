@@ -20,6 +20,17 @@
         </span>
 
         <!-- 로그아웃 -->
-        <a th:href="@{/logout}" class="logout">로그아웃</a>
+        <a href="/logout" id="logoutBtn" class="logout">로그아웃</a>
     </div>
+<!--    <script>-->
+<!--        document.getElementById('logoutBtn').addEventListener('click', (e) => {-->
+<!--            e.preventDefault();-->
+<!--            sessionStorage.removeItem('selectedOutboundMap');-->
+<!--            sessionStorage.removeItem('selectedMap');-->
+
+<!--            setTimeout(() => {-->
+<!--                window.location.href = '/logout';-->
+<!--            }, 50);-->
+<!--        });-->
+<!--    </script>-->
 </header>

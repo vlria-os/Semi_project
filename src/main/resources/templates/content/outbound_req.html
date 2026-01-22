@@ -60,6 +60,7 @@
             </td>
         </tr>
     </table>
+        <button type="button" id="resetOutboundSelection">선택 초기화</button>
     <button type="button" onclick="submitOutbound()">출고 요청</button>
 
     </form>
@@ -83,22 +84,63 @@
         </ul>
     </div>
     <script>
+        const selectedOutboundMap = {};
+
         function toggleQty(checkbox){
             const tr = checkbox.closest('tr');
             const qtyInput = tr.querySelector('.reqQty');
             const productInput = tr.querySelector('.productId');
+            const productId = productInput.value;
 
             if(checkbox.checked){
                 qtyInput.disabled = false;
                 productInput.disabled = false;
                 qtyInput.focus();
-            }else{
+
+                selectedOutboundMap[productId] = { qty: qtyInput.value || '' };
+            } else {
                 qtyInput.disabled = true;
                 qtyInput.value = '';
                 productInput.disabled = true;
+
+                delete selectedOutboundMap[productId];
             }
+
+            sessionStorage.setItem('selectedOutboundMap', JSON.stringify(selectedOutboundMap));
         }
 
+        document.addEventListener('input', e => {
+            if(e.target.classList.contains('reqQty')){
+                const tr = e.target.closest('tr');
+                const productId = tr.querySelector('.productId').value;
+                if(selectedOutboundMap[productId]){
+                    selectedOutboundMap[productId].qty = e.target.value;
+                    sessionStorage.setItem('selectedOutboundMap', JSON.stringify(selectedOutboundMap));
+                }
+            }
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedMap = JSON.parse(sessionStorage.getItem('selectedOutboundMap') || '{}');
+
+            Object.keys(savedMap).forEach(productId => {
+                const row = Array.from(document.querySelectorAll('#outboundForm table tr'))
+                    .find(tr => tr.querySelector('.productId') && tr.querySelector('.productId').value === productId);
+
+                if(row){
+                    const checkbox = row.querySelector('.rowCheck');
+                    const qtyInput = row.querySelector('.reqQty');
+                    const productInput = row.querySelector('.productId');
+
+                    checkbox.checked = true;
+                    qtyInput.disabled = false;
+                    productInput.disabled = false;
+                    qtyInput.value = savedMap[productId].qty;
+                }
+            });
+
+            Object.assign(selectedOutboundMap, savedMap);
+        });
 
         function submitOutbound(){
             const rows = document.querySelectorAll('#outboundForm table tr');
@@ -181,6 +223,24 @@
                 });
 
         }
+        document.getElementById('resetOutboundSelection').addEventListener('click', () => {
+            document.querySelectorAll('#outboundForm table tr').forEach(tr => {
+                const checkbox = tr.querySelector('.rowCheck');
+                const qtyInput = tr.querySelector('.reqQty');
+                const productInput = tr.querySelector('.productId');
+
+                if(checkbox){
+                    checkbox.checked = false;
+                    qtyInput.value = '';
+                    qtyInput.disabled = true;
+                    productInput.disabled = true;
+                }
+            });
+
+            Object.keys(selectedOutboundMap).forEach(id => delete selectedOutboundMap[id]);
+            sessionStorage.removeItem('selectedOutboundMap');
+        });
+
 
     </script>
 </section>

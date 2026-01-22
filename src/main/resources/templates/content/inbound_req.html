@@ -45,7 +45,7 @@
            onkeydown="if(event.key === 'Enter'){ event.preventDefault(); search(); }">
     <button type="submit" onclick="search()">검색</button>
 </div>
-
+    <button type="button" id="resetSelection">선택 초기화</button>
 <button type="button" onclick="submitSelected()">입고요청</button>
 
     <div>
@@ -63,53 +63,72 @@
     </div>
 
 <script>
-    const selectedMap = {};
+        const selectedMap = {};
 
-    function search(){
-        const keyword=document.getElementById("keyword").value;
+        // 창고 불러오기
+        async function loadWarehouses(selectEl, status, selectedWarehouse = '') {
+        const res = await fetch(`/office_staff/inbound_req/warehouse?status=${encodeURIComponent(status)}`);
+        const list = await res.json();
 
-        fetch(`/common/product_search?keyword=${encodeURIComponent(keyword)}`)
-            .then(res=>res.json())
-            .then(result=>{
-                const list = result.productDtos;
-                const tbody=document.getElementById('productBody');
-                tbody.innerHTML='';
+        selectEl.innerHTML = '<option value="">선택</option>';
+        list.forEach(w => {
+        const isSelected = w.warehouse_id == selectedWarehouse ? 'selected' : '';
+        selectEl.innerHTML += `<option value="${w.warehouse_id}" ${isSelected}>${w.warehouse_name}</option>`;
+    });
 
-                list.forEach(p => {
-                    const saved = selectedMap[p.product_id];
+        const checkbox = selectEl.closest('tr').querySelector('.chk');
+        selectEl.disabled = !(checkbox.checked);
+    }
 
-                    tbody.innerHTML += `
-    <tr>
-        <td>
-            <input type="checkbox"
-       class="chk"
-       data-id="${p.product_id}"
-       data-status="${p.status}"
-       ${saved ? 'checked' : ''}>
-        </td>
-        <td>${p.product_id}</td>
-        <td><img src="/image/${p.save_name}" style="width:100px;"></td>
-        <td>${p.product_name}</td>
-        <td>${p.unit}</td>
-        <td>${p.price}</td>
-        <td>${p.status}</td>
-        <td>${p.category}</td>
-        <td>
-            <select class="warehouse" name="warehouse_id" ${saved ? '' : 'disabled'}>
-                <option value="">선택</option>
-           </select>
-        </td>
-        <td>
-            <input type="number" class="qty" min="1" value="${saved?.qty ?? ''}" ${saved ? '' : 'disabled'} style="width:60px;">
-        </td>
-    </tr>
-    `;
-                });
+        // 초기 데이터 불러오기
+        window.addEventListener('DOMContentLoaded', async () => {
+        const savedMap = JSON.parse(sessionStorage.getItem('selectedMap') || '{}');
+        Object.assign(selectedMap, savedMap);
 
-            })
-    };
+        await search();
+    });
 
-    document.addEventListener('change', e => {
+        // 검색 및 테이블 렌더링
+        async function search(pageNum = 1) {
+        const keyword = document.getElementById("keyword").value;
+        const res = await fetch(`/common/product_search?keyword=${encodeURIComponent(keyword)}&pageNum=${pageNum}`);
+        const result = await res.json();
+
+        const tbody = document.getElementById('productBody');
+        tbody.innerHTML = '';
+
+        for(const p of result.productDtos){
+        const saved = selectedMap[p.product_id];
+
+        tbody.innerHTML += `
+<tr>
+    <td><input type="checkbox" class="chk" data-id="${p.product_id}" data-status="${p.status}" ${saved ? 'checked' : ''}></td>
+    <td>${p.product_id}</td>
+    <td><img src="/image/${p.save_name}" style="width:100px;"></td>
+    <td>${p.product_name}</td>
+    <td>${p.unit}</td>
+    <td>${p.price}</td>
+    <td>${p.status}</td>
+    <td>${p.category}</td>
+    <td><select class="warehouse" ${saved ? '' : 'disabled'}></select></td>
+    <td><input type="number" class="qty" min="1" value="${saved?.qty ?? ''}" ${saved ? '' : 'disabled'} style="width:60px;"></td>
+</tr>
+`;
+
+        if(saved){
+        const row = tbody.lastElementChild;
+        const warehouseSelect = row.querySelector('.warehouse');
+        const qtyInput = row.querySelector('.qty');
+        qtyInput.disabled = false;
+        await loadWarehouses(warehouseSelect, p.status, saved.warehouse);
+    }
+    }
+
+        renderPaging(result.pageInfo);
+    }
+
+        // 체크박스, 창고, 수량 이벤트
+        document.addEventListener('change', async e => {
         const row = e.target.closest('tr');
         if(!row) return;
 
@@ -119,86 +138,79 @@
         const qty = row.querySelector('.qty');
 
         if(e.target.classList.contains('chk')) {
-            warehouse.disabled = !checkbox.checked;
-            qty.disabled = !checkbox.checked;
+        warehouse.disabled = !checkbox.checked;
+        qty.disabled = !checkbox.checked;
 
-            if(checkbox.checked){
-                const status = checkbox.dataset.status;
-                loadWarehouses(warehouse, status);
+        if(checkbox.checked){
+        const status = checkbox.dataset.status;
+        await loadWarehouses(warehouse, status);
+        selectedMap[id] = { warehouse: warehouse.value || '', qty: qty.value || '' };
+    } else {
+        delete selectedMap[id];
+        warehouse.innerHTML = '<option value="">선택</option>';
+    }
+    }
 
-                selectedMap[id] = {
-                    warehouse: '',
-                    qty: '' };
-            } else {
-                delete selectedMap[id];
-                warehouse.innerHTML = '<option value="">선택</option>';
-            }
-        }
-
-        // 창고 선택
         if(e.target.classList.contains('warehouse') && selectedMap[id]){
-            selectedMap[id].warehouse = e.target.value;
-        }
+        selectedMap[id].warehouse = e.target.value;
+    }
 
-        // 수량 입력
         if(e.target.classList.contains('qty') && selectedMap[id]){
-            selectedMap[id].qty = e.target.value;
-        }
+        selectedMap[id].qty = e.target.value;
+    }
 
+            sessionStorage.setItem('selectedMap', JSON.stringify(selectedMap));
     });
 
-    function loadWarehouses(selectEl, status){
-        fetch(`/office_staff/inbound_req/warehouse?status=${encodeURIComponent(status)}`)
-            .then(res => res.json())
-            .then(list => {
-                selectEl.innerHTML = '<option value="">선택</option>';
-
-                list.forEach(w => {
-                    selectEl.innerHTML += `
-                    <option value="${w.warehouse_id}">
-                        ${w.warehouse_name}
-                    </option>
-                `;
-                });
-            });
-    }
-
-    function submitSelected() {
+        // 입고요청
+        function submitSelected() {
         const data = Object.entries(selectedMap).map(([product_id, info]) => ({
-            product_id,
-            warehouse_id: info.warehouse,
-            quantity: info.qty
-        }));
+        product_id,
+        warehouse_id: info.warehouse,
+        quantity: info.qty
+    }));
 
         fetch('/office_staff/inbound_req', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        })
-            .then(res => res.json())
-            .then(result => {
-                if(result){
-                    alert('요청 완료');
-                }
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+        .then(res => res.json())
+        .then(result => {
+        if(result) alert('요청 완료');
 
-                Object.keys(selectedMap).forEach(id => delete selectedMap[id]);
-
-                // 2. 체크박스, 창고, 수량 초기화
-                document.querySelectorAll('#productBody tr').forEach(row => {
-                    const checkbox = row.querySelector('.chk');
-                    const warehouse = row.querySelector('.warehouse');
-                    const qty = row.querySelector('.qty');
-
-                    checkbox.checked = false;
-                    warehouse.value = '';
-                    warehouse.disabled = true;
-                    qty.value = '';
-                    qty.disabled = true;
-                });
-            })
-            .catch(err => console.error(err));
+        // 데이터만 초기화 (UI는 유지)
+        Object.keys(selectedMap).forEach(id => delete selectedMap[id]);
+            sessionStorage.removeItem('selectedMap');
+    })
+        .catch(err => console.error(err));
     }
+
+        // 선택 초기화 버튼
+        document.getElementById('resetSelection').addEventListener('click', () => {
+        Object.keys(selectedMap).forEach(id => delete selectedMap[id]);
+
+        document.querySelectorAll('#productBody tr').forEach(row => {
+        const checkbox = row.querySelector('.chk');
+        const warehouse = row.querySelector('.warehouse');
+        const qty = row.querySelector('.qty');
+
+        checkbox.checked = false;
+        warehouse.value = '';
+        warehouse.disabled = true;
+        qty.value = '';
+        qty.disabled = true;
+    });
+            sessionStorage.removeItem('selectedMap');
+    });
+    document.querySelectorAll('#pagingArea a').forEach(a => {
+        a.addEventListener('click', e => {
+            e.preventDefault(); // 기본 이동 막기
+            const url = new URL(a.href);
+            const pageNum = url.searchParams.get('pageNum') || 1;
+            search(pageNum);
+        });
+    });
+
 </script>
 </section>
