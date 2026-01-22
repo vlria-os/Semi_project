@@ -26,6 +26,10 @@ public class PaymentService {
         return paymentMapper.select_list();
     }
 
+    public PaymentDto list_one(int settlement_id){
+        return paymentMapper.select_list_one(settlement_id);
+    }
+
     public int update(int settlement_id, int webuser_id){
         SettlementDto settlementDto=new SettlementDto();
         settlementDto.setPayment_id(webuser_id);

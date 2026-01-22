@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,20 +55,19 @@ public class OutboundService {
     public int update_approval(int outbound_id,
                                Outbound_detailDto outbound_detailDto,
                                int approver_id){
-
-        System.out.println(outbound_detailDto);
-
         int product_id=outbound_detailMapper.select_product(outbound_detailDto.getOutbound_detail_id());
         outbound_detailDto.setQuantity(outbound_detailMapper.select_quantity(outbound_detailDto.getOutbound_detail_id()));
+        List<Select_outboundDto> select_outboundDtos = stockMapper.select_outbound(product_id);
 
         //재고 확인
-        List<Select_outboundDto> select_outboundDtos=stockMapper.select_outbound(product_id);
-        int totalStock = 0;
-        for (Select_outboundDto s : select_outboundDtos) {
-            totalStock += s.getQuantity();
-        }
-        if (totalStock < outbound_detailDto.getQuantity()) {
-            return -1;
+        if(outbound_detailDto.getApproval_status().equals("APPROVED")) {
+            int totalStock = 0;
+            for (Select_outboundDto s : select_outboundDtos) {
+                totalStock += s.getQuantity();
+            }
+            if (totalStock < outbound_detailDto.getQuantity()) {
+                return -1;
+            }
         }
 
         int n=outbound_detailMapper.update_appStatus(outbound_detailDto);
@@ -110,18 +110,30 @@ public class OutboundService {
                               int confirmer_id){
 
         List<Lot_outDto> lot_outDtos=lot_outMapper.select_lot(outbound_detail_id);
-        int quantity1=outbound_detailMapper.select_quantity(outbound_detail_id);
-//        if(lot_outDtos.isEmpty()){
-//            return -1;
-//        }
-        for (Lot_outDto l : lot_outDtos){
-            quantity1-=l.getQuantity();
-        }
-        if(quantity1>0){
-            return -1;
+        int product_id=outbound_detailMapper.select_product(outbound_detail_id);
+
+        boolean is_expired=false;
+        for(Lot_outDto l:lot_outDtos){
+            LocalDate expiration =
+                    outbound_detailMapper.select_expiration(l.getLot_out_id());
+            if (expiration != null || expiration.isBefore(LocalDate.now())) {
+                is_expired = true;
+            }
         }
 
-        int product_id=outbound_detailMapper.select_product(outbound_detail_id);
+        if(is_expired){
+            int m=outbound_detailMapper.update_outStatus_rej(outbound_detail_id);
+            for (Lot_outDto l : lot_outDtos) {
+                reason="유통기한 만료";
+                stockMapper.update_in(new StockDto(l.getStock_id(),0,l.getQuantity(), product_id));
+                int q=lot_outMapper.delete(l.getLot_out_id());
+                Outbound_detailDto outbound_detailDto=new Outbound_detailDto();
+                outbound_detailDto.setOutbound_detail_id(outbound_detail_id);
+                outbound_detailDto.setReason(reason);
+                int a=outbound_detailMapper.update_reason(outbound_detailDto);
+            }
+            return -1;
+        }
 
         if(status.equals("REJECTED")){
             int m=outbound_detailMapper.update_outStatus_rej(outbound_detail_id);

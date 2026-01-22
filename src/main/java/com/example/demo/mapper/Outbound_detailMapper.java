@@ -3,6 +3,7 @@ package com.example.demo.mapper;
 import com.example.demo.dto.Outbound_detailDto;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Mapper
@@ -19,4 +20,5 @@ public interface Outbound_detailMapper {
     int update_reason(Outbound_detailDto outbound_detailDto);
     int select_quantity(int outbound_detail);
     List<String> select_detail_status(int outbound_id);
+    LocalDate select_expiration(int lot_out_id);
 }

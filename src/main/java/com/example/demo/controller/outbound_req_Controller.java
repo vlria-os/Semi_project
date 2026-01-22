@@ -18,11 +18,21 @@ import java.util.Map;
 public class outbound_req_Controller {
     private final OutboundService outboundService;
     private final ProductStockService service;
+    private final ProductStockService productStockService;
 
     @GetMapping("/content/outbound_req")
-    public String outbound_reqForm(@RequestParam(required = false)String keyword,
-                                   @RequestParam(required = false)String status,
+    public String outbound_reqForm(@RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
+                                   @RequestParam(value = "keyword", required = false) String keyword,
+                                   @RequestParam(value = "status", required = false) String status,
                                    Model model){
+        Map<String,Object> map=productStockService.selectAll(pageNum, keyword, status);
+
+        model.addAttribute("p",map.get("list"));
+        model.addAttribute("pageInfo",map.get("pageInfo"));
+        model.addAttribute("content", "content/outbound_req");
+        model.addAttribute("status", status);
+        model.addAttribute("keyword", keyword);
+
         model.addAttribute("navFragment", "fragment/nav/officeNav");
         model.addAttribute("content", "content/outbound_req");
         return "layout";

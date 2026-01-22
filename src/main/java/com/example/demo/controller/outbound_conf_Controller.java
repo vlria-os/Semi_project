@@ -4,6 +4,7 @@ import com.example.demo.dto.ApprovalConfDto;
 import com.example.demo.dto.Lot_outDto;
 import com.example.demo.dto.Lot_outListDto;
 import com.example.demo.service.OutboundService;
+import com.example.demo.service.Ref_ExpService;
 import com.example.demo.service.RequestService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.List;
 public class outbound_conf_Controller {
     private final OutboundService outboundService;
     private final RequestService requestService;
+    private final Ref_ExpService refExpService;
 
     @GetMapping("/field_staff/outbound_conf")
     public String outbound_confFrom(Model model){
@@ -37,6 +39,9 @@ public class outbound_conf_Controller {
                                HttpSession session){
         int confirmer_id=(int)session.getAttribute("webuser_id");
         int n=outboundService.insert_confirm(outbound_detail_id,"CONFIRMED",null,confirmer_id);
+        if(n<0){
+            refExpService.insert_expiration();
+        }
         return "redirect:/field_staff/outbound_conf";
     }
 

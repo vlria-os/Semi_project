@@ -14,4 +14,5 @@ public class OutboundDetailDto {
     private String save_name;
     private int quantity;
     private String approval_status;
+    private String reason;
 }

@@ -43,7 +43,7 @@
                     <td th:text="${list.product_type}"></td>
                     <td th:text="${list.warehouse_name}"></td>
                     <td th:text="${list.quantity}"></td>
-                    <td th:text="${list.expiration_date}"></td>
+                    <td th:text="${#dates.format(list.expiration_date, 'yy-MM-dd HH:MM')}"></td>
                     <td>
                         <span th:text="'D-' + ${list.days_left}" th:classappend="${list.days_left} ? 'alert' : ''"></span>
                     </td>
