@@ -19,4 +19,5 @@ public class WorkingLogDto {
     private LocalDateTime checkOutTime;
     private String attendStatus;
     private String memo;
+    private Integer canCheckoutLate;
 }

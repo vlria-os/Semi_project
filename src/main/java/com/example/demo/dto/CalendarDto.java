@@ -13,9 +13,12 @@ public class CalendarDto {
     private String title;
     private String start;
     private String end;
-
     private boolean allDay;
-    private String color;
+
+    // ✅ FullCalendar가 제일 확실하게 먹는 색 필드들
+    private String backgroundColor;
+    private String borderColor;
+    private String textColor;
 
     private Map<String, Object> extendedProps;
 }

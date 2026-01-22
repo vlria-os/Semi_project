@@ -6,8 +6,20 @@
     </div>
 
     <div class="header-right">
-        <button type="button" id="btnCheckIn" th:if="${session.YesterdayCheckOutLog != null && session.TodayCheckInLog == null}">출근</button>
-        <button type="button" id="btnCheckOut" th:if="${session.TodayCheckInLog != null && session.TodayCheckOutLog == null}">퇴근</button>
+        <!-- 미퇴근 기록 없을 때 -->
+        <button type="button"
+                id="btnCheckIn"
+                th:if="${session.openLog == null}">
+            출근
+        </button>
+        <!-- 미퇴근 기록 있는데 오늘일 때 -->
+        <button type="button"
+                id="btnCheckOut"
+                th:if="${session.openLog != null
+                and session.openLog.workingDate == session.today}">
+            퇴근
+        </button>
+
         <!-- 채팅방 -->
         <a href="#" onclick="openChatWindow()" style="text-decoration: none; font-size: 1.2rem;">
             💬
@@ -15,7 +27,7 @@
         </a>
 
         <!-- 로그인 사용자 이름 -->
-        <span th:text="${session.roleMsg}" style="font-weight: 600; font-size: 14px; color: #cdb5e1;">
+        <span th:text="${session.webuserName}" style="font-weight: 600; font-size: 14px; color: #cdb5e1;"  th:onclick="|location.href='@{/work/calendar}'|">
             사용자
         </span>
 
@@ -25,9 +37,7 @@
 <!--    <script>-->
 <!--        document.getElementById('logoutBtn').addEventListener('click', (e) => {-->
 <!--            e.preventDefault();-->
-<!--            sessionStorage.removeItem('selectedOutboundMap');-->
-<!--            sessionStorage.removeItem('selectedMap');-->
-
+<!--            sessionStorage.clear();-->
 <!--            setTimeout(() => {-->
 <!--                window.location.href = '/logout';-->
 <!--            }, 50);-->

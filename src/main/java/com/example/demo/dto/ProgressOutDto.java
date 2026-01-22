@@ -23,4 +23,5 @@ public class ProgressOutDto {
     private LocalDate approved_date;
     private LocalDate shipped_date;
     private String reason;
+    private String is_refund;
 }

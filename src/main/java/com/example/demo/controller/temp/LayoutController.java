@@ -8,6 +8,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.time.LocalDate;
+
 @Controller
 @RequiredArgsConstructor
 public class LayoutController {
@@ -37,31 +39,22 @@ public class LayoutController {
             return "redirect:/login";
         }
 
-        //어제 퇴근 기록 - 있어야 출근 버튼 활성화
-        WorkingLogDto checkOutDto=workingLogService.getYesterdayCheckOutLogOne((int)session.getAttribute("webuser_id"));
-
-        //오늘 출근 기록 - 없어야 출근 버튼 활성화 (있으면 퇴근 버튼이 보여야 함)
-        WorkingLogDto checkInDto=workingLogService.getTodayCheckInLogOne((int)session.getAttribute("webuser_id"));
-
-        //오늘 퇴근 기록
-        WorkingLogDto todayCheckOutDto=workingLogService.getTodayCheckOutLogOne((int)session.getAttribute("webuser_id"));
+        //미퇴근 기록
+        WorkingLogDto openLog=workingLogService.getOpenWorkingLog((int)session.getAttribute("webuser_id"));
 
         if((int)session.getAttribute("role_id")==1){
-            session.setAttribute("YesterdayCheckOutLog",checkOutDto);
-            session.setAttribute("TodayCheckInLog",checkInDto);
-            session.setAttribute("TodayCheckOutLog",todayCheckOutDto);
+            session.setAttribute("openLog",openLog);
+            session.setAttribute("today", LocalDate.now());
             model.addAttribute("navFragment", "fragment/nav/adminNav");
             model.addAttribute("content", "content/notice");
         }else if((int)session.getAttribute("role_id")==2){
-            session.setAttribute("YesterdayCheckOutLog",checkOutDto);
-            session.setAttribute("TodayCheckInLog",checkInDto);
-            session.setAttribute("TodayCheckOutLog",todayCheckOutDto);
+            session.setAttribute("openLog",openLog);
+            session.setAttribute("today", LocalDate.now());
             model.addAttribute("navFragment", "fragment/nav/officeNav");
             model.addAttribute("content", "content/notice");
         }else if((int)session.getAttribute("role_id")==3){
-            session.setAttribute("YesterdayCheckOutLog",checkOutDto);
-            session.setAttribute("TodayCheckInLog",checkInDto);
-            session.setAttribute("TodayCheckOutLog",todayCheckOutDto);
+            session.setAttribute("openLog",openLog);
+            session.setAttribute("today", LocalDate.now());
             model.addAttribute("navFragment", "fragment/nav/fieldNav");
             model.addAttribute("content", "content/notice");
         }

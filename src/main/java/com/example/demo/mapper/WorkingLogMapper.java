@@ -4,6 +4,8 @@ import com.example.demo.dto.WorkingLogDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -17,8 +19,8 @@ public interface WorkingLogMapper {
                  @Param("attendStatus") String attendStatus,
                  @Param("memo") String memo);
 
-    //어제 퇴근 기록 확인
-    WorkingLogDto selectYesterdayCheckOutLogOne(@Param("webuserId") int webuserId);
+    //미퇴근 기록 확인
+    WorkingLogDto selectOpenWorkingLog(@Param("webuserId") int webuserId);
 
     //오늘 출근 기록 확인
     WorkingLogDto selectTodayCheckInLogOne(@Param("webuserId") int webuserId);
@@ -30,4 +32,14 @@ public interface WorkingLogMapper {
     List<WorkingLogDto> selectMyWorkingLog(@Param("webuserId") int webuserId,
                                            @Param("startDate") String startDate,
                                            @Param("endDate") String endDate);
+
+    //퇴근 보정
+    int updateCheckoutLate(@Param("workingLogId") int workingLogId,
+                           @Param("webuserId") int webuserId,
+                           @Param("checkOutTime") LocalDateTime checkOutTime);
+
+    LocalDate selectWorkingDateById(@Param("workingLogId") int workingLogId,
+                                    @Param("webuserId") int webuserId);
+
+    int selectWorkingLogOwner(@Param("workingLogId") int workingLogId);
 }

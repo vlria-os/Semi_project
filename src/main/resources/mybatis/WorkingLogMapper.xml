@@ -21,12 +21,22 @@
         and check_out_time is null
     </update>
 
-    <!-- 어제 퇴근 기록 확인 -->
-    <select id="selectYesterdayCheckOutLogOne" resultType="WorkingLogDto">
-        select check_out_time as checkOutTime
+    <!-- 미퇴근 기록 확인 -->
+    <select id="selectOpenWorkingLog" resultType="WorkingLogDto">
+        select * from
+        (select
+        working_log_id as workingLogId,
+        trunc(working_date) as workingDate,
+        check_in_time as checkInTime,
+        check_out_time as checkOutTime
         from working_log
-        where webuser_id = #{webuserId}
-        and trunc(working_date)=trunc(sysdate)-1
+        where
+        webuser_id = #{webuserId}
+        and check_in_time is not null
+        and check_out_time is null
+        order by trunc(working_date) desc,
+        working_log_id desc)
+        where rownum=1
     </select>
 
     <!-- 오늘 출근 기록 확인 -->
@@ -48,18 +58,62 @@
     <!-- 한 달 근무 기록 -->
     <select id="selectMyWorkingLog" resultType="WorkingLogDto">
         select
-        working_log_id as workingLogId,
-        trunc(working_date) as workingDate,
-        attend_status as attendStatus,
-        check_in_time as checkInTime,
-        check_out_time as checkOutTime,
-        memo
+            working_log_id as workingLogId,
+            trunc(working_date) as workingDate,
+            attend_status as attendStatus,
+            check_in_time as checkInTime,
+            check_out_time as checkOutTime,
+            memo,
+            case
+                when check_in_time is not null
+                and check_out_time is null
+                <![CDATA[
+                and trunc(working_date) < trunc(sysdate)
+                and nvl(attend_status, 'X') != 'CHECK_OUT_LATE'
+                then 1
+                else 0
+            end as canCheckoutLate
         from working_log
-        where webuser_id=#{webuserId} and
-        <![CDATA[
-        trunc(working_date) >= to_date(#{startDate}, 'YYYY-MM-DD') and
-        trunc(working_date) < to_date(#{endDate}, 'YYYY-MM-DD')
-        ]]>
+        where webuser_id=#{webuserId}
+            and trunc(working_date) >= to_date(#{startDate}, 'YYYY-MM-DD')
+            and trunc(working_date) < to_date(#{endDate}, 'YYYY-MM-DD')
+            ]]>
         order by trunc(working_date)
+    </select>
+
+    <!-- 퇴근 보정 -->
+    <update id="updateCheckoutLate">
+        update working_log
+        set check_out_time = #{checkOutTime},
+            attend_status = 'CHECK_OUT_LATE',
+            memo =
+                    case
+                        when memo is null or trim(memo) = '' then '퇴근 체크 익일 보정'
+                        else memo || chr(10) || '퇴근 체크 익일 보정'
+                    end
+        where
+            working_log_id = #{workingLogId}
+            and webuser_id = #{webuserId}
+            and check_in_time is not null
+            and check_out_time is null
+            and nvl(attend_status,'X') != 'CHECK_OUT_LATE'
+        <![CDATA[
+            and trunc(working_date) < trunc(sysdate)
+        ]]>
+    </update>
+
+    <!-- 날짜 데이터 받아오기 -->
+    <select id="selectWorkingDateById" resultType="java.time.LocalDate">
+        select trunc(working_date)
+        from working_log
+        where working_log_id = #{workingLogId}
+              and webuser_id = #{webuserId}
+    </select>
+
+    <!-- 근무 기록 주인 찾어 -->
+    <select id="selectWorkingLogOwner" resultType="int">
+        select webuser_id
+        from working_log
+        where working_log_id=#{workingLogId}
     </select>
 </mapper>
