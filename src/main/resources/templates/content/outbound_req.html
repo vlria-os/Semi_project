@@ -1,14 +1,28 @@
 <section xmlns:th="http://www.thymeleaf.org"
          th:fragment="content">
-
+    <link rel="stylesheet" th:href="@{/css/content/outbound_req.css}">
+<div class="main">
     <h1>출고 요청</h1>
+    <div class="search-container">
+        <div class="search-bar">
+            <form th:action="@{/stockList/req}" method="get" style="display: flex; gap: 8px;">
+                <input type="text" placeholder="상품명 또는 카테고리" name="keyword" th:value="${keyword}">
+                <input type="submit" value="검색">
+            </form>
+        </div>
+        <div class="btn-area">
+            <button type="button" id="resetOutboundSelection">선택 초기화</button>
+            <button type="button" onclick="submitOutbound()">출고 요청</button>
+        </div>
+    </div>
 
-    <div>
+    <div class="filter-group">
         <form th:action="@{/stockList/req}" method="get">
-            <button type="submit">전체</button>
-            <button type="submit" name="status" value="COLD">냉장</button>
-            <button type="submit" name="status" value="ROOM">실온</button>
-            <button type="submit" name="status" value="FROZEN">냉동</button>
+            <input type="hidden" name="keyword" th:value="${keyword}">
+            <button type="submit" th:classappend="${status == null or status == ''} ? 'active' : ''">전체</button>
+            <button type="submit" name="status" value="COLD"th:classappend="${status == 'COLD'} ? 'active' : ''">냉장</button>
+            <button type="submit" name="status" value="ROOM" th:classappend="${status == 'ROOM'} ? 'active' : ''">실온</button>
+            <button type="submit" name="status" value="FROZEN" th:classappend="${status == 'FROZEN'} ? 'active' : ''">냉동</button>
         </form>
     </div>
 
@@ -20,10 +34,11 @@
             <th>재고이름</th>
             <th>카테고리</th>
             <th>가격</th>
-            <th>수량</th>
+            <th>재고수량</th>
             <th>단위</th>
             <th>이미지</th>
             <th>제품종류</th>
+            <th>출고수량</th>
 
         </tr>
         <tr th:each="ps, stat : ${p}" th:if="${ps != null}">
@@ -60,29 +75,22 @@
             </td>
         </tr>
     </table>
-        <button type="button" id="resetOutboundSelection">선택 초기화</button>
-    <button type="button" onclick="submitOutbound()">출고 요청</button>
 
     </form>
     <div>
-        <form th:action="@{/stockList/req}" method="get">
-            <input type="text" placeholder="상품명 또는 카테고리" name="keyword">
-            <input type="submit" value="검색">
-        </form>
-    </div>
-    <div th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
-        <ul>
+        <ul th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
             <li th:if="${pageInfo.startPageNum > 1}">
-                <a th:href="@{/content/outbound_req(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
+                <a th:href="@{/content/outbound_req(pageNum=${pageInfo.startPageNum - 1}, status=${status}, keyword=${keyword})}">[이전]</a>
             </li>
             <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
                 <a th:href="@{/content/outbound_req(pageNum=${num},status=${status},keyword=${keyword})}">[[${num}]]</a>
             </li>
             <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
-                <a th:href="@{/content/outbound_req(pageNum=${pageInfo.endPageNum + 1})}">다음</a>
+                <a th:href="@{/content/outbound_req(pageNum=${pageInfo.endPageNum + 1}, status=${status}, keyword=${keyword})}">[다음]</a>
             </li>
         </ul>
     </div>
+</div>
     <script>
         const selectedOutboundMap = {};
 
