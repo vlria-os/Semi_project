@@ -116,23 +116,4 @@ public class CalendarController {
             );
         }
     }
-
-    @GetMapping("/api/debug/ip")
-    public Map<String, Object> debugIp(HttpServletRequest request) {
-
-        Map<String, Object> result = new LinkedHashMap<>();
-
-        // 1) 가장 기본 (로컬테스트면 보통 127.0.0.1)
-        result.put("remoteAddr", request.getRemoteAddr());
-
-        // 2) 프록시/로드밸런서 환경에서 많이 쓰는 헤더들 (지금은 아마 null)
-        result.put("xForwardedFor", request.getHeader("X-Forwarded-For"));
-        result.put("xRealIp", request.getHeader("X-Real-IP"));
-
-        // 3) 참고용: Host/UA
-        result.put("host", request.getHeader("Host"));
-        result.put("userAgent", request.getHeader("User-Agent"));
-
-        return result;
-    }
 }

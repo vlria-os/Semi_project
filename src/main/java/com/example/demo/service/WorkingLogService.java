@@ -24,6 +24,12 @@ public class WorkingLogService {
 
     //출근 체크
     public boolean checkIn(int webuserId, int roleId){
+        int cnt=workingLogMapper.countTodayCheckIn(webuserId);
+
+        if (cnt > 0){
+            return false;
+        }
+
         WebuserDto dto=webuserMapper.selectWebuser(webuserId);
         Map<String,Object> map=new HashMap<>();
         map.put("webuserId",webuserId);
@@ -43,8 +49,8 @@ public class WorkingLogService {
     }
 
     //오늘 출근 기록
-    public WorkingLogDto getTodayCheckInLogOne(int webuserId){
-        return workingLogMapper.selectTodayCheckInLogOne(webuserId);
+    public int getCountTodayCheckIn(int webuserId){
+        return workingLogMapper.countTodayCheckIn(webuserId);
     }
 
     //오늘 퇴근 기록

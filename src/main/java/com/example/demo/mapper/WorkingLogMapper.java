@@ -23,7 +23,7 @@ public interface WorkingLogMapper {
     WorkingLogDto selectOpenWorkingLog(@Param("webuserId") int webuserId);
 
     //오늘 출근 기록 확인
-    WorkingLogDto selectTodayCheckInLogOne(@Param("webuserId") int webuserId);
+    int countTodayCheckIn(@Param("webuserId") int webuserId);
 
     //오늘 퇴근 기록 확인
     WorkingLogDto selectTodayCheckOutLogOne(@Param("webuserId") int webuserId);
