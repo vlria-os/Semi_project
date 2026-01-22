@@ -4,15 +4,62 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.demo.mapper.WorkingLogMapper">
+    <!-- 출근 체크 -->
     <insert id="checkIn" parameterType="map">
         insert into working_log
         ( working_log_id, working_date, webuser_id, name, role_id, check_in_time,
-        check_out_time, attend_status, approval_status, approver_id, approval_date )
+        check_out_time, attend_status,memo)
         values(working_log_seq.nextval,trunc(sysdate),#{webuserId},#{name},#{roleId},
-        sysdate,null,null,'REQUEST',null,null)
+        sysdate,null,null,null)
     </insert>
+
+    <!-- 퇴근 체크 -->
     <update id="checkOut">
-        update working_log set check_out_time=sysdate, attend_status='WORK'
-        where webuser_id = #{webuserId}
+        update working_log set check_out_time=sysdate,
+        attend_status=#{attendStatus}, memo=#{memo}
+        where webuser_id = #{webuserId} and working_date=trunc(sysdate)
+        and check_out_time is null
     </update>
+
+    <!-- 어제 퇴근 기록 확인 -->
+    <select id="selectYesterdayCheckOutLogOne" resultType="WorkingLogDto">
+        select check_out_time as checkOutTime
+        from working_log
+        where webuser_id = #{webuserId}
+        and trunc(working_date)=trunc(sysdate)-1
+    </select>
+
+    <!-- 오늘 출근 기록 확인 -->
+    <select id="selectTodayCheckInLogOne" resultType="WorkingLogDto">
+        select check_in_time as checkInTime
+        from working_log
+        where webuser_id = #{webuserId}
+        and trunc(working_date)=trunc(sysdate)
+    </select>
+
+    <!-- 오늘 퇴근 기록 확인 -->
+    <select id="selectTodayCheckOutLogOne" resultType="WorkingLogDto">
+        select check_out_time as checkOutTime
+        from working_log
+        where webuser_id=#{webuserId}
+        and trunc(working_date)=trunc(sysdate)
+    </select>
+
+    <!-- 한 달 근무 기록 -->
+    <select id="selectMyWorkingLog" resultType="WorkingLogDto">
+        select
+        working_log_id as workingLogId,
+        trunc(working_date) as workingDate,
+        attend_status as attendStatus,
+        check_in_time as checkInTime,
+        check_out_time as checkOutTime,
+        memo
+        from working_log
+        where webuser_id=#{webuserId} and
+        <![CDATA[
+        trunc(working_date) >= to_date(#{startDate}, 'YYYY-MM-DD') and
+        trunc(working_date) < to_date(#{endDate}, 'YYYY-MM-DD')
+        ]]>
+        order by trunc(working_date)
+    </select>
 </mapper>

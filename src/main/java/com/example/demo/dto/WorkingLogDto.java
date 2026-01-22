@@ -10,15 +10,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Data
 public class WorkingLogDto {
-    private Integer working_log_id;
-    private LocalDate working_date;
-    private int webuser_id;
+    private Integer workingLogId;
+    private LocalDate workingDate;
+    private Integer webuserId;
     private String name;
-    private int role_id;
-    private LocalDateTime check_in_time;
-    private LocalDateTime check_out_time;
-    private String attend_status;
-    private String approval_status;
-    private Integer approver_id;
-    private LocalDateTime approval_date;
+    private Integer roleId;
+    private LocalDateTime checkInTime;
+    private LocalDateTime checkOutTime;
+    private String attendStatus;
+    private String memo;
 }

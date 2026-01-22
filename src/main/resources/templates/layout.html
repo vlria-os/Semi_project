@@ -28,6 +28,32 @@
 
 <footer th:replace="~{fragment/footer :: footer}"/>
 
+<div id="checkOut-Overlay" style="display: none">
+    <div id="checkOut-Area">
+        <div id="checkOut-Box">
+            <div id="checkOut-Title">퇴근 처리</div>
+            <div id="checkOut-Content">
+                <span>퇴근 유형</span>
+                <select id="attendStatus">
+                    <option value="WORK">정상 퇴근</option>
+                    <option value="HALF_AM">오전 반차</option>
+                    <option value="HALF_PM">오후 반차</option>
+                    <option value="ANNUAL">연차</option>
+                    <option value="SICK">병가</option>
+                    <option value="ETC">기타</option>
+                </select>
+            </div>
+            <div id="checkOut-Memo">
+                <span>메모(선택)</span>
+                <input type="text" id="checkOutMemo" placeholder="사유/메모 입력">
+            </div>
+            <div id="checkOut-Btn">
+                <button type="button" onclick="checkOutOk()">확인</button> <button type="button" onclick="checkOutNo()">취소</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- HEADER -->
 <!--<header th:replace="~{fragment/header :: header}"></header>-->
 
@@ -184,22 +210,15 @@
     //출근
     document.addEventListener("click",(e) => {
         const btn = e.target.closest("#btnCheckIn");
-        const btn2 = e.target.closest("#btnCheckOut");
 
         if(!btn) return;
-
-        const btnOut = document.getElementById("btnCheckOut"); // ✅ 여기!
-        const btnIn  = document.getElementById("btnCheckIn");
 
         fetch('/work/checkIn')
             .then(resp => resp.text())
             .then(data => {
                 alert(data.trim() === "success" ? "출근 성공!" : "출근 실패!");
 
-                if (data.trim() === "success") {          // ✅ 성공일 때만 토글
-                    btnIn.style.display = "none";
-                    if (btnOut) btnOut.style.display = "inline-flex";
-                }
+                location.reload(); //새로고침
             })
             .catch(error => {
                 console.error(error);
@@ -207,31 +226,49 @@
             });
     });
 
-    //퇴근
+    //퇴근 버튼 클릭
     document.addEventListener("click",(e) => {
-        const btn=e.target.closest("#btnCheckOut");
-        const btn2=e.target.closest("#btnCheckIn");
+        const btn = e.target.closest("#btnCheckOut");
+        const checkOutArea=document.getElementById("checkOut-Overlay");
 
         if(!btn) return;
 
-        const btnOut = document.getElementById("btnCheckOut");
-        const btnIn  = document.getElementById("btnCheckIn");
+        checkOutArea.style.display="block";
+    });
 
-        fetch('/work/checkOut')
+    //퇴근 유형 선택 취소
+    function checkOutNo(){
+        const checkOutArea=document.getElementById("checkOut-Overlay");
+
+        checkOutArea.style.display="none";
+    }
+
+    //퇴근
+    function checkOutOk(){
+        const attendStatus=document.getElementById("attendStatus").value;
+        const memo=document.getElementById("checkOutMemo").value;
+
+        fetch('/work/checkOut', {
+            method:'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                attendStatus: attendStatus,
+                memo: memo
+            })
+        })
             .then(resp => resp.text())
             .then(data => {
-                alert(data.trim() === "success" ? "퇴근 성공!" : "퇴근 실패!");
-
-                if (data.trim() === "success") {
-                    btnOut.style.display = "none";
-                    if (btnIn) btnIn.style.display = "inline-flex";
+                if(data.trim() === "success"){
+                    alert('퇴근 성공!');
+                    location.reload();
+                }else {
+                    alert('퇴근 실패!');
+                    location.reload();
                 }
-            })
-            .catch(error => {
-                console.error(error);
-                alert("요청 실패! 콘솔을 확인하세요!");
             });
-    });
+    }
 
     document.addEventListener("DOMContentLoaded", function(){
         const navLinks=document.querySelectorAll(".nav-tabs a");
