@@ -110,7 +110,7 @@ public class ProductListController {
     public Map<String, Object> productSearch(@RequestParam(name = "pageNum", defaultValue = "1") int pageNum,
                                              @ModelAttribute SearchDto searchDto) {
         Map<String, Object> map = productService.productList(pageNum, searchDto);
-        System.out.println("=========================>"+map);
+        System.out.println("=========================>"+map.get("pageInfo"));
         return map;
     }
 

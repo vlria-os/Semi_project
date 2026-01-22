@@ -65,10 +65,10 @@
 <script>
     const selectedMap = {};
 
-    function search(){
+    window.search=function(pageNum = 1){
         const keyword=document.getElementById("keyword").value;
 
-        fetch(`/common/product_search?keyword=${encodeURIComponent(keyword)}`)
+        fetch(`/common/product_search?keyword=${encodeURIComponent(keyword)}&pageNum=${pageNum}`)
             .then(res=>res.json())
             .then(result=>{
                 const list = result.productDtos;
@@ -105,9 +105,42 @@
     </tr>
     `;
                 });
+                renderPaging(result.pageInfo);
 
             })
     };
+
+    window.searchPage = function(pageNum) {
+        search(pageNum);
+    }
+
+    function renderPaging(pageInfo) {
+        const pagingArea = document.getElementById('pagingArea');
+        pagingArea.innerHTML = '';
+
+        if(!pageInfo || pageInfo.totalPageCount <= 1) return;
+
+        // 이전
+        if(pageInfo.startPageNum > 1){
+            const prev = document.createElement('li');
+            prev.innerHTML = `<a href="#" onclick="searchPage(${pageInfo.startPageNum - 1})">[이전]</a>`;
+            pagingArea.appendChild(prev);
+        }
+
+        // 페이지 번호
+        for(let i = pageInfo.startPageNum; i <= pageInfo.endPageNum; i++){
+            const li = document.createElement('li');
+            li.innerHTML = `<a href="#" onclick="searchPage(${i})">${i}</a>`;
+            pagingArea.appendChild(li);
+        }
+
+        // 다음
+        if(pageInfo.endPageNum < pageInfo.totalPageCount){
+            const next = document.createElement('li');
+            next.innerHTML = `<a href="#" onclick="searchPage(${pageInfo.endPageNum + 1})">[다음]</a>`;
+            pagingArea.appendChild(next);
+        }
+    }
 
     document.addEventListener('change', e => {
         const row = e.target.closest('tr');
