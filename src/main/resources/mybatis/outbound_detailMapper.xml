@@ -74,4 +74,10 @@
     <select id="select_detail_status" parameterType="int" resultType="String">
         select outbound_status from outbound_detail where outbound_id=#{value}
     </select>
+    <select id="select_expiration" parameterType="int" resultType="java.time.LocalDate">
+        select l.expiration_date from stock s
+            join lot_in l on l.lot_in_id=s.lot_in_id
+            join lot_out o on l.lot_in_id=o.lot_in_id
+            where o.lot_out_id=#{value}
+    </select>
 </mapper>

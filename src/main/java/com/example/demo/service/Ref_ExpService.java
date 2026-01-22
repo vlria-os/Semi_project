@@ -21,7 +21,7 @@ public class Ref_ExpService {
     private final StockMapper stockMapper;
 
     @Transactional
-    @Scheduled(cron = "0 20 10 * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void insert_expiration(){
         List<Select_outboundDto> select_outboundDtos=stockMapper.select_expiration();
 
@@ -36,8 +36,6 @@ public class Ref_ExpService {
                                 s.getQuantity(),s.getStock_id(),null));
             stockMapper.update_out(new StockDto(s.getStock_id(),0, s.getQuantity(), s.getProduct_id()));
         }
-
-        System.out.println("스케줄러 실행중...");
     }
 
     @Transactional

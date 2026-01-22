@@ -6,12 +6,13 @@
     </div>
     <table>
       <tr>
-        <th>승인 번호</th><th>승인자</th><th>상품명</th><th>승인일</th>
+        <th>출고 번호</th><th>승인자</th><th>상품명</th><th>폐기 여부</th><th>승인일</th>
       </tr>
       <tr th:each="l:${list}" th:attr="data-outbound-id=${l.outbound_id}" onclick="showDetail(this)">
-        <td th:text="${l.approval_id}"></td>
+        <td th:text="${l.outbound_id}"></td>
         <td th:text="${l.approver_name}"></td>
         <td th:text="${l.product_name}"></td>
+        <td th:text="${l.is_expired}"></td>
         <td th:text="${#temporals.format(l.created_at, 'yyyy-MM-dd HH:mm:ss')}"></td>
       </tr>
     </table>
@@ -56,7 +57,7 @@
                     rows += `
     <tr class="detailItem"
       data-bound-detail-id="${bound_type == 'IN' ? l.inbound_detail_id : l.outbound_detail_id}" data-bound-type="${bound_type}">
-      <td data-product-id="${l.product_id}">${name}</td>
+      <td data-product-id="${l.product_id}">${l.product_name}</td>
       <td class="originQty">${l.quantity}</td>
       <td>${bound_type == 'IN' ? l.inbound_status : l.outbound_status}</td>
       <td>
@@ -85,6 +86,7 @@
       <tr class="detailItem"
           data-bound-detail-id="${l.outbound_detail_id}"
           data-bound-type="OUT">
+        <td>${l.outbound_detail_id}</td>
         <td data-product-id="${l.product_id}">${name}</td>
         <td>${l.outbound_status}</td>
         <td>${l.quantity}</td>
@@ -104,7 +106,7 @@
                   <td colspan="${colCount}">
                      <table>
                      <tr>
-                        <th>상품명</th><th>승인 상태</th><th>수량</th><th>처리</th>
+                        <th>출고 상세</th><th>상품명</th><th>승인 상태</th><th>수량</th><th>처리</th>
                      </tr>
                      ${rows}
                      </table>

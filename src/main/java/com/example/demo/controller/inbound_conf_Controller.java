@@ -52,7 +52,7 @@ public class inbound_conf_Controller {
         String status="APPROVED";
         int n=inboundService.insert_confirm(lot_inDtos,status,null,confirmer_id);
 
-        return "redirect:/content/confirmList";
+        return "redirect:/field_staff/inbound_conf";
     }
 
     @PostMapping("/field_staff/inbound_conf_rej")
@@ -64,7 +64,7 @@ public class inbound_conf_Controller {
         String status="REJECTED";
         int n=inboundService.insert_confirm(lot_inDtos,status,reason,confirmer_id);
 
-        return "redirect:/content/confirmList";
+        return "redirect:/field_staff/inbound_conf";
     }
 
 }

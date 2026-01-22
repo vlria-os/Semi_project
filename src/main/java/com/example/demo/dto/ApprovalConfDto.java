@@ -16,5 +16,6 @@ public class ApprovalConfDto {
     private String product_name;
     private String approval_status;
     private String is_refund;
+    private String is_expired;
     private LocalDateTime created_at;
 }
