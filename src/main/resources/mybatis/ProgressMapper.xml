@@ -148,7 +148,8 @@
                 o.request_date            AS requested_date,
                 a.created_at           AS approved_date,
                 l.shipped_date,
-                d.reason
+                d.reason,
+                 i.is_refund
 
                     FROM outbound_detail d
                     JOIN outbound o ON o.outbound_id = d.outbound_id
@@ -161,6 +162,7 @@
 
                     LEFT JOIN lot_out l ON l.outbound_detail_id = d.outbound_detail_id
                     LEFT JOIN webuser conf ON conf.webuser_id = l.confirmer_id
+        left join inbound i on i.lot_out_id=l.lot_out_id
 
                     JOIN warehouse w ON w.warehouse_id = l.warehouse_id
                     where o.webuser_id=#{webuser_id} or a.approver_id=#{webuser_id} or l.confirmer_id=#{webuser_id}

@@ -64,7 +64,6 @@ public class ProgressService {
 
         Map<String,Object> result=new HashMap<>();
         result.put("list",progressMapper.select_out(map));
-        System.out.println(progressMapper.select_out(map));
         result.put("pageInfo",pageInfo);
         return result;
     }
