@@ -108,8 +108,15 @@
                                                           th:value="${webuser.id}"></td>
                                 </tr>
                                 <tr>
-                                    <th>PASSWORD</th><td><input type="password"
-                                                                name="password" th:value="${webuser.password}"></td>
+                                    <th>PASSWORD</th>
+                                    <td>
+                                        <div class="password-wrapper">
+                                            <input type="password" name="password" th:value="${webuser.password}">
+                                            <button type="button" class="btn-view" onclick="toggleVisibility(this)">
+                                                <span class="eye-con">👁️</span>
+                                            </button>
+                                        </div>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>이름</th><td><input type="text"
@@ -119,18 +126,18 @@
                                     <th>역할</th>
                                     <td>
                                         <label><input type="radio" name="role_id"
-                                               value="1">관리자</label>
+                                               value="1" th:checked="${webuser.role_id == 1}">관리자</label>
                                         <label><input type="radio" name="role_id"
-                                               value="2">사무 직원</label>
+                                               value="2" th:checked="${webuser.role_id == 2}">사무 직원</label>
                                         <label><input type="radio" name="role_id"
-                                               value="3">현장 직원</label>
+                                               value="3" th:checked="${webuser.role_id == 3}">현장 직원</label>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>상태</th>
                                     <td>
-                                        <label><input type="radio" name="is_active" value="Y">활성</label>
-                                        <label><input type="radio" name="is_active" value="N">비활성</label>
+                                        <label><input type="radio" name="is_active" value="Y" th:checked="${webuser.is_active == 'Y'}">활성</label>
+                                        <label><input type="radio" name="is_active" value="N" th:checked="${webuser.is_active == 'N'}">비활성</label>
                                     </td>
                                 </tr>
                                 <tr>
@@ -146,8 +153,8 @@
                 </tbody>
             </table>
         </div>
-        <div th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
-            <ul class="page-ul">
+        <div>
+            <ul class="page-ul" th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
                 <li th:if="${pageInfo.startPageNum > 1}">
                     <a th:href="@{/webuser/list(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
                 </li>
@@ -161,6 +168,18 @@
         </div>
     </div>
 <script th:inline="javascript">
+
+    function toggleVisibility(btn){
+        const input= btn.parentElement.querySelector('input');
+        const icon= btn.querySelector('.eye-con');
+        if(input.type === "password"){
+            input.type = "text";
+            icon.textContent= "🧑‍🦯‍➡️";
+        }else{
+            input.type= "password";
+            icon.textContent= "👁️";
+        }
+    }
 
     function insertWebuser(){
         document.getElementById("insertForm").style.display="block";
