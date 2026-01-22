@@ -11,9 +11,10 @@
         </div>
         <table id="Table">
             <tr>
-                <th>상품명</th><th>요청자</th><th>요청일</th><th>상세보기</th>
+                <th>출고번호</th><th>상품명</th><th>요청자</th><th>요청일</th><th>상세보기</th>
             </tr>
             <tr th:each="l:${list}">
+                <td th:text="${l.outbound_id}"></td>
                 <td th:text="${l.product_name}"></td>
                 <td th:text="${l.webuser_name}"></td>
                 <td th:text="${#temporals.format(l.request_date, 'yyyy-MM-dd HH:mm:ss')}"></td>
