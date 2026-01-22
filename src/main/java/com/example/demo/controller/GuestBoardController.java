@@ -54,7 +54,7 @@ public class GuestBoardController {
     @GetMapping("/list")
     public String list(
             @RequestParam(defaultValue = "0")int page, //요청에 page가 없으면 0으로
-            @RequestParam(required = false)String type,
+            @RequestParam(required = false)String category,
             @RequestParam(required = false)String keyword,
             Model model) {
 
@@ -62,17 +62,15 @@ public class GuestBoardController {
         List<GuestBoardDto> filteredList;
 
         //1.검색 여부 확인
-        if (keyword != null && !keyword.isBlank()) {
-            if ("category".equals(type)) {
+        if (keyword != null && !category.isBlank()) {
+            filteredList=service.searchByCategory(category);
                 // 카테고리 검색
-                filteredList = service.searchByCategory(keyword);
-            } else {
+            } else if(keyword != null && !keyword.isBlank()){
                 // 전체 검색: 제목, 작성자, 내용 등
                 filteredList = service.searchAll(keyword);
-            }
-        } else {
+            } else {
             // 검색 키워드가 없으면 전체 목록
-            filteredList = service.getList();
+               filteredList = service.getList();
         }
 
         //2.전체 글 수와 페이지 수 계산
@@ -84,7 +82,7 @@ public class GuestBoardController {
         model.addAttribute("list", list);
         model.addAttribute("currentPage",page);
         model.addAttribute("totalPages",totalPages);
-        model.addAttribute("type",type);
+        model.addAttribute("type",category);
         model.addAttribute("keyword",keyword);
         model.addAttribute("categories",categories);
         return "guest/list";
@@ -107,7 +105,7 @@ public class GuestBoardController {
             return "redirect:/guest/list";
         } else {
             ra.addFlashAttribute("error", "삭제 실패!! 비밀번호를 확인하세요");
-            return "redirect:/guest/view" + id;
+            return "redirect:/guest/view/" + id;
 
             //만약 redirect를 안쓰고 싶다면
 //            @PostMapping("/delete")
@@ -132,7 +130,7 @@ public class GuestBoardController {
     public String search(@RequestParam String type,
                          @RequestParam String keyword, Model model) {
         List<GuestBoardDto> list;
-        if (type.equals("category")) {
+        if (type.equals("type")) {
             list = service.searchByCategory(keyword);
         } else { //title
             list = service.searchByTitle(keyword);

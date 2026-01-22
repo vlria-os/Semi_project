@@ -13,6 +13,14 @@ h1 {
     margin-top: 30px;
     margin-bottom: 20px;
 }
+.board-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2E8B57;
+    text-align: center;
+    margin-bottom: 25px;
+    text-shadow: 3px 3px 8px rgba(0,0,0,0.5); /* 더 넓고 흐림 */
+}
 
 .container {
     max-width: 800px;
@@ -51,7 +59,9 @@ button {
     cursor: pointer;
     margin-right: 10px;
     font-size: 14px;
-}
+    white-space: nowrap; /* 텍스트 줄 바꿈 방지 */
+    min-width: 60px;     /* 최소 너비 지정 (필요 시 조절) */
+    }
 
 button:hover {
     background-color: #45a049;
@@ -135,6 +145,49 @@ label {
 .search-box input {
     padding: 8px;
     font-size: 14px;
+}
+.search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 10px 0;
+}
+
+.search-bar input[type="text"] {
+    flex-grow: 1;
+    min-width: 200px;
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.search-bar select {
+    padding: 10px;
+    font-size: 14px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    min-width: 120px;
+}
+
+.search-bar button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+    font-weight: bold;
+}
+
+.search-bar button:nth-of-type(1) {
+    background-color: #2f855a;  /* 검색 버튼 */
+}
+
+.search-bar button:nth-of-type(2) {
+    background-color: #276749;  /* 글쓰기 버튼 */
 }
 
 /* === 제목 링크 === */

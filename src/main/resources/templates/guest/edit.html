@@ -8,7 +8,7 @@
 <body>
 
 <div class="container">
-    <h1>글 수정</h1>
+    <h1 class="board-title">글 수정</h1>
     <!--실제 수정 폼-->
     <form th:action="@{/guest/edit}" method="post">
         <input type="hidden" name="id" th:value="${board.id}" />

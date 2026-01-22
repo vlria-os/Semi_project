@@ -39,7 +39,7 @@
     </update>
 
     <!--카테고리 검색-->
-    <select id="searchByCategory" parameterType="GuestBoardDto" resultType="com.example.demo.dto.GuestBoardDto">
+    <select id="searchByCategory" parameterType="String" resultType="com.example.demo.dto.GuestBoardDto">
         select id,category,name,title,content,view_count as viewCount,created_at as createdAt
         from guest_board
         where category = #{category}

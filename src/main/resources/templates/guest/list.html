@@ -7,15 +7,15 @@
 </head>
 <body>
 <div class="container">
-    <h1>게시판 목록</h1>
+    <h1 class="board-title">게시판 목록</h1>
 
-    <div class="top-bar" style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 20px; gap: 15px;">
+    <div class="search-bar" >
         <!-- 검색 폼 -->
         <form th:action="@{/guest/list}" method="get" style="display: flex; gap: 10px; align-items: center; flex-grow: 1;">
             <input type="text" name="keyword" th:value="${keyword}" placeholder="제목, 작성자, 내용으로 검색..." style="flex-grow: 1; padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 1rem;">
-            <select name="type" style="padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 1rem; width: 150px;">
-                <option value="" th:selected="${type == null || type == ''}">전체</option>
-                <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}" th:selected="${type == cat}"></option>
+            <select name="category" style="padding: 10px; border-radius: 6px; border: 1px solid #ccc; font-size: 1rem; width: 150px;">
+                <option value="" th:selected="${category == null || category == ''}">전체</option>
+                <option th:each="cat : ${categories}" th:value="${cat}" th:text="${cat}" th:selected="${category == cat}"></option>
             </select>
             <button type="submit" style="padding: 10px 20px; background-color: #2f855a; color: white; border: none; border-radius: 6px; cursor: pointer;">검색</button>
         </form>

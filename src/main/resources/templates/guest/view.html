@@ -8,7 +8,7 @@
 <body>
 
     <div class="container">
-        <h1 th:text="${board.title}">제목</h1>
+        <h1 class="board-title" th:text="${board.title}">제목</h1>
 
         <p><strong>작성자:</strong> <span th:text="${board.name}"></span> </p>
         <p><strong>작성일:</strong>
@@ -16,6 +16,8 @@
         <p><strong>조회수:</strong> <span th:text="${board.viewCount}"></span> </p>
         <p th:text="${board.content}">내용</p>
 
+
+        <!--게시글 수정/삭제 버튼-->
         <form th:action="@{/guest/delete}" method="post">
             <input type="hidden" name="id" th:value="${board.id}"/>
             비밀번호: <input type="password" name="password" required/>
@@ -30,6 +32,77 @@
         </div>
     </form>
 </div>
+    <!--댓글 영역-->
+    <h3>댓글</h3>
+
+    <div id="comment-list"></div>
+    <input type="hidden" id="boardId" th:value="${board.id}">
+    <div id="comment-form">
+        <input type="text" id="name" placeholder="이름">
+        <input type="password" id="commentpassword" placeholder="비밀번호">
+        <textarea  id="commentcontent" placeholder="댓글을 입력하세요"></textarea>
+        <button onclick="addComment()">댓글 등록</button>
+    </div>
+
+
+    <!-- Ajax 댓글 스크립트-->
+    <script>
+        function loadComments() {
+            const boardId = document.getElementById("boardId").value;
+            fetch(`/guest/comment/${boardId}`)
+                .then(res => res.json())
+                .then(data => {
+                    let html = "";
+                    data.forEach(c => {
+                        html += `
+                    <div style="border-bottom:1px solid #ddd; padding:5px 0;">
+                        <b>${c.name}</b> : ${c.content}
+                        <button onclick="deleteComment(${c.id})" style="float:right;">삭제</button>
+                    </div>
+                `;
+                    });
+                    document.getElementById("comment-list").innerHTML = html;
+                });
+        }
+        //댓글 등록
+        function addComment() {
+            const data = {
+                boardId: document.getElementById("boardId").value,
+                name: document.getElementById("name").value,
+                password: document.getElementById("commentpassword").value,
+                content: document.getElementById("commentcontent").value
+            };
+
+            fetch("/guest/comment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            })
+                .then(() => {
+                    loadComments();  // 새로고침 없이 댓글 갱신
+                    document.getElementById("commentcontent").value = ""; // 입력창 초기화
+                });
+        }
+
+        function deleteComment(id) {
+            const password = prompt("비밀번호를 입력하세요"); // 삭제 시 비밀번호 입력
+            if(!password)return;
+
+            fetch(`/guest/comment/${id}?password=${encodeURIComponent(password)}`, { method: "DELETE" })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.success) {
+                        loadComments();
+                    }else{
+                        alert("비밀번호가 틀렸습니다.");
+                    }
+                });
+            }
+
+    </script>
+
+
+
 
 </body>
 </html>
