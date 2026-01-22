@@ -118,6 +118,7 @@ public class CalendarController {
     }
 
     @GetMapping("/api/debug/ip")
+    @ResponseBody
     public Map<String, Object> debugIp(HttpServletRequest request) {
 
         Map<String, Object> result = new LinkedHashMap<>();

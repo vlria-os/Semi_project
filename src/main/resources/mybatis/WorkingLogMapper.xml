@@ -40,11 +40,12 @@
     </select>
 
     <!-- 오늘 출근 기록 확인 -->
-    <select id="selectTodayCheckInLogOne" resultType="WorkingLogDto">
-        select check_in_time as checkInTime
+    <select id="countTodayCheckIn" resultType="int">
+        select count(*)
         from working_log
         where webuser_id = #{webuserId}
-        and trunc(working_date)=trunc(sysdate)
+        and trunc(working_date) = trunc(sysdate)
+        and check_in_time is not null
     </select>
 
     <!-- 오늘 퇴근 기록 확인 -->

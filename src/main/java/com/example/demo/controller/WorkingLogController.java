@@ -29,8 +29,6 @@ public class WorkingLogController {
         boolean checkIn=workingLogService.checkIn(webuserId,roleId);
 
         if(checkIn){
-            WorkingLogDto checkInDto=workingLogService.getTodayCheckInLogOne(webuserId);
-            session.setAttribute("checkInLog",checkInDto);
             return "success";
         }else {
             return "failure";
