@@ -246,5 +246,17 @@
             });
     });
 
+    function toggleVisibility(btn){
+        const input= btn.parentElement.querySelector('input');
+        const icon= btn.querySelector('.eye-con');
+        if(input.type === "password"){
+            input.type = "text";
+            icon.textContent= "🧑‍🦯‍➡️";
+        }else{
+            input.type= "password";
+            icon.textContent= "👁️";
+        }
+    }
+
 </script>
 </section>
