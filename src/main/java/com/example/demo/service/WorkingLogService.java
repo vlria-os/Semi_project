@@ -37,9 +37,9 @@ public class WorkingLogService {
         return workingLogMapper.checkOut(webuserId, attendStatus, memo) > 0;
     }
 
-    //어제 퇴근 기록
-    public WorkingLogDto getYesterdayCheckOutLogOne(int webuserId){
-        return workingLogMapper.selectYesterdayCheckOutLogOne(webuserId);
+    //미퇴근 기록
+    public WorkingLogDto getOpenWorkingLog(int webuserId){
+        return workingLogMapper.selectOpenWorkingLog(webuserId);
     }
 
     //오늘 출근 기록
@@ -53,7 +53,7 @@ public class WorkingLogService {
     }
 
     //캘린더에 표시될 본인 근무 기록
-    public List<CalendarDto> getMyWorkingLog(int webuserId, String startDate, String endDate){
+    public List<CalendarDto> getMyWorkingLog(int webuserId, String startDate, String endDate, int roleId){
         List<WorkingLogDto> workList=workingLogMapper.selectMyWorkingLog(webuserId,startDate,endDate);
 
         List<CalendarDto> list=new ArrayList<>();
@@ -130,7 +130,9 @@ public class WorkingLogService {
             map.put("memo",dto.getMemo() == null ? "" : dto.getMemo());
 
             //퇴근 보정 버튼 노출 여부 결정하는 조건
-            boolean canCheckoutLate = dto.getCanCheckoutLate() != null && dto.getCanCheckoutLate() == 1;
+            boolean isAdmin=(roleId == 1);
+
+            boolean canCheckoutLate = isAdmin && dto.getCanCheckoutLate() != null && dto.getCanCheckoutLate() == 1;
 
             map.put("canCheckoutLate",canCheckoutLate);
 
@@ -165,5 +167,10 @@ public class WorkingLogService {
         int n=workingLogMapper.updateCheckoutLate(workingLogId, webuserId, checkOutTime);
 
         return n > 0;
+    }
+
+    //근무 기록 주인 찾어
+    public int selectWorkingLogOwner(int workingLogId){
+        return workingLogMapper.selectWorkingLogOwner(workingLogId);
     }
 }

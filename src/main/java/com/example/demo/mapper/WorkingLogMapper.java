@@ -19,8 +19,8 @@ public interface WorkingLogMapper {
                  @Param("attendStatus") String attendStatus,
                  @Param("memo") String memo);
 
-    //어제 퇴근 기록 확인
-    WorkingLogDto selectYesterdayCheckOutLogOne(@Param("webuserId") int webuserId);
+    //미퇴근 기록 확인
+    WorkingLogDto selectOpenWorkingLog(@Param("webuserId") int webuserId);
 
     //오늘 출근 기록 확인
     WorkingLogDto selectTodayCheckInLogOne(@Param("webuserId") int webuserId);
@@ -40,4 +40,6 @@ public interface WorkingLogMapper {
 
     LocalDate selectWorkingDateById(@Param("workingLogId") int workingLogId,
                                     @Param("webuserId") int webuserId);
+
+    int selectWorkingLogOwner(@Param("workingLogId") int workingLogId);
 }

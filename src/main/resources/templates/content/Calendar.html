@@ -9,52 +9,60 @@
     <link rel="stylesheet" th:href="@{/css/calendar.css}">
 </head>
 <body>
+<div class="main">
 
-<div id="calendar"></div>
-
-<!-- ✅ 클릭한 이벤트 옆에 뜨는 작은 팝오버 -->
-<div id="workPopover" class="work-popover hidden">
-    <div class="pop-header">
-        <div class="pop-date" id="popDate">2026-01-21</div>
-        <button class="pop-close" type="button" id="popCloseBtn">×</button>
+    <div class="calendar-owner">
+        <span class="label">근무 기록</span>
+        <span class="value" th:text="${viewUserName} + ' (사원 번호: ' + ${viewUserId} + ')'">
+        홍길동 (사번: 3)
+    </span>
     </div>
 
-    <div class="pop-body">
-        <div class="pop-row">
-            <span class="k">상태</span>
-            <span class="v" id="popStatus">정상 근무</span>
+    <div id="calendar"></div>
+
+    <!-- ✅ 클릭한 이벤트 옆에 뜨는 작은 팝오버 -->
+    <div id="workPopover" class="work-popover hidden">
+        <div class="pop-header">
+            <div class="pop-date" id="popDate">2026-01-21</div>
+            <button class="pop-close" type="button" id="popCloseBtn">×</button>
         </div>
 
-        <div class="pop-row">
-            <span class="k">출근</span>
-            <span class="v" id="popCheckIn">10:34</span>
-        </div>
-
-        <div class="pop-row">
-            <span class="k">퇴근</span>
-            <span class="v" id="popCheckOut">18:02</span>
-        </div>
-
-        <div class="pop-row memo">
-            <span class="k">메모</span>
-            <div class="memo-box" id="popMemo">배고파</div>
-        </div>
-
-        <div class="pop-row hidden" id="lateCheckoutRow">
-            <span class="k">퇴근 보정</span>
-            <div class="v" style="display:flex; gap:8px; align-items:center;">
-                <input type="time" id="lateCheckoutTime" value="18:00">
-                <button type="button" id="lateCheckoutBtn">퇴근 보정</button>
+        <div class="pop-body">
+            <div class="pop-row">
+                <span class="k">상태</span>
+                <span class="v" id="popStatus">정상 근무</span>
             </div>
-        </div>
 
-        <div class="pop-row hidden" id="lateCheckoutMsgRow">
-            <span class="k"></span>
-            <span class="v" id="lateCheckoutMsg" style="white-space:nowrap;"></span>
+            <div class="pop-row">
+                <span class="k">출근</span>
+                <span class="v" id="popCheckIn">10:34</span>
+            </div>
+
+            <div class="pop-row">
+                <span class="k">퇴근</span>
+                <span class="v" id="popCheckOut">18:02</span>
+            </div>
+
+            <div class="pop-row memo">
+                <span class="k">메모</span>
+                <div class="memo-box" id="popMemo">배고파</div>
+            </div>
+
+            <div class="pop-row hidden" id="lateCheckoutRow">
+                <span class="k">퇴근 보정</span>
+                <div class="v" style="display:flex; gap:8px; align-items:center;">
+                    <input type="time" id="lateCheckoutTime" value="18:00">
+                    <button type="button" id="lateCheckoutBtn">퇴근 보정</button>
+                </div>
+            </div>
+
+            <div class="pop-row hidden" id="lateCheckoutMsgRow">
+                <span class="k"></span>
+                <span class="v" id="lateCheckoutMsg" style="white-space:nowrap;"></span>
+            </div>
         </div>
     </div>
 </div>
-
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js"></script>
 <script>
     const statusTextMap = {
@@ -107,6 +115,12 @@
     }
 
     document.addEventListener("DOMContentLoaded", function () {
+        // ✅ URL에서 targetUserId 뽑기 (/work/calendar?targetUserId=123)
+        const qs = new URLSearchParams(window.location.search);
+        const targetUserId = qs.get('targetUserId'); // 없으면 null
+        console.log('targetUserId:', targetUserId);
+
+
         const calendarEl = document.getElementById("calendar");
         const pop = document.getElementById('workPopover');
 
@@ -132,6 +146,11 @@
                     startDate: fetchInfo.startStr.slice(0, 10),
                     endDate: fetchInfo.endStr.slice(0, 10)
                 });
+
+                // ✅ 관리자 페이지로 들어온 경우만 targetUserId 같이 넘김
+                if (targetUserId) {
+                    params.set('targetUserId', targetUserId);
+                }
 
                 fetch('/api/work/calendar?' + params.toString())
                     .then(resp => {
@@ -172,7 +191,13 @@
                 currentEvent = e;
 
                 // 보정 UI 토글
-                const canFix = !!p.canCheckoutLate;
+                const canFix =
+                    p.canCheckoutLate === true ||
+                    p.canCheckoutLate === 1 ||
+                    p.canCheckoutLate === "1";
+
+                console.log('canCheckoutLate:', p.canCheckoutLate, typeof p.canCheckoutLate);
+
                 const lateRow = document.getElementById('lateCheckoutRow');
                 const msgRow = document.getElementById('lateCheckoutMsgRow');
                 const msg = document.getElementById('lateCheckoutMsg');

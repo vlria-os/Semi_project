@@ -21,12 +21,22 @@
         and check_out_time is null
     </update>
 
-    <!-- 어제 퇴근 기록 확인 -->
-    <select id="selectYesterdayCheckOutLogOne" resultType="WorkingLogDto">
-        select check_out_time as checkOutTime
+    <!-- 미퇴근 기록 확인 -->
+    <select id="selectOpenWorkingLog" resultType="WorkingLogDto">
+        select * from
+        (select
+        working_log_id as workingLogId,
+        trunc(working_date) as workingDate,
+        check_in_time as checkInTime,
+        check_out_time as checkOutTime
         from working_log
-        where webuser_id = #{webuserId}
-        and trunc(working_date)=trunc(sysdate)-1
+        where
+        webuser_id = #{webuserId}
+        and check_in_time is not null
+        and check_out_time is null
+        order by trunc(working_date) desc,
+        working_log_id desc)
+        where rownum=1
     </select>
 
     <!-- 오늘 출근 기록 확인 -->
@@ -98,5 +108,12 @@
         from working_log
         where working_log_id = #{workingLogId}
               and webuser_id = #{webuserId}
+    </select>
+
+    <!-- 근무 기록 주인 찾어 -->
+    <select id="selectWorkingLogOwner" resultType="int">
+        select webuser_id
+        from working_log
+        where working_log_id=#{workingLogId}
     </select>
 </mapper>
