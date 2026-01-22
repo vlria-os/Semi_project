@@ -31,7 +31,7 @@ public class DueDateController {
         if(searchDto.getField() == null || searchDto.getField().isEmpty()){
             searchDto.setField("all");
         }
-
+//        boolean lot_status=
         model.addAttribute("viewType", viewType);
         model.addAttribute("list", result.get("list"));
         model.addAttribute("pageInfo", result.get("pageInfo"));

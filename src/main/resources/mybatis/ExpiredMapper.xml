@@ -34,7 +34,7 @@
                     w.warehouse_id,
                     li.expiration_date,
                     lo.quantity,
-                    trunc(lo.shipped_date) - trunc(li.expiration_date) as days_left
+                    lo.shipped_date
                 from lot_out lo
                 join lot_in li on lo.lot_in_id = li.lot_in_id
                 join inbound_detail id on li.inbound_detail_id = id.inbound_detail_id

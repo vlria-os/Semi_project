@@ -74,7 +74,7 @@
             and li.expiration_date >= trunc(sysdate)
             order by li.expiration_date asc
         <![CDATA[
-        ) where rownum <= 3
+        ) where rownum <= 10
         ]]>
     </select>
 </mapper>
