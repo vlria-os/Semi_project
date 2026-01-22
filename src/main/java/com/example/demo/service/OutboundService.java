@@ -116,7 +116,7 @@ public class OutboundService {
         for(Lot_outDto l:lot_outDtos){
             LocalDate expiration =
                     outbound_detailMapper.select_expiration(l.getLot_out_id());
-            if (expiration != null && expiration.isBefore(LocalDate.now())) {
+            if (expiration != null || expiration.isBefore(LocalDate.now())) {
                 is_expired = true;
             }
         }

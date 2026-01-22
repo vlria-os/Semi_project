@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<table id="Table">
+    <thead>
+    <tr>
+        <th>결제번호</th>
+        <th>기간</th>
+        <th>입금/출금</th>
+        <th>회사명</th>
+        <th>결제금액</th>
+        <th>결제</th>
+    </tr>
+    </thead>
+
+    <tbody id="paymentBody">
+    <tr th:id="'row_' + ${item.settlement_id}"
+        th:data-total-pay="${item.total_pay}">
+        <td th:text="${item.settlement_id}"></td>
+        <td th:text="${item.period}"></td>
+        <td th:text="${item.inout}"></td>
+        <td th:text="${item.company_name}"></td>
+        <td th:text="${item.total_pay}"></td>
+        <td>
+            <div th:if="${item.payment_status == 'N'}">
+                <button class="payButton">결제하기</button>
+            </div>
+            <div th:if="${item.payment_status == 'Y'}">
+                결제완료
+            </div>
+    </tbody>
+</table>
+
+<script src="https://js.tosspayments.com/v2/standard"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", async function() {
+        const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
+        const tossPayments = new TossPayments(clientKey);
+        const customerKey = "6JKXrNpeN511woC64RWuD";
+
+        document.querySelectorAll(".payButton").forEach(btn => {
+            btn.addEventListener("click", async function () {
+                const row = btn.closest("tr");
+                const totalPay = Math.abs(parseInt(row.dataset.totalPay));
+
+                // 이미 결제 UI가 있으면 제거
+                const existing = row.nextElementSibling;
+                if (existing && existing.classList.contains("paymentRow")) {
+                    existing.remove();
+                    return; // 토글 형태
+                }
+
+                // 결제 UI용 tr 생성
+                const paymentTr = document.createElement("tr");
+                paymentTr.classList.add("paymentRow");
+                paymentTr.innerHTML = `
+                <td colspan="6">
+                    <div id="payment-method-${row.id}"></div>
+                    <div id="agreement-${row.id}"></div>
+                    <button id="modalPayButton-${row.id}">결제 진행</button>
+                </td>
+            `;
+                row.after(paymentTr);
+
+                // 위젯 생성
+                const widgets = tossPayments.widgets({customerKey});
+                await widgets.setAmount({currency: "KRW", value: totalPay}); // row별 금액 조정 가능
+
+                widgets.renderPaymentMethods({selector: `#payment-method-${row.id}`, variantKey: "DEFAULT"});
+                widgets.renderAgreement({selector: `#agreement-${row.id}`, variantKey: "AGREEMENT"});
+
+                // 결제 버튼 이벤트
+                const settlementId = row.id.replace("row_", "");
+
+                console.log("Settlement ID:", settlementId);
+
+                document.getElementById(`modalPayButton-${row.id}`).addEventListener("click", async function () {
+                    await widgets.requestPayment({
+                        orderId: "SETTLE_"+settlementId,
+                        orderName: "월말 정산",
+                        successUrl: window.location.origin + "/payment/success?settlementId=" + settlementId,
+                        failUrl: window.location.origin + "/",
+                        customerEmail: "admin@gmail.com",
+                        customerName: "admin",
+                        customerMobilePhone: "01012341234"
+                    });
+                });
+            });
+        });
+
+        document.querySelectorAll(".btn-check").forEach(btn => {
+            btn.addEventListener("click", async function() {
+                const settlementId = btn.dataset.settlement_id;
+
+                try {
+                    const response = await fetch(`/payment/success?settlementId=${settlementId}`, {
+                        method: "GET"  // GET 요청으로 컨트롤러 매핑에 맞춤
+                    });
+
+                    if (!response.ok) throw new Error("서버 오류 발생");
+
+                    // 성공 시 페이지 새로고침 또는 이동
+                    window.location.href = "/payment";
+
+                } catch (e) {
+                    console.error(e);
+                    alert("결제 확인 처리 실패");
+                }
+            });
+        });
+    });
+</script>
+</body>
+</html>

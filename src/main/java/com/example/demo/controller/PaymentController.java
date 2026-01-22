@@ -1,14 +1,13 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.PaymentDto;
+import com.example.demo.dto.SettlementDto;
 import com.example.demo.service.PaymentService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,13 +40,12 @@ public class PaymentController {
         return "결제 실패! " + params.toString();
     }
 
-    @PostMapping("/generate-link")
-    @ResponseBody
-    public Map<String, String> generateLink(@RequestParam int amount) {
-        String paymentId = paymentService.createPaymentLink(amount, "월말 정산");
-
-        Map<String, String> result = new HashMap<>();
-        result.put("url", "https://toss.im/pay/" + paymentId);
-        return result;
+    @GetMapping("/payment/guest/{settlementId}")
+    public String generateLink(Model model,
+                               @PathVariable("settlementId") int settlementId) {
+        PaymentDto paymentDto =paymentService.list_one(settlementId);
+        System.out.println("==============>"+paymentDto);
+        model.addAttribute("item", paymentDto);
+        return "content/payment_guest"; // 위 HTML 페이지 이름
     }
 }

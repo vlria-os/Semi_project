@@ -313,13 +313,13 @@
       form.appendChild(hidden('reason', reason));
 
       // 🔥 핵심: List 바인딩 가능하게
-      form.appendChild(hidden('product_id',
+      form.appendChild(hidden('lot_inDtos[0].product_id',
               detailTr.children[0].dataset.productId));
 
       if(boundType === 'IN'){
         form.action = '/field_staff/inbound_conf_rej';
         form.appendChild(hidden(
-                'inbound_detail_id',
+                'lot_inDtos[0].inbound_detail_id',
                 boundDetailId
         ));
       }else{
@@ -331,9 +331,6 @@
       }
 
       form.appendChild(hidden('bound_type', boundType));
-
-      console.log('boundDetailId=', boundDetailId);
-      console.log('boundType=', boundType);
 
       document.body.appendChild(form);
       form.submit();
