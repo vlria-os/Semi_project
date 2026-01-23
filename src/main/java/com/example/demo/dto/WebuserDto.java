@@ -9,11 +9,11 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Data
 public class WebuserDto {
-    private int webuser_id;
+    private Integer webuser_id;
     private String id;
     private String password;
     private String webuser_name;
-    private int role_id;
+    private Integer role_id;
     private String is_active;
     private LocalDate created_at;
 }
