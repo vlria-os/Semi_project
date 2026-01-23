@@ -32,8 +32,8 @@ label {
 }
 
 input[type="text"],
-input[type="file"],
 input[type="number"],
+input[type="file"],
 select {
     width: 100%;
     padding: 12px 16px;

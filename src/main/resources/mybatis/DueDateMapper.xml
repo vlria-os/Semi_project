@@ -65,6 +65,7 @@
         select * from (
             select
                 p.product_name,
+                s.quantity as quantity,
                 trunc(li.expiration_date) - trunc(sysdate) as days_left
             from stock s
             join lot_in li on s.lot_in_id = li.lot_in_id

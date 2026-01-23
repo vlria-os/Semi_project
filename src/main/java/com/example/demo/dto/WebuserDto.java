@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -15,5 +17,5 @@ public class WebuserDto {
     private String webuser_name;
     private int role_id;
     private String is_active;
-    private LocalDate created_at;
+    private LocalDateTime created_at;
 }

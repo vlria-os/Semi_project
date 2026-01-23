@@ -43,8 +43,10 @@
             </div>
 
             <div class="form-group">
-                <label>이미지 첨부</label>
-                <input type="file" th:field="*{file}">
+                <div class="file-upload-wrapper">
+                    <label for="file" class="custom-file-upload">📁이미지 첨부</label>
+                    <input type="file" id="file" th:field="*{file}">
+                </div>
             </div>
 
             <button type="submit">상품 등록하기</button>

@@ -20,5 +20,4 @@ public class DueDateDto {
     private Date expiration_date;
     private int quantity;
     private int days_left;
-    private Date shipped_date;
 }

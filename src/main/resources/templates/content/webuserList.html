@@ -90,7 +90,7 @@
                             <span th:case="2">사무 직원</span>
                             <span th:case="3">현장 직원</span>
                         </td>
-                        <td th:text="${webuser.created_at}"></td>
+                        <td th:text="${#temporals.format(webuser.created_at, 'yy-MM-dd HH:MM')}"></td>
                         <td th:text="${webuser.is_active == 'Y' ? '활성':'비활성'}"></td>
                         <td><button type="button" onclick="updateForm(this)" class="btn-edit">수정</button></td>
                         <td><button type="button" class="btn-edit"
