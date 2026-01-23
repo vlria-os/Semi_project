@@ -63,39 +63,44 @@
 
     </select>
     <select id="count" resultType="int">
-        select count(*) from
-        (
+        select count(*)
+        from (
         select
-        p.product_id as product_id, p.product_name as product_name,
-        p.price as price,NVL(s.quantity,0) as quantity,
-        p.unit as unit, i.file_path as image_path,i.save_name as save_name,
-        c.category_path as category_path,
-        p.status as status
+        p.product_id
         from product p
         left join stock s
         on p.product_id = s.product_id
         left join product_image i
-        on p.image_id=i.image_id
-        left join
-        (
+        on p.image_id = i.image_id
+        left join (
         select category_id,
         ltrim(sys_connect_by_path(category_name,'>'),'>') as category_path
         from category
         start with parent_id is null
-        connect by prior category_id = parent_id) c
+        connect by prior category_id = parent_id
+        ) c
         on p.category_id = c.category_id
+
         <where>
             <if test="keyword != null and keyword != ''">
-                and (p.product_name like '%'||#{keyword}||'%'
-                or c.category_path like '%'||#{keyword}||'%')
+                (p.product_name LIKE '%'||#{keyword}||'%'
+                OR c.category_path LIKE '%'||#{keyword}||'%')
             </if>
+
             <if test="status != null and status != ''">
-                and (
-                p.status = #{status}
-                )
+                AND p.status = #{status}
             </if>
         </where>
-        order by p.product_id
+
+        group by
+        p.product_id,
+        p.product_name,
+        p.price,
+        p.unit,
+        i.file_path,
+        i.save_name,
+        c.category_path,
+        p.status
         )
     </select>
    <!-- 재고 수량 수정-->
