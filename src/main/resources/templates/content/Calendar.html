@@ -60,11 +60,50 @@
                 <span class="k"></span>
                 <span class="v" id="lateCheckoutMsg" style="white-space:nowrap;"></span>
             </div>
+
+            <div class="pop-row hidden" id="absentEditRow" style="display:block;">
+
+                <!-- 제목: pop-row/k 구조 완전 탈출 -->
+                <div style="font-weight:600; margin-bottom:6px; color:#444;">
+                    결근 수정
+                </div>
+
+                <!-- 내용 -->
+                <div style="display:flex; flex-direction:column; gap:8px;">
+
+                    <select id="absentStatus" style="width:100%;">
+                        <option value="WORK">정상 근무</option>
+                        <option value="ANNUAL">연차</option>
+                        <option value="SICK">병가</option>
+                        <option value="HALF_AM">오전 반차</option>
+                        <option value="HALF_PM">오후 반차</option>
+                        <option value="ETC">기타</option>
+                    </select>
+
+                    <div style="display:flex; gap:8px;">
+                        <input type="time" id="absentIn" value="09:00" style="flex:1;">
+                        <input type="time" id="absentOut" value="18:00" style="flex:1;">
+                    </div>
+
+                    <button type="button" id="absentSaveBtn">결근 수정</button>
+                </div>
+            </div>
+
+
+            <div class="pop-row hidden" id="absentMsgRow">
+                <span class="k"></span>
+                <span class="v" id="absentMsg" style="white-space:nowrap;"></span>
+            </div>
+
         </div>
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.20/index.global.min.js"></script>
-<script>
+<script th:inline="javascript">
+    const role_id = /*[[${session.role_id}]]*/ 0;
+    const IS_ADMIN=(role_id === 1);
+    console.log('IS_ADMIN=', IS_ADMIN);
+
     const statusTextMap = {
         WORK: '정상 근무',
         CHECK_IN_ONLY: '출근 (퇴근 미등록)',
@@ -72,7 +111,8 @@
         HALF_PM: '오후 반차',
         ANNUAL: '연차',
         SICK: '병가',
-        CHECK_OUT_LATE: "익일 퇴근 처리",
+        CHECK_OUT_LATE: '익일 퇴근 처리',
+        ABSENT: '결근',
         ETC: '기타'
     };
 
@@ -214,8 +254,29 @@
                     lateRow.classList.add('hidden');
                 }
 
+                const absentRow = document.getElementById('absentEditRow');
+                const absentMsgRow = document.getElementById('absentMsgRow');
+                const absentMsg = document.getElementById('absentMsg');
+
+                absentMsg.textContent = '';
+                absentMsgRow.classList.add('hidden');
+
+                const isAbsent = (p.attendStatus === 'ABSENT');
+
+                if (IS_ADMIN && isAbsent) {
+                    absentRow.classList.remove('hidden');
+
+                    // 기본값
+                    document.getElementById('absentStatus').value = 'WORK';
+                    document.getElementById('absentIn').value = '09:00';
+                    document.getElementById('absentOut').value = '18:00';
+                } else {
+                    absentRow.classList.add('hidden');
+                }
+
                 // ✅ 클릭한 “이벤트 DOM” 옆에 띄우기
                 openPopoverAt(info.el);
+                toggleAbsentTimeInputs();
             }
         });
 
@@ -266,8 +327,59 @@
                 msg.textContent = '요청 실패: ' + (err.message || '네트워크 오류');
             }
         });
+
+        document.getElementById("absentSaveBtn").addEventListener("click", async () => {
+            if (!currentEvent) return;
+
+            const workingLogId=currentEvent.id;
+
+            const attendStatus = document.getElementById("absentStatus").value;
+            const checkInTime = document.getElementById("absentIn").value;   // "09:00"
+            const checkOutTime = document.getElementById("absentOut").value; // "18:00"
+
+            const msgRow = document.getElementById('absentMsgRow');
+            const msg = document.getElementById('absentMsg');
+            msgRow.classList.remove('hidden');
+            msg.textContent = '처리 중...';
+
+            try{
+                const resp=await fetch(`/api/work/${workingLogId}/absent-update`,{
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({attendStatus, checkInTime, checkOutTime})
+                });
+
+                const result=await resp.json().catch(() => ({}));
+
+                if (!resp.ok){
+                    msg.textContent= result?.message||'실패';
+                    return;
+                }
+
+                msg.textContent = result?.message || '결근 수정 성공!';
+                closePopover();
+                calendar.refetchEvents(); // 서버 기준으로 이벤트 다시 받는 게 제일 안전
+
+            }catch (err){
+                console.error(err);
+                msg.textContent = '요청 실패: ' + (err.message || '네트워크 오류');
+            }
+        });
+
+        document.getElementById('absentStatus').addEventListener('change', toggleAbsentTimeInputs);
+
         calendar.render();
     });
+
+    function toggleAbsentTimeInputs() {
+        const s = document.getElementById('absentStatus').value;
+        const enabled = (s === 'WORK');
+        document.getElementById('absentIn').disabled = !enabled;
+        document.getElementById('absentOut').disabled = !enabled;
+    }
+
+    document.getElementById('absentStatus').addEventListener('change', toggleAbsentTimeInputs);
+
 </script>
 </body>
 </html>

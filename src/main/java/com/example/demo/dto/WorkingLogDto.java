@@ -13,8 +13,6 @@ public class WorkingLogDto {
     private Integer workingLogId;
     private LocalDate workingDate;
     private Integer webuserId;
-    private String name;
-    private Integer roleId;
     private LocalDateTime checkInTime;
     private LocalDateTime checkOutTime;
     private String attendStatus;

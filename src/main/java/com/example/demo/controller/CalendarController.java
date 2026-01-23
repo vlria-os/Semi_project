@@ -1,9 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.CalendarDto;
-import com.example.demo.dto.CheckoutLateDto;
-import com.example.demo.dto.WebuserDto;
-import com.example.demo.dto.WorkingLogDto;
+import com.example.demo.dto.*;
 import com.example.demo.service.WebuserService;
 import com.example.demo.service.WorkingLogService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -46,7 +44,14 @@ public class CalendarController {
         model.addAttribute("viewUserName",viewUserName);
         model.addAttribute("viewUserId",viewUserId);
 
-        model.addAttribute("navFragment", "fragment/nav/adminNav");
+        if (roleId == 1){
+            model.addAttribute("navFragment", "fragment/nav/adminNav");
+        } else if (roleId == 2){
+            model.addAttribute("navFragment", "fragment/nav/officeNav");
+        } else if (roleId == 3){
+            model.addAttribute("navFragment", "fragment/nav/fieldNav");
+        }
+
         model.addAttribute("content", "content/Calendar");
         return "layout";
     }
@@ -58,16 +63,21 @@ public class CalendarController {
                                              @RequestParam(required = false) Integer targetUserId,
                                              HttpSession session){
         Integer webuserId = (Integer) session.getAttribute("webuser_id");
-        Integer roleId = (Integer) session.getAttribute("role_id");
-
         if(session.getAttribute("webuser_id") == null){
             return Collections.emptyList();
         }
 
+        Integer roleId = (Integer) session.getAttribute("role_id");
+
+        LocalDate start=LocalDate.parse(startDate);
+        LocalDate end=LocalDate.parse(endDate);
+
         if (roleId != null && roleId == 1 && targetUserId != null){
+            workingLogService.ensureAbsences(targetUserId,start,end);
             List<CalendarDto> list=workingLogService.getMyWorkingLog(targetUserId, startDate, endDate, roleId);
             return list;
         }else {
+            workingLogService.ensureAbsences(webuserId,start,end);
             List<CalendarDto> list=workingLogService.getMyWorkingLog(webuserId, startDate, endDate, roleId);
             return list;
         }
@@ -115,5 +125,43 @@ public class CalendarController {
                     )
             );
         }
+    }
+
+    @PatchMapping("/api/work/{workingLogId}/absent-update")
+    @ResponseBody
+    public ResponseEntity<Map<String,Object>> updateAbsent(@PathVariable int workingLogId,
+                                                           @RequestBody AbsentUpdateDto dto,
+                                                           HttpSession session){
+        Integer webuserId=(Integer) session.getAttribute("webuser_id");
+        if (webuserId == null){
+            return ResponseEntity.status(403).body(Map.of("ok", false, "message", "로그인 후 다시 시도하시오!"));
+        }
+
+        Integer roleId=(Integer) session.getAttribute("role_id");
+        if (roleId == null || roleId != 1){
+            return ResponseEntity.status(403).body(Map.of("ok", false, "message", "관리자 계정이 아닙니다!"));
+        }
+
+        String memo=(String) session.getAttribute("webuserName");
+
+        boolean update=workingLogService.updateAbsent(workingLogId, dto.getAttendStatus(), dto.getCheckInTime(),
+                                                        dto.getCheckOutTime(), memo);
+
+        if (update){
+            return ResponseEntity.ok(
+                    Map.of(
+                            "ok", true,
+                            "message", "결근 보정 성공!"
+                    )
+            );
+        }else {
+            return ResponseEntity.badRequest().body(
+                    Map.of(
+                            "ok", false,
+                            "message", "결근 보정 실패!"
+                    )
+            );
+        }
+
     }
 }

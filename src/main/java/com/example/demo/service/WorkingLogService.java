@@ -8,13 +8,12 @@ import com.example.demo.mapper.WorkingLogMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -114,6 +113,11 @@ public class WorkingLogService {
                         color = "#000000";
                         break;
 
+                    case "ABSENT":
+                        title = "결근";
+                        color = "#FF69B4"; // 예: 빨강 (원하는 색으로)
+                        break;
+
                     case "ETC":
                     default:
                         title = "기타";
@@ -175,8 +179,94 @@ public class WorkingLogService {
         return n > 0;
     }
 
+    //결근 수정
+    public boolean updateAbsent(int workingLogId, String attendStatus,
+                                String checkInTime, String checkOutTime, String memo){
+        int ownerId=workingLogMapper.selectWorkingLogOwner(workingLogId);
+        if (ownerId <= 0) return false;
+
+        LocalDate workingDate=workingLogMapper.selectWorkingDateById(workingLogId, ownerId);
+        if (workingDate == null) return false;
+
+        if (!workingDate.isBefore(LocalDate.now())) return false; // 오늘/미래 수정 금지
+
+        boolean isWork="WORK".equals(attendStatus);
+
+        LocalDateTime CheckInTime;
+        LocalDateTime CheckOutTime;
+
+        if (!isWork){
+            CheckInTime=null;
+            CheckOutTime=null;
+        } else {
+            LocalTime in;
+            if (checkInTime == null || checkInTime.isBlank()){
+                in=LocalTime.of(9,0);
+            }else {
+                in=LocalTime.parse(checkInTime);
+            }
+
+            LocalTime out;
+            if (checkOutTime == null || checkOutTime.isBlank()){
+                out=LocalTime.of(18,0);
+            }else {
+                out=LocalTime.parse(checkOutTime);
+            }
+
+            if (!out.isAfter(in)) return false;
+
+            LocalTime start=LocalTime.of(9,0);
+            LocalTime end=LocalTime.of(23,59);
+            if (in.isBefore(start) || in.isAfter(end) || out.isBefore(start) || out.isAfter(end)){
+                return false;
+            }
+
+            CheckInTime=workingDate.atTime(in);
+            CheckOutTime=workingDate.atTime(out);
+        }
+
+        int n=workingLogMapper.absentUpdate(attendStatus, CheckInTime, CheckOutTime, workingLogId, ownerId, memo);
+
+        return n > 0;
+    }
+
     //근무 기록 주인 찾어
     public int selectWorkingLogOwner(int workingLogId){
         return workingLogMapper.selectWorkingLogOwner(workingLogId);
     }
+
+    //출퇴근 기록 없는 과거의 날짜들 결근 처리
+    public void ensureAbsences(int webuserId, LocalDate startDate, LocalDate endDate){
+        //근무 있는 날들 받아오기
+        Set<LocalDate> exists=workingLogMapper.selectWorkingDates(webuserId, startDate.toString(), endDate.toString())
+                        .stream().map(LocalDate::parse).collect(Collectors.toSet());
+
+        LocalDate today=LocalDate.now();
+
+        LocalDate joined=workingLogMapper.selectUserCreatedDate(webuserId);
+        if (joined == null) return;
+
+        LocalDate from=startDate;
+        if (joined.isAfter(from)) from = joined;
+        for (LocalDate day=from; day.isBefore(endDate); day=day.plusDays(1)){
+            //어제까지만 (오늘/미래는 결근 처리하면 안됨)
+            if (!day.isBefore(today)) continue;
+
+            //주말 제외
+            if (isWeekend(day)) continue;
+
+            //이미 기록 있는 날이면 스킵
+            if (exists.contains(day)) continue;
+
+            //결근 처리
+            workingLogMapper.insertAbsent(webuserId, day.toString());
+        }
+    }
+
+    //주말인지 체크
+    private boolean isWeekend(LocalDate d){
+        return d.getDayOfWeek() == DayOfWeek.SATURDAY
+                || d.getDayOfWeek() == DayOfWeek.SUNDAY;
+    }
+
 }
