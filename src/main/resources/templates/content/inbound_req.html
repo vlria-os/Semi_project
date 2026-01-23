@@ -133,7 +133,10 @@
     }
 
         renderPaging(result.pageInfo);
-    }
+        console.log('list size', result.productDtos.length);
+        console.log('pageInfo', result.pageInfo);
+
+        }
 
         // 체크박스, 창고, 수량 이벤트
         document.addEventListener('change', async e => {
@@ -211,14 +214,21 @@
     });
             sessionStorage.removeItem('selectedMap');
     });
-    document.querySelectorAll('#pagingArea a').forEach(a => {
-        a.addEventListener('click', e => {
-            e.preventDefault(); // 기본 이동 막기
-            const url = new URL(a.href);
-            const pageNum = url.searchParams.get('pageNum') || 1;
-            search(pageNum);
+    // document.querySelectorAll('#pagingArea a').forEach(a => {
+    //     a.addEventListener('click', e => {
+    //         e.preventDefault(); // 기본 이동 막기
+    //         const url = new URL(a.href);
+    //         const pageNum = url.searchParams.get('pageNum') || 1;
+    //         search(pageNum);
+    //     });
+    document.getElementById('pagingArea').addEventListener('click', (e) => {
+        const a = e.target.closest('a');
+        if(!a) return;
+        e.preventDefault();
+        const url = new URL(a.href);
+        const pageNum = url.searchParams.get('pageNum') || 1;
+        search(pageNum);
         });
-    });
 
 </script>
 </section>
