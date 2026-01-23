@@ -2,6 +2,11 @@
   <link rel="stylesheet" th:href="@{/css/content/payment.css}">
   <div class="main">
     <h2>월말 정산</h2>
+    <div class="month-selector" style="display:flex; align-items:center; gap:10px; margin-bottom:20px; justify-content:center;">
+      <button id="prevMonth">&lt; 이전</button>
+      <span id="currentMonth" style="font-weight:600;">2026-01</span>
+      <button id="nextMonth">다음 &gt;</button>
+    </div>
     <table id="Table">
       <thead>
       <tr>
@@ -46,50 +51,115 @@
 
 <script src="https://js.tosspayments.com/v2/standard"></script>
 <script>
-  document.addEventListener("DOMContentLoaded", async function() {
+  let currentMonth = new Date(); // 오늘 기준
+  const paymentBody = document.getElementById("paymentBody");
+  const currentMonthSpan = document.getElementById("currentMonth");
+
+  function formatMonth(date) {
+    return date.toISOString().slice(0,7); // YYYY-MM
+  }
+
+  function updateMonthDisplay() {
+    currentMonthSpan.textContent = formatMonth(currentMonth);
+  }
+
+  // 월 변경 버튼 이벤트
+  document.getElementById("prevMonth").addEventListener("click", () => {
+    currentMonth.setMonth(currentMonth.getMonth() - 1);
+    updateMonthDisplay();
+    loadPayments();
+  });
+
+  document.getElementById("nextMonth").addEventListener("click", () => {
+    currentMonth.setMonth(currentMonth.getMonth() + 1);
+    updateMonthDisplay();
+    loadPayments();
+  });
+
+  // 월별 데이터 불러오기
+  async function loadPayments() {
+    const monthStr = formatMonth(currentMonth); // "2026-01"
+
+    try {
+      const response = await fetch(`/payment/list?month=${monthStr}`);
+      if (!response.ok) throw new Error("데이터 불러오기 실패");
+
+      const list = await response.json(); // 서버에서 JSON 형식으로 반환
+      paymentBody.innerHTML = ""; // 기존 테이블 초기화
+
+      list.forEach(l => {
+        const tr = document.createElement("tr");
+        tr.id = `row_${l.settlement_id}`;
+        tr.dataset.totalPay = l.total_pay;
+        tr.innerHTML = `
+        <td>${l.settlement_id}</td>
+        <td>${l.period}</td>
+        <td>${l.inout}</td>
+        <td>${l.company_name}</td>
+        <td>${l.total_pay}</td>
+        <td>
+          ${l.payment_status === 'N'
+                ? (l.inout === 'out'
+                        ? `<button class="payButton">결제하기</button>`
+                        : `<button class="btn-link" data-settlement_id="${l.settlement_id}">링크 복사</button>
+                   <button class="btn-check" data-settlement_id="${l.settlement_id}">입금 확인</button>`)
+                : `<span class="status-done">결제완료</span>`}
+        </td>
+      `;
+        paymentBody.appendChild(tr);
+      });
+
+      // 새로 생성된 버튼 이벤트 다시 바인딩
+      bindPaymentButtons();
+    } catch (e) {
+      console.error(e);
+      alert("결제 내역 불러오기 실패");
+    }
+  }
+
+  // 기존 결제 버튼 이벤트 바인딩 함수를 따로 뺌
+  function bindPaymentButtons() {
     const clientKey = "test_gck_docs_Ovk5rk1EwkEbP0W43n07xlzm";
     const tossPayments = new TossPayments(clientKey);
     const customerKey = "6JKXrNpeN511woC64RWuD";
 
+    // payButton 이벤트
     document.querySelectorAll(".payButton").forEach(btn => {
+      // 이미 이벤트가 붙어있으면 건너뛰기
+      if (btn.dataset.bound) return;
+      btn.dataset.bound = true;
+
       btn.addEventListener("click", async function () {
         const row = btn.closest("tr");
         const totalPay = Math.abs(parseInt(row.dataset.totalPay));
 
-        // 이미 결제 UI가 있으면 제거
         const existing = row.nextElementSibling;
         if (existing && existing.classList.contains("paymentRow")) {
           existing.remove();
-          return; // 토글 형태
+          return;
         }
 
-        // 결제 UI용 tr 생성
         const paymentTr = document.createElement("tr");
         paymentTr.classList.add("paymentRow");
         paymentTr.innerHTML = `
-                <td colspan="6">
-                    <div id="payment-method-${row.id}"></div>
-                    <div id="agreement-${row.id}"></div>
-                    <button id="modalPayButton-${row.id}">결제 진행</button>
-                </td>
-            `;
+        <td colspan="6">
+          <div id="payment-method-${row.id}"></div>
+          <div id="agreement-${row.id}"></div>
+          <button id="modalPayButton-${row.id}">결제 진행</button>
+        </td>
+      `;
         row.after(paymentTr);
 
-        // 위젯 생성
         const widgets = tossPayments.widgets({customerKey});
-        await widgets.setAmount({currency: "KRW", value: totalPay}); // row별 금액 조정 가능
+        await widgets.setAmount({currency: "KRW", value: totalPay});
 
         widgets.renderPaymentMethods({selector: `#payment-method-${row.id}`, variantKey: "DEFAULT"});
         widgets.renderAgreement({selector: `#agreement-${row.id}`, variantKey: "AGREEMENT"});
 
-        // 결제 버튼 이벤트
         const settlementId = row.id.replace("row_", "");
-
-        console.log("Settlement ID:", settlementId);
-
         document.getElementById(`modalPayButton-${row.id}`).addEventListener("click", async function () {
           await widgets.requestPayment({
-            orderId: "SETTLE_"+settlementId,
+            orderId: "SETTLE_" + settlementId,
             orderName: "월말 정산",
             successUrl: window.location.origin + "/payment/success?settlementId=" + settlementId,
             failUrl: window.location.origin + "/",
@@ -101,7 +171,6 @@
       });
     });
 
-    // // 링크 복사 기능
     document.querySelectorAll(".btn-link").forEach(btn => {
       btn.addEventListener("click", async function () {
         const settlementId = btn.dataset.settlement_id;
@@ -118,9 +187,8 @@
         }
       });
     });
-
     document.querySelectorAll(".btn-check").forEach(btn => {
-      btn.addEventListener("click", async function() {
+      btn.addEventListener("click", async function () {
         const settlementId = btn.dataset.settlement_id;
 
         try {
@@ -139,7 +207,11 @@
         }
       });
     });
-  });
+  }
+
+  // 초기 로드
+  updateMonthDisplay();
+  loadPayments();
 
 
 

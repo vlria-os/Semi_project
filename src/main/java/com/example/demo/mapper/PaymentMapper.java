@@ -14,7 +14,7 @@ public interface PaymentMapper {
     int insert_settlement(SettlementDto settlementDto);
     int Minus_pay(SettlementDto settlementDto);
     int Plus_pay(SettlementDto settlementDto);
-    List<PaymentDto> select_list();
+    List<PaymentDto> select_list(String month);
     PaymentDto select_list_one(int settlement_id);
     int update(SettlementDto settlementDto);
 }

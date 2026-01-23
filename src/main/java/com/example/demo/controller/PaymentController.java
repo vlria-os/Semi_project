@@ -9,7 +9,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -19,10 +22,21 @@ public class PaymentController {
 
     @GetMapping("/payment")
     public String paymentPage(Model model) {
-        model.addAttribute("list", paymentService.list());
+        String month= LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
+
+        model.addAttribute("list", paymentService.list(month));
         model.addAttribute("navFragment", "fragment/nav/adminNav");
         model.addAttribute("content", "content/payment");
         return "layout"; // 위 HTML 페이지 이름
+    }
+
+    @GetMapping("/payment/list")
+    @ResponseBody
+    public List<PaymentDto> paymentPage_month(@RequestParam(required = false) String month) {
+        if(month==null){
+            month= LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
+        }
+        return paymentService.list(month);
     }
 
     @GetMapping("/payment/success")

@@ -21,8 +21,8 @@ import java.util.Map;
 public class PaymentService {
     private final PaymentMapper paymentMapper;
 
-    public List<PaymentDto> list(){
-        return paymentMapper.select_list();
+    public List<PaymentDto> list(String month){
+        return paymentMapper.select_list(month);
     }
 
     public PaymentDto list_one(int settlement_id){
