@@ -13,6 +13,7 @@
                 </div>
                 <div class="nav-toggle">
                     <form th:action="@{/stockList}" method="get">
+                        <input type="hidden" name="keyword" th:value="${keyword}">
                         <button type="submit" class="view-btn" th:classappend="${status == null || status == ''} ? 'active' : ''">전체</button>
                         <button type="submit" name="status" value="COLD" class="view-btn" th:classappend="${status == 'COLD'} ? 'active' : ''">냉장</button>
                         <button type="submit" name="status" value="ROOM" class="view-btn" th:classappend="${status == 'ROOM'} ? 'active' : ''">실온</button>

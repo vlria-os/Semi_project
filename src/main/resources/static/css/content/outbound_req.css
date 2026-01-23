@@ -1,0 +1,163 @@
+.main {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 25px;
+}
+
+.search-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.search-bar {
+    display: flex;
+    gap: 8px;
+}
+
+.search-bar input[type="text"] {
+    padding: 10px 15px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    width: 250px;
+    height: 40px;
+    box-sizing: border-box;
+}
+
+.filter-group button {
+    padding: 8px 18px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filter-group button {
+    padding: 8px 16px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.filter-group button.active {
+    background-color: #3b82f6;
+    color: white;
+    border-color: #2563eb;
+    font-weight: 700;
+    box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3);
+}
+
+.filter-group button:hover {
+    background-color: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    margin-top: 10px;
+}
+
+table th {
+    background-color: #f1f5f9;
+    color: #64748b;
+    padding: 15px;
+    font-size: 13px;
+    font-weight: 600;
+    border-bottom: 2px solid #e2e8f0;
+    text-align: center;
+}
+
+table td {
+    padding: 12px;
+    border-bottom: 1px solid #f1f5f9;
+    text-align: center;
+    font-size: 14px;
+    color: #334155;
+}
+
+.reqQty {
+    width: 70px;
+    padding: 6px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.reqQty:disabled {
+    background-color: #f8fafc;
+    color: #cbd5e1;
+}
+
+.btn-area {
+    display: flex;
+    gap: 10px;
+}
+
+button, input[type="submit"] {
+    height: 40px;
+    padding: 0 20px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+}
+
+
+input[type="submit"], button[onclick*="submitOutbound"] {
+    background-color: #3b82f6;
+    color: white;
+}
+
+button[onclick*="submitOutbound"] {
+    background-color: #10b981;
+}
+
+#resetOutboundSelection {
+    background-color: #f1f5f9;
+    color: #64748b;
+    border: 1px solid #e2e8f0;
+}
+
+.pagination_wrap ul{
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    gap: 8px;
+    margin-top: 30px;
+    padding: 0;
+}
+
+.pagination_wrap ul li a {
+    padding: 8px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    text-decoration: none;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.pagination_wrap ul li a:hover {
+    background-color: #3b82f6;
+    color: white;
+}

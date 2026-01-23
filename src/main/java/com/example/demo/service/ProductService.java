@@ -32,7 +32,7 @@ public class ProductService {
         map.put("searchDto", searchDto);
 
         int totalRowCount=productMapper.count(map);
-        PageInfo pageInfo=new PageInfo(pageNum,3,5,totalRowCount);
+        PageInfo pageInfo=new PageInfo(pageNum,5,5,totalRowCount);
 
         map.put("startRow",pageInfo.getStartRow());
         map.put("endRow",pageInfo.getEndRow());

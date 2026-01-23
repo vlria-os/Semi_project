@@ -86,13 +86,11 @@
         on p.category_id = c.category_id
         <where>
             <if test="keyword != null and keyword != ''">
-                (p.product_name like '%'||#{keyword}||'%'
+                and (p.product_name like '%'||#{keyword}||'%'
                 or c.category_path like '%'||#{keyword}||'%')
             </if>
-        </where>
-        <where>
             <if test="status != null and status != ''">
-                (
+                and (
                 p.status = #{status}
                 )
             </if>
@@ -113,7 +111,7 @@
         on p.product_id=s.product_id
         join lot_in l
         on l.lot_in_id = s.lot_in_id
-        where p.product_id = #{productId}
+        <![CDATA[where p.product_id = #{productId} and expiration_date >= sysdate]]>
         order by expiration_date asc
     </select>
     <update id="updateQuantity">

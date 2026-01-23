@@ -58,6 +58,8 @@ public class StockListController {
         model.addAttribute("p",map.get("list"));
         model.addAttribute("pageInfo",map.get("pageInfo"));
         model.addAttribute("content", "content/outbound_req");
+        model.addAttribute("status", status);
+        model.addAttribute("keyword", keyword);
 
         if ((int) session.getAttribute("role_id") == 1) {
             model.addAttribute("navFragment", "fragment/nav/adminNav");

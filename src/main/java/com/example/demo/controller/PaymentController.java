@@ -16,7 +16,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class PaymentController {
     private final PaymentService paymentService;
-    private final String secretKey = "test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6";
 
     @GetMapping("/payment")
     public String paymentPage(Model model) {
@@ -37,14 +36,13 @@ public class PaymentController {
     @GetMapping("/payment/fail")
     @ResponseBody
     public String paymentFail(@RequestParam Map<String, String> params) {
-        return "결제 실패! " + params.toString();
+        return "redirect:/payment";
     }
 
     @GetMapping("/payment/guest/{settlementId}")
     public String generateLink(Model model,
                                @PathVariable("settlementId") int settlementId) {
         PaymentDto paymentDto =paymentService.list_one(settlementId);
-        System.out.println("==============>"+paymentDto);
         model.addAttribute("item", paymentDto);
         return "content/payment_guest"; // 위 HTML 페이지 이름
     }
