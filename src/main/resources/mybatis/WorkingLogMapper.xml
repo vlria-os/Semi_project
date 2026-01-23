@@ -146,8 +146,8 @@
     <update id="absentUpdate">
         update working_log
         set attend_status = #{attendStatus},
-        check_in_time  = #{checkInTime},
-        check_out_time = #{checkOutTime},
+        check_in_time  = #{checkInTime, jdbcType=TIMESTAMP},
+        check_out_time = #{checkOutTime, jdbcType=TIMESTAMP},
         memo = case
         when #{memo} is null or trim(#{memo}) = '' then '출퇴근 미처리로 관리자 수정'
         else '출퇴근 미처리로 관리자(' || #{memo} || ') 수정'

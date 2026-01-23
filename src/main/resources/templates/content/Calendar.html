@@ -349,10 +349,15 @@
                     body: JSON.stringify({attendStatus, checkInTime, checkOutTime})
                 });
 
-                const result=await resp.json().catch(() => ({}));
+                // const result=await resp.json().catch(() => ({}));
+                const raw = await resp.text();
+                console.log('status=', resp.status, 'raw=', raw);
+
+                let result = {};
+                try { result = JSON.parse(raw); } catch(e) {}
 
                 if (!resp.ok){
-                    msg.textContent= result?.message||'실패';
+                    msg.textContent = result?.message || raw || '실패';
                     return;
                 }
 
