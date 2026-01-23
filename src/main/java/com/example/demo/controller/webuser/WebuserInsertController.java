@@ -24,6 +24,12 @@ public class WebuserInsertController {
     @GetMapping("/webuser/idcheck")
     @ResponseBody
     public String webuserIdcheck(@RequestParam String id){
+
+        if (id == null || "".equals(id) || id.isBlank()){
+            String result="아이디를 입력하세요.";
+            return result;
+        }
+
         WebuserDto dto=service.idCheck(id);
         if(dto != null){
             String result="이미 사용 중인 아이디입니다.";
@@ -37,19 +43,44 @@ public class WebuserInsertController {
     @PostMapping("/webuser/insert")
     public String webuserInsertOk(WebuserDto dto,
                                   RedirectAttributes r){
-        boolean result=service.insertWebuser(dto);
-        if(result){
-            r.addFlashAttribute("status",
-                    "success");
-            r.addFlashAttribute("msg",
-                    "계정 추가 성공!");
-        }else {
-            r.addFlashAttribute("status",
-                    "failure");
-            r.addFlashAttribute("msg",
-                    "계정 추가 실패!");
+        if (dto.getId() == null || dto.getId().isBlank()){
+            r.addFlashAttribute("status","failure");
+            r.addFlashAttribute("msg","아이디를 입력하세요!");
+            return "redirect:/webuser/list";
+        } else {
+            if (dto.getPassword() == null || dto.getPassword().isBlank()){
+                r.addFlashAttribute("status","failure");
+                r.addFlashAttribute("msg","비밀번호를 입력하세요!");
+                return "redirect:/webuser/list";
+            }else {
+                if (dto.getWebuser_name() == null || dto.getWebuser_name().isBlank()){
+                    r.addFlashAttribute("status","failure");
+                    r.addFlashAttribute("msg","이름를 입력하세요!");
+                    return "redirect:/webuser/list";
+                }else {
+                    if (dto.getRole_id() == null){
+                        r.addFlashAttribute("status","failure");
+                        r.addFlashAttribute("msg","역할을 선택하세요!");
+                        return "redirect:/webuser/list";
+                    } else {
+                        boolean result=service.insertWebuser(dto);
+
+                        if(result){
+                            r.addFlashAttribute("status",
+                                    "success");
+                            r.addFlashAttribute("msg",
+                                    "계정 추가 성공!");
+                        }else {
+                            r.addFlashAttribute("status",
+                                    "failure");
+                            r.addFlashAttribute("msg",
+                                    "계정 추가 실패!");
+                        }
+                        return "redirect:/webuser/list";
+                    }
+                }
+            }
         }
-        return "redirect:/webuser/list";
     }
 
     @PostMapping("/webuser/insert/excel")

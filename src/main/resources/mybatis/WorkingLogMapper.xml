@@ -7,9 +7,9 @@
     <!-- 출근 체크 -->
     <insert id="checkIn" parameterType="map">
         insert into working_log
-        ( working_log_id, working_date, webuser_id, name, role_id, check_in_time,
+        ( working_log_id, working_date, webuser_id, check_in_time,
         check_out_time, attend_status,memo)
-        values(working_log_seq.nextval,trunc(sysdate),#{webuserId},#{name},#{roleId},
+        values(working_log_seq.nextval,trunc(sysdate),#{webuserId},
         sysdate,null,null,null)
     </insert>
 
@@ -76,6 +76,7 @@
             end as canCheckoutLate
         from working_log
         where webuser_id=#{webuserId}
+            and trunc(working_date) >= (select trunc(created_at) from webuser where webuser_id = #{webuserId})
             and trunc(working_date) >= to_date(#{startDate}, 'YYYY-MM-DD')
             and trunc(working_date) < to_date(#{endDate}, 'YYYY-MM-DD')
             ]]>
@@ -116,5 +117,50 @@
         select webuser_id
         from working_log
         where working_log_id=#{workingLogId}
+    </select>
+
+    <!-- 이미 기록된 날짜 목록 -->
+    <select id="selectWorkingDates" resultType="string">
+        select to_char(working_date, 'YYYY-MM-DD')
+        from working_log
+        where webuser_id = #{webuserId}
+        <![CDATA[
+              and working_date >= to_date(#{startDate}, 'YYYY-MM-DD')
+              and working_date < to_date(#{endDate}, 'YYYY-MM-DD')
+        ]]>
+    </select>
+    
+    <!-- 출퇴근 기록 없는 날짜 결근 체크 -->
+    <insert id="insertAbsent">
+        insert into working_log(
+                working_log_id, webuser_id, working_date, check_in_time, check_out_time,
+                attend_status, memo
+                )
+        values (
+                working_log_seq.nextval, #{webuserId}, TO_DATE(#{workingDate}, 'YYYY-MM-DD'),
+                null, null, 'ABSENT', null
+                )
+    </insert>
+
+    <!-- 관리자만 결근 수정 -->
+    <update id="absentUpdate">
+        update working_log
+        set attend_status = #{attendStatus},
+        check_in_time  = #{checkInTime, jdbcType=TIMESTAMP},
+        check_out_time = #{checkOutTime, jdbcType=TIMESTAMP},
+        memo = case
+        when #{memo} is null or trim(#{memo}) = '' then '출퇴근 미처리로 관리자 수정'
+        else '출퇴근 미처리로 관리자(' || #{memo} || ') 수정'
+        end
+        where working_log_id = #{workingLogId}
+        and webuser_id=#{ownerId}
+        and attend_status = 'ABSENT'
+    </update>
+
+    <!-- 입사일 조회 -->
+    <select id="selectUserCreatedDate" resultType="java.time.LocalDate">
+        select trunc(created_at)
+        from webuser
+        where webuser_id = #{webuserId}
     </select>
 </mapper>

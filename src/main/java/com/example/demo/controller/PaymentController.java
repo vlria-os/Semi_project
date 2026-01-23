@@ -9,21 +9,34 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
 public class PaymentController {
     private final PaymentService paymentService;
-    private final String secretKey = "test_gsk_docs_OaPz8L5KdmQXkzRz3y47BMw6";
 
     @GetMapping("/payment")
     public String paymentPage(Model model) {
-        model.addAttribute("list", paymentService.list());
+        String month= LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
+
+        model.addAttribute("list", paymentService.list(month));
         model.addAttribute("navFragment", "fragment/nav/adminNav");
         model.addAttribute("content", "content/payment");
         return "layout"; // 위 HTML 페이지 이름
+    }
+
+    @GetMapping("/payment/list")
+    @ResponseBody
+    public List<PaymentDto> paymentPage_month(@RequestParam(required = false) String month) {
+        if(month==null){
+            month= LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
+        }
+        return paymentService.list(month);
     }
 
     @GetMapping("/payment/success")
@@ -37,14 +50,13 @@ public class PaymentController {
     @GetMapping("/payment/fail")
     @ResponseBody
     public String paymentFail(@RequestParam Map<String, String> params) {
-        return "결제 실패! " + params.toString();
+        return "redirect:/payment";
     }
 
     @GetMapping("/payment/guest/{settlementId}")
     public String generateLink(Model model,
                                @PathVariable("settlementId") int settlementId) {
         PaymentDto paymentDto =paymentService.list_one(settlementId);
-        System.out.println("==============>"+paymentDto);
         model.addAttribute("item", paymentDto);
         return "content/payment_guest"; // 위 HTML 페이지 이름
     }

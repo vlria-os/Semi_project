@@ -25,7 +25,7 @@ public class Inbound_req_Controller {
     @GetMapping("/office_staff/inbound_req")
     public String inbound_reqForm(@RequestParam(name = "pageNum", defaultValue = "1") int pageNum, Model model,
                                   @ModelAttribute SearchDto searchDto){
-        Map<String,Object> map=productService.productList(pageNum, new SearchDto());
+        Map<String,Object> map=productService.productList(pageNum, searchDto);
 
         model.addAttribute("list", map.get("productDtos"));
         model.addAttribute("pageInfo",map.get("pageInfo"));
