@@ -86,13 +86,11 @@
         on p.category_id = c.category_id
         <where>
             <if test="keyword != null and keyword != ''">
-                (p.product_name like '%'||#{keyword}||'%'
+                and (p.product_name like '%'||#{keyword}||'%'
                 or c.category_path like '%'||#{keyword}||'%')
             </if>
-        </where>
-        <where>
             <if test="status != null and status != ''">
-                (
+                and (
                 p.status = #{status}
                 )
             </if>

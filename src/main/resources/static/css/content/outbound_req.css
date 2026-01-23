@@ -139,7 +139,7 @@ button[onclick*="submitOutbound"] {
     border: 1px solid #e2e8f0;
 }
 
-ul {
+.pagination_wrap ul{
     display: flex;
     justify-content: center;
     list-style: none;
@@ -148,7 +148,7 @@ ul {
     padding: 0;
 }
 
-ul li a {
+.pagination_wrap ul li a {
     padding: 8px 16px;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
@@ -157,7 +157,7 @@ ul li a {
     font-weight: 600;
 }
 
-ul li a:hover {
+.pagination_wrap ul li a:hover {
     background-color: #3b82f6;
     color: white;
 }

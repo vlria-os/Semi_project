@@ -7,6 +7,7 @@
         <div class="search-bar">
             <form th:action="@{/stockList/req}" method="get" style="display: flex; gap: 8px;">
                 <input type="text" placeholder="상품명 또는 카테고리" name="keyword" th:value="${keyword}">
+                <input type="hidden" name="status" th:value="${status}">
                 <input type="submit" value="검색">
             </form>
         </div>
@@ -77,7 +78,7 @@
     </table>
 
     </form>
-    <div>
+    <div class="pagination_wrap">
         <ul th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
             <li th:if="${pageInfo.startPageNum > 1}">
                 <a th:href="@{/content/outbound_req(pageNum=${pageInfo.startPageNum - 1}, status=${status}, keyword=${keyword})}">[이전]</a>

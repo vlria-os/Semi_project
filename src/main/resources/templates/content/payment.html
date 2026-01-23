@@ -1,43 +1,47 @@
 <section xmlns:th="http://www.thymeleaf.org" th:fragment="content">
-  <table id="Table">
-    <thead>
-    <tr>
-      <th>결제번호</th>
-      <th>기간</th>
-      <th>입금/출금</th>
-      <th>회사명</th>
-      <th>결제금액</th>
-      <th>결제</th>
-    </tr>
-    </thead>
+  <link rel="stylesheet" th:href="@{/css/content/payment.css}">
+  <div class="main">
+    <h2>월말 정산</h2>
+    <table id="Table">
+      <thead>
+      <tr>
+        <th>결제번호</th>
+        <th>기간</th>
+        <th>입금/출금</th>
+        <th>회사명</th>
+        <th>결제금액</th>
+        <th>결제</th>
+      </tr>
+      </thead>
 
-    <tbody id="paymentBody">
-    <tr th:each="l : ${list}" th:id="'row_' + ${l.settlement_id}"
-        th:data-total-pay="${l.total_pay}">
-      <td th:text="${l.settlement_id}"></td>
-      <td th:text="${l.period}"></td>
-      <td th:text="${l.inout}"></td>
-      <td th:text="${l.company_name}"></td>
-      <td th:text="${l.total_pay}"></td>
-      <td>
-        <div th:if="${l.payment_status == 'N'}">
-           <button th:if="${l.inout == 'out'}" class="payButton">결제하기</button>
-            <div th:if="${l.inout == 'in'}">
-              <button class="btn-link"
-                      th:data-settlement_id="${l.settlement_id}">
-                링크 복사
-              </button>
-              <button class="btn-check"
-                      th:data-settlement_id="${l.settlement_id}">
-                입금 확인
-              </button>
+      <tbody id="paymentBody">
+      <tr th:each="l : ${list}" th:id="'row_' + ${l.settlement_id}"
+          th:data-total-pay="${l.total_pay}">
+        <td th:text="${l.settlement_id}"></td>
+        <td th:text="${l.period}"></td>
+        <td th:text="${l.inout}"></td>
+        <td th:text="${l.company_name}"></td>
+        <td th:text="${l.total_pay}"></td>
+        <td>
+          <div th:if="${l.payment_status == 'N'}">
+             <button th:if="${l.inout == 'out'}" class="payButton">결제하기</button>
+              <div th:if="${l.inout == 'in'}">
+                <button class="btn-link"
+                        th:data-settlement_id="${l.settlement_id}">
+                  링크 복사
+                </button>
+                <button class="btn-check"
+                        th:data-settlement_id="${l.settlement_id}">
+                  입금 확인
+                </button>
+            </div>
           </div>
-        </div>
-        <div th:if="${l.payment_status == 'Y'}">
-          결제완료
-        </div>
-    </tbody>
-  </table>
+          <div th:if="${l.payment_status == 'Y'}">
+            <span class="status-done">결제완료</span>
+          </div>
+      </tbody>
+    </table>
+  </div>
 </section>
 
 <script src="https://js.tosspayments.com/v2/standard"></script>
