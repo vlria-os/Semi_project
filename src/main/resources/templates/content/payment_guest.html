@@ -3,37 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <style>
+        /* Base Body - 중앙 정렬 */
+        body {
+            background-color: #f8faff;
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: #333;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        /* Table Container */
+        .table-container {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        }
+        thead {
+            background-color: #3b82f6;
+            color: white;
+        }
+        th, td {
+            padding: 12px 16px;
+            text-align: center;
+        }
+        tbody tr:nth-child(even) {
+            background-color: #f1f5f9;
+        }
+        .payButton {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 8px;
+            background-color: #3b82f6;
+            color: white;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        .payButton:hover { background-color: #2563eb; }
+
+        /* Modal Styles - Login card style */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-card {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid #edf2f7;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        .modal-card h2 {
+            margin-bottom: 25px;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            float: right;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: -10px;
+            margin-right: -10px;
+        }
+
+        #modalPayButton {
+            width: 100%;
+            margin-top: 20px;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background-color: #3b82f6;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #modalPayButton:hover { background-color: #2563eb; }
+    </style>
 </head>
 <body>
-<table id="Table">
-    <thead>
-    <tr>
-        <th>결제번호</th>
-        <th>기간</th>
-        <th>입금/출금</th>
-        <th>회사명</th>
-        <th>결제금액</th>
-        <th>결제</th>
-    </tr>
-    </thead>
 
-    <tbody id="paymentBody">
-    <tr th:id="'row_' + ${item.settlement_id}"
-        th:data-total-pay="${item.total_pay}">
-        <td th:text="${item.settlement_id}"></td>
-        <td th:text="${item.period}"></td>
-        <td th:text="${item.inout}"></td>
-        <td th:text="${item.company_name}"></td>
-        <td th:text="${item.total_pay}"></td>
-        <td>
-            <div th:if="${item.payment_status == 'N'}">
-                <button class="payButton">결제하기</button>
-            </div>
-            <div th:if="${item.payment_status == 'Y'}">
-                결제완료
-            </div>
-    </tbody>
-</table>
+<div class="payment-container" style="display:flex; flex-direction:column; gap:20px; max-width:600px; margin: 40px auto;">
+    <h1 style="font-size:28px; font-weight:700; color:#1a1a1a; text-align:center;">
+        HansolWareHouse 결제 서비스
+    </h1>
+    <div class="payment-card"
+         style="background:white; padding:20px; border-radius:12px; box-shadow:0 5px 15px rgba(0,0,0,0.05); display:flex; flex-direction:column; gap:5px;">
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; border-top:1px solid #e5e7eb; border-bottom:1px solid #e5e7eb;">
+            <div style="padding:10px; background:#f1f5f9; font-weight:600;">결제번호</div>
+            <div style="padding:10px;"> <span th:text="${item.settlement_id}"></span> </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; border-bottom:1px solid #e5e7eb;">
+            <div style="padding:10px; background:#f9fafb; font-weight:600;">기간</div>
+            <div style="padding:10px;"> <span th:text="${#temporals.format(item.period,'yyyy-MM')}"></span> </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; border-bottom:1px solid #e5e7eb;">
+            <div style="padding:10px; background:#f1f5f9; font-weight:600;">회사명</div>
+            <div style="padding:10px;"> <span th:text="${item.company_name}"></span> </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr;">
+            <div style="padding:10px; background:#f9fafb; font-weight:600;">결제금액</div>
+            <div style="padding:10px;"> <span th:text="${item.total_pay}"></span> </div>
+        </div>
+
+        <!-- 버튼 영역 -->
+        <div style="width:100%; margin-top:15px; display:flex; justify-content:center;">
+            <button class="payButton" th:if="${item.payment_status == 'N'}"
+                    style="padding:10px 16px; border-radius:8px; background:#3b82f6; color:white; border:none; cursor:pointer; width:100%;">
+                결제하기
+            </button>
+            <span th:if="${item.payment_status == 'Y'}" style="font-weight:600; color:green;">결제완료</span>
+        </div>
+    </div>
+</div>
 
 <script src="https://js.tosspayments.com/v2/standard"></script>
 <script>

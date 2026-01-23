@@ -18,7 +18,7 @@
       <tr th:each="l : ${list}" th:id="'row_' + ${l.settlement_id}"
           th:data-total-pay="${l.total_pay}">
         <td th:text="${l.settlement_id}"></td>
-        <td th:text="${l.period}"></td>
+        <td th:text="${#temporals.format(l.period, 'yyyy-MM')}"></td>
         <td th:text="${l.inout}"></td>
         <td th:text="${l.company_name}"></td>
         <td th:text="${l.total_pay}"></td>
