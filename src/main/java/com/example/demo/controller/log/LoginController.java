@@ -61,7 +61,7 @@ public class LoginController {
                                 session.setAttribute("openLog",openLog);
                                 session.setAttribute("today", LocalDate.now());
                                 model.addAttribute("navFragment", "fragment/nav/adminNav");
-                                model.addAttribute("content", "content/notice");
+                                model.addAttribute("content", "notice/list");
                                 return "layout";
                             } else if (userDto.getRole_id() == 2) {
                                 session.setAttribute("webuser_id", userDto.getWebuser_id());
@@ -71,7 +71,7 @@ public class LoginController {
                                 session.setAttribute("openLog",openLog);
                                 session.setAttribute("today", LocalDate.now());
                                 model.addAttribute("navFragment", "fragment/nav/officeNav");
-                                model.addAttribute("content", "content/notice");
+                                model.addAttribute("content", "notice/list");
                                 return "layout";
                             } else if (userDto.getRole_id() == 3) {
                                 session.setAttribute("webuser_id", userDto.getWebuser_id());
@@ -81,7 +81,7 @@ public class LoginController {
                                 session.setAttribute("openLog",openLog);
                                 session.setAttribute("today", LocalDate.now());
                                 model.addAttribute("navFragment", "fragment/nav/fieldNav");
-                                model.addAttribute("content", "content/notice");
+                                model.addAttribute("content", "notice/list");
                                 return "layout";
                             }
 

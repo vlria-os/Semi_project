@@ -1,0 +1,56 @@
+<section xmlns:th="http://www.thymeleaf.org" th:fragment="content">
+<h3>📌 고정 공지 </h3>
+<ul>
+    <li th:each="notice : ${pinnedNotices}">
+      <a th:href="@{/notice/detail/{id}(id=${notice.noticeId})}"
+         th:text="${notice.title}">공지제목</a>
+    </li>
+</ul>
+
+<h2>회사 공지사항</h2>
+
+</body>
+
+
+<!--<form method="get" action="/notice/list"> -->
+    <form class="search-form"  method="get" action="/notice/list">
+    <input type="date" name="startDate">
+    ~
+    <input type="date" name="endDate">
+    <button type="submit">검색</button>
+</form>
+
+<table border="1" width="100%">
+    <tr>
+        <th>번호</th>
+        <th>제목</th>
+        <th>작성자</th>
+        <th>작성일</th>
+        <th>조회수</th>
+    </tr>
+
+    <tr th:each="notice : ${noticeList}">
+        <td th:text="${notice.noticeId}"></td>
+        <td>
+            <a th:href="@{/notice/detail/{id}(id=${notice.noticeId})}"
+               th:text="${notice.title}">공지제목</a>
+         </td>
+        <td th:text="${notice.writer}"></td>
+        <td th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd')}"></td>
+        <td th:text="${notice.viewCount}"></td>
+    </tr>
+</table>
+
+<br>
+
+<a th:if="${page > 1}"
+   th:href="@{/notice/list(page=${prevPage})}">이전</a>
+
+<span th:text="${page}"></span>
+
+<a th:if="${hasNext}"
+   th:href="@{/notice/list(page=${nextPage})}">다음</a>
+
+<br><br>
+<a href="/notice/new">공지 등록</a>
+</section>

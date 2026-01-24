@@ -20,13 +20,13 @@ public class LayoutController {
                          HttpSession session){
         if((int)session.getAttribute("role_id")==1){
             model.addAttribute("navFragment", "fragment/nav/adminNav");
-            model.addAttribute("content", "content/notice");
+            model.addAttribute("content", "notice/list");
         }else if((int)session.getAttribute("role_id")==2){
             model.addAttribute("navFragment", "fragment/nav/officeNav");
-            model.addAttribute("content", "content/notice");
+            model.addAttribute("content", "notice/list");
         }else if((int)session.getAttribute("role_id")==3){
             model.addAttribute("navFragment", "fragment/nav/fieldNav");
-            model.addAttribute("content", "content/notice");
+            model.addAttribute("content", "notice/list");
         }
 
         return "layout";
@@ -46,17 +46,17 @@ public class LayoutController {
             session.setAttribute("openLog",openLog);
             session.setAttribute("today", LocalDate.now());
             model.addAttribute("navFragment", "fragment/nav/adminNav");
-            model.addAttribute("content", "content/notice");
+            model.addAttribute("content", "/notice/list");
         }else if((int)session.getAttribute("role_id")==2){
             session.setAttribute("openLog",openLog);
             session.setAttribute("today", LocalDate.now());
             model.addAttribute("navFragment", "fragment/nav/officeNav");
-            model.addAttribute("content", "content/notice");
+            model.addAttribute("content", "/notice/list");
         }else if((int)session.getAttribute("role_id")==3){
             session.setAttribute("openLog",openLog);
             session.setAttribute("today", LocalDate.now());
             model.addAttribute("navFragment", "fragment/nav/fieldNav");
-            model.addAttribute("content", "content/notice");
+            model.addAttribute("content", "/notice/list");
         }
 
         return "layout";
