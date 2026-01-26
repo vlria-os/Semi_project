@@ -16,33 +16,45 @@
     <sql id="warehouseSearch">
         <where>
             <if test="field != null and field != '' and field != 'all' ">
-                and upper(warehouse_type) = upper(#{field})
+                and upper(w.warehouse_type) = upper(#{field})
             </if>
             <if test="keyword != null and keyword != ''">
                 and (
-                upper(warehouse_name) like '%' || upper(#{keyword}) || '%' or
-                cast(warehouse_id as varchar2(100)) like '%' || upper(#{keyword}) || '%' or
-                upper(location) like '%' || upper(#{keyword}) || '%'
+                    upper(w.warehouse_name) like '%' || upper(#{keyword}) || '%' or
+                    cast(w.warehouse_id as varchar2(100)) like '%' || upper(#{keyword}) || '%' or
+                    upper(w.location) like '%' || upper(#{keyword}) || '%'
                 )
             </if>
         </where>
     </sql>
 
     <select id="selectWarehouseList" parameterType="map" resultType="WarehouseDto">
-        select * from(
-        select w.*, rownum rnum from(
-        select
-        warehouse_id,
-        warehouse_name,
-        warehouse_type,
-        location,
-        maximum_capacity,
-        is_active,
-        created_at
-        from warehouse
-        <include refid="warehouseSearch"/>
-        order by warehouse_id desc
-        ) w
+       select * from (
+            select wh.*, rownum rnum from (
+                select
+                    w.warehouse_id,
+                    w.warehouse_name,
+                    w.warehouse_type,
+                    w.location,
+                    w.maximum_capacity,
+                    w.is_active,
+                    w.created_at,
+                    NVL(sum_stock.total, 0) as current_stock,
+                    case
+                        when w.maximum_capacity > 0
+                        then round((NVL(sum_stock.total, 0) / w.maximum_capacity) * 100, 1)
+                        else 0
+                    end as usage_rate
+                from warehouse w
+                left join (
+                    select li.warehouse_id, sum(s.quantity) as total
+                    from stock s
+                    join lot_in li on s.lot_in_id = li.lot_in_id
+                    group by li.warehouse_id
+                ) sum_stock on w.warehouse_id = sum_stock.warehouse_id
+                <include refid="warehouseSearch"/>
+                order by w.warehouse_id desc
+            ) wh
         )
         <![CDATA[
             where rnum>=#{startRow} and rnum<=#{endRow}
@@ -50,7 +62,8 @@
     </select>
 
     <select id="getWarehouseCount" resultType="int" parameterType="map">
-        select count(*) from warehouse
+        select count(*)
+        from warehouse w
         <include refid="warehouseSearch"/>
     </select>
 

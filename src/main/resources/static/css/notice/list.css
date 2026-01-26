@@ -1,0 +1,101 @@
+.main {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 20px;
+}
+
+/* Pinned Notices Style */
+.pinnedNotices {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 25px;
+}
+
+.pinnedNotices li {
+    background-color: #fff7ed; /* Light orange for attention */
+    border-left: 4px solid #f97316;
+    padding: 12px 20px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.pinnedNotices li a {
+    text-decoration: none;
+    color: #c2410c;
+}
+
+/* Date Search Bar */
+.search-form {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+    background: #f8fafc;
+    padding: 15px;
+    border-radius: 8px;
+}
+
+.search-form input[type="date"] {
+    padding: 8px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    outline: none;
+}
+
+.search-form button {
+    background-color: #3b82f6;
+    color: white;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* Table styling consistent with your other pages */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+table th {
+    background-color: #f1f5f9;
+    color: #64748b;
+    padding: 15px;
+    font-size: 13px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+table td {
+    padding: 15px;
+    border-bottom: 1px solid #f1f5f9;
+    text-align: center;
+    color: #334155;
+}
+
+table tr:hover {
+    background-color: #f8fafc;
+}
+
+/* New Post Button */
+a[href="/notice/new"] {
+    display: inline-block;
+    background-color: #10b981;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    margin-top: 20px;
+}

@@ -44,8 +44,8 @@
                 <td th:text="${item.waste_quantity} + '개'"></td>
                 <td th:text="${item.total_quantity} + '개'"></td>
                 <td>
-                    <div class="progress-bar" style="background: #fee2e2; border-radius: 4px; height: 10px; width: 100px; display: inline-block; margin-right: 10px;">
-                        <div class="progress" th:style="'width:' + ${item.waste_rate} + '%; background-color: #ef4444; border-radius: 4px;'"></div>
+                    <div class="stats-bar" style="background: #fee2e2; border-radius: 4px; height: 10px; width: 100px; display: inline-block; margin-right: 10px;">
+                        <div class="status" th:style="'width:' + ${item.waste_rate} + '%; background-color: #ef4444; border-radius: 4px;'"></div>
                     </div>
                     <span th:test="${item.waste_rate} + '%'"></span>
                 </td>

@@ -31,20 +31,42 @@
                     <ul th:each="list:${list}">
                         <a th:href="@{/warehouse/update(warehouse_id=${list.warehouse_id})}">
                             <li>
-                                <p th:text="${list.warehouse_name}"></p>
-                                <p th:text="${list.warehouse_type}"></p>
-                                <p th:text="${list.warehouse_id}" hidden="hidden"></p>
-                                <p>위치</p>
-                                <p th:text="${list.location}"></p>
-                                <p>용량</p>
-                                <p th:text="${list.maximum_capacity}"></p>
+                                <div class="card-layout">
+                                    <div class="info-side">
+                                        <p th:text="${list.warehouse_name}" class="w-name"></p>
+                                        <p th:class="'w-type ' + ${list.warehouse_type == 'FROZEN' ? 'type-frozen' : (list.warehouse_type == 'COLD' ? 'type-cold' : 'type-room')}"
+                                           th:text="${list.warehouse_type == 'FROZEN' ? '냉동' : (list.warehouse_type == 'COLD' ? '냉장' : '실온')}"></p>
+
+                                            <!--
+                                            th:switch="${list.warehouse_type}"
+                                            <p th:case="'FROZEN'" class="w-type type-frozen">냉동</p>
+<!--                                        <p th:case="'COLD'" class="w-type type-cold">냉장</p>
+<!--                                        <p th:case="'ROOM'" class="w-type type-room">실온</p>-->
+                                        <p th:text="${list.warehouse_id}" hidden="hidden"></p>
+                                        <div class="meta-data">
+                                            <p>위치</p>
+                                            <p th:text="${list.location}"></p>
+                                            <p>용량</p>
+                                            <p th:text="${list.maximum_capacity}"></p>
+                                        </div>
+                                    </div>
+
+                                    <div class="progress-group">
+                                        <div class="percentage-label">
+                                            <span th:text="${list.usage_rate} + '%'">0%</span>
+                                        </div>
+                                        <div class="bar-container">
+                                            <div class="bar-fill" th:style="'height: ' + ${list.usage_rate} + '%'" th:classappend="${list.usage_rate > 90} ? 'warning' : ''"></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </li>
                         </a>
                     </ul>
 
                     <!-- 페이징 처리-->
                     <div class="pagination_wrap">
-                        <ul>
+                        <ul th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
                             <li th:if="${pageInfo.startPageNum > 1}">
                                 <a th:href="@{/warehouse/list(pageNum=${pageInfo.startPageNum -1}, field=${searchDto.field}, keyword=${searchDto.keyword})}">[이전]</a>
                             </li>
