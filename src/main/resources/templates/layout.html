@@ -79,7 +79,9 @@
 <!-- FOOTER -->
 <!--<footer th:replace="~{fragment/footer :: footer}"></footer>-->
 
-<script>
+<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+<script th:inline="javascript">
     // (function () {
     //
     //     const ads=document.getElementById("resultDaejeon");
@@ -239,8 +241,9 @@
     //퇴근 유형 선택 취소
     function checkOutNo(){
         const checkOutArea=document.getElementById("checkOut-Overlay");
-
         checkOutArea.style.display="none";
+        document.getElementById("attendStatus").value = "WORK";
+        document.getElementById("checkOutMemo").value = "";
     }
 
     //퇴근
@@ -283,6 +286,60 @@
     function goMyWorkingLog(){
         const returnUrl=window.location.pathname + window.location.search;
         location.href = "/work/calendar?returnUrl=" + encodeURIComponent(returnUrl);
+    }
+
+    function updateChatUnreadBadgeFromTotal(total) {
+        const badge = document.getElementById('chatUnreadBadge');
+        if (!badge) return;
+
+        if (Number(total) > 0) {
+            badge.style.display = 'inline-block';
+            badge.textContent = '1';   // 하나라도 있으면 1
+        } else {
+            badge.style.display = 'none';
+            badge.textContent = '0';
+        }
+    }
+
+    function refreshChatUnreadBadge() {
+        fetch('/chat/unread/total', { credentials: 'same-origin' })
+            .then(async (res) => {
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+
+                // ✅ int는 json이 아니라 text로 온다
+                const txt = await res.text();
+                const total = parseInt(txt, 10);
+
+                if (Number.isNaN(total)) throw new Error('NaN: ' + txt);
+
+                updateChatUnreadBadgeFromTotal(total);
+            })
+            .catch((e) => {
+                console.log('[unread] fetch failed:', e);
+                // ❌ 실패했다고 0으로 숨기면 “깜빡임/영원히 안뜸” 생김
+                // 그냥 유지해.
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', refreshChatUnreadBadge);
+
+    const headerUserId = /*[[${session.webuser_id}]]*/ 0;
+
+    console.log("[HEADER] loaded, userId =", headerUserId);
+
+    if (headerUserId > 0) {
+        const socket = new SockJS('/ws');
+        const stomp = Stomp.over(socket);
+        stomp.debug = null;
+
+        stomp.connect({}, () => {
+            console.log("[HEADER] stomp connected");
+
+            stomp.subscribe("/topic/chat-list/" + headerUserId, () => {
+                console.log("[HEADER] chat-list event");
+                refreshChatUnreadBadge();
+            });
+        });
     }
 </script>
 
