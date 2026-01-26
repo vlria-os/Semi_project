@@ -1,11 +1,4 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <title>공지 상세</title>
-</head>
-<body>
-eld
+<section xmlns:th="http://www.thymeleaf.org" th:fragment="content">
 <h2 th:text="${notice.title}"></h2>
 
 작성자: <span th:text="${notice.writer}"></span><br><br>
@@ -13,7 +6,6 @@ eld
 조회수: <span th:text="${notice.viewCount}"></span>
 
 <hr>
-</body>
 <div>
         내용 : <span th:text="${notice.content}"></span>
 </div>
@@ -42,5 +34,4 @@ eld
 </td>
 </table>
 </tr>
-</body>
-</html>
+</section>

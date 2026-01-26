@@ -42,8 +42,11 @@ public class NoticeController {
 
     // 등록 화면
     @GetMapping("/notice/new")
-    public String newForm() {
-        return "notice/new";
+    public String newForm(Model model) {
+
+        model.addAttribute("navFragment", "fragment/nav/adminNav");
+        model.addAttribute("content", "notice/new");
+        return "layout";
     }
 
     // 등록 처리
@@ -59,15 +62,15 @@ public class NoticeController {
     // 상세
     @GetMapping("/notice/detail/{id}")
     public String detail(@PathVariable("id") Long id, Model model) {
-        model.addAttribute("notice",
-                noticeService.getNoticeDetail(id));
-        return "notice/detail";
+        model.addAttribute("notice", noticeService.getNoticeDetail(id));
+        model.addAttribute("navFragment", "fragment/nav/adminNav");
+        model.addAttribute("content", "notice/detail");
+        return "layout";
     }
     //수정
     @GetMapping("/notice/edit/{id}")
     public String editForm(@PathVariable Long id, Model model) {
-        model.addAttribute("notice",
-                noticeService.getNoticeDetail(id));
+        model.addAttribute("notice", noticeService.getNoticeDetail(id));
         return "notice/edit";
     }
     //수정처리 (POST)

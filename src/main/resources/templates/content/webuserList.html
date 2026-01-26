@@ -58,17 +58,20 @@
         </form>
         <div class="search-container">
             <form th:action="@{/webuser/list}" method="get" class="search-bar">
-            <select name="field">
-                <option value="webuser_name"
-                        th:selected="${field == 'webuser_name'}">이름</option>
-                <option value="webuser_id"
-                        th:selected="${field == 'webuser_id'}">사원 번호</option>
-                <option value="role_id"
-                        th:selected="${field == 'role_id'}">역할</option>
-            </select>
-            <input type="text" name="keyword" th:value="${keyword}"
-                   placeholder="검색어를 입력하세요.">
-            <input type="submit" value="검색">
+                <button type="button" value="webuser_name" th:selected="${field == 'webuser_name'}">이름</button>
+                <button type="button" value="webuser_id" th:selected="${field == 'webuser_id'}">사원 번호</button>
+                <button type="button" value="role_id" th:selected="${field == 'role_id'}">역할</button>
+<!--            <select name="field">-->
+<!--                <option value="webuser_name"-->
+<!--                        th:selected="${field == 'webuser_name'}">이름</option>-->
+<!--                <option value="webuser_id"-->
+<!--                        th:selected="${field == 'webuser_id'}">사원 번호</option>-->
+<!--                <option value="role_id"-->
+<!--                        th:selected="${field == 'role_id'}">역할</option>-->
+<!--            </select>-->
+                <input type="text" name="keyword" th:value="${keyword}"
+                       placeholder="검색어를 입력하세요.">
+                <input type="submit" value="검색">
             </form>
         </div>
         <div>

@@ -2,6 +2,7 @@ package com.example.demo.controller.sidebar;
 
 import com.example.demo.dto.SearchDto;
 import com.example.demo.service.ExpiredService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +21,7 @@ public class ExpiredController {
                               @RequestParam(value = "typeFilter", defaultValue = "all") String typeFilter,
                               @RequestParam(value = "warehouseFilter", required = false) String warehouseFilter,
                               @RequestParam(value = "isAjax", defaultValue = "false") boolean isAjax,
+                              HttpSession session,
                               Model model){
         if(searchDto.getKeyword() == null) searchDto.setKeyword("");
 
@@ -30,7 +32,14 @@ public class ExpiredController {
         model.addAttribute("typeFilter", typeFilter);
         model.addAttribute("warehouseFilter", warehouseFilter);
         model.addAttribute("searchDto", searchDto);
-        model.addAttribute("navFragment", "fragment/nav/adminNav");
+        Integer roleId = (Integer) session.getAttribute("role_id");
+        String nav= switch (roleId != null ? roleId : 1){
+            case 2 -> "officeNav";
+            case 3 -> "fieldNav";
+            default -> "adminNav";
+        };
+
+        model.addAttribute("navFragment", "fragment/nav/" + nav);
         model.addAttribute("content", "fragment/sidebar/expiredList");
 
         if(isAjax){
