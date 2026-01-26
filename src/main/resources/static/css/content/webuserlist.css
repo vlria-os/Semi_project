@@ -347,3 +347,41 @@ td span[th\:case] {
     color: #3b82f6;
     opacity: 1;
 }
+
+.filter-group {
+    display: flex;
+    background-color: #f1f5f9;
+    padding: 4px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+.filter-group button {
+    padding: 6px 16px;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.filter-group button.active {
+    background-color: #ffffff;
+    color: #3b82f6;
+    shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.filter-group button:hover:not(.active) {
+    color: #334155;
+    background-color: #e2e8f0;
+}
+
+.search-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}

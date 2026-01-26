@@ -57,24 +57,19 @@
             </table>
         </form>
         <div class="search-container">
-            <form th:action="@{/webuser/list}" method="get" class="search-bar">
-                <button type="button" value="webuser_name" th:selected="${field == 'webuser_name'}">이름</button>
-                <button type="button" value="webuser_id" th:selected="${field == 'webuser_id'}">사원 번호</button>
-                <button type="button" value="role_id" th:selected="${field == 'role_id'}">역할</button>
-<!--            <select name="field">-->
-<!--                <option value="webuser_name"-->
-<!--                        th:selected="${field == 'webuser_name'}">이름</option>-->
-<!--                <option value="webuser_id"-->
-<!--                        th:selected="${field == 'webuser_id'}">사원 번호</option>-->
-<!--                <option value="role_id"-->
-<!--                        th:selected="${field == 'role_id'}">역할</option>-->
-<!--            </select>-->
-                <input type="text" name="keyword" th:value="${keyword}"
+            <form class="search-bar" onsubmit="return false;">
+                <div class="filter-group">
+                    <button type="button" onclick="filterStatus('all')" th:classappend="${field == 'all' || field== null} ? 'active' : ''">전체</button>
+                    <button type="button" onclick="filterStatus('Y')" th:classappend="${field == 'Y'} ? 'active' : ''">활성</button>
+                    <button type="button" onclick="filterStatus('N')" th:classappend="${field == 'N'} ? 'active' : ''">비활성</button>
+                </div>
+
+                <input type="hidden" name="field" id="formField" th:value="${field != null ? field : 'all'}">
+                <input type="text" name="keyword" id="formKeyword" th:value="${keyword}"
                        placeholder="검색어를 입력하세요.">
-                <input type="submit" value="검색">
             </form>
         </div>
-        <div>
+        <div id="webuserListContainer">
             <table id="webuserTable">
                 <thead>
                     <tr>
@@ -157,19 +152,19 @@
                 </tr>
                 </tbody>
             </table>
-        </div>
-        <div>
-            <ul class="page-ul" th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
-                <li th:if="${pageInfo.startPageNum > 1}">
-                    <a th:href="@{/webuser/list(pageNum=${pageInfo.startPageNum - 1})}">이전</a>
-                </li>
-                <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
-                    <a th:href="@{/webuser/list(pageNum=${num},field=${field},keyword=${keyword})}">[[${num}]]</a>
-                </li>
-                <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
-                    <a th:href="@{/webuser/list(pageNum=${pageInfo.endPageNum + 1})}">다음</a>
-                </li>
-            </ul>
+            <div class="pagination-container">
+                <ul class="page-ul" th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
+                    <li th:if="${pageInfo.startPageNum > 1}">
+                        <a href="javascript:void(0);" th:onclick="|updateWebuserList(${pageInfo.startPageNum -1}, true)|">[이전]</a>
+                    </li>
+                    <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
+                        <a href="javascript:void(0);" th:onclick="|updateWebuserList(${num}, true)|">[[${num}]]</a>
+                    </li>
+                    <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
+                        <a href="javascript:void(0);" th:onclick="|updateWebuserList(${pageInfo.endPageNum +1}, true)|">[다음]</a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 <script th:inline="javascript">
@@ -260,6 +255,48 @@
             icon.textContent= "👁️";
         }
     }
+
+    let debounceTimer;
+    function updateWebuserList(pageNum =1, isAjax= false) {
+        const field= document.getElementById("formField").value;
+        const keyword= document.getElementById("formKeyword").value;
+        const url=`/webuser/list?pageNum=${pageNum}&field=${field}&keyword=${keyword}`;
+
+        if(isAjax){
+            fetch(url)
+                .then(response => response.text())
+                .then(html => {
+                    const parser= new DOMParser();
+                    const doc= parser.parseFromString(html, 'text/html');
+                    const newContent=doc.getElementById("webuserListContainer");
+                    if(newContent){
+                        document.getElementById("webuserListContainer").innerHTML= newContent.innerHTML;
+                        window.history.pushState({}, '', url);
+                    }
+                })
+                .catch(error => console.error("Search Error:", error));
+        } else {
+            location.href= url;
+        }
+    }
+
+    function filterStatus(val){
+        document.getElementById("formField").value= val;
+        const buttons=document.querySelectorAll(".filter-group button");
+        buttons.forEach(btn => btn.classList.remove('active'));
+
+        const clickedBtn= event.currentTarget;
+        if(clickedBtn) clickedBtn.classList.add('active');
+        updateWebuserList(1, true);
+    }
+
+    document.getElementById("formKeyword").addEventListener("keyup", function() {
+        clearTimeout(debounceTimer);
+        debounceTimer= setTimeout(()=>{
+            updateWebuserList(1, true);
+        }, 300);
+    });
+
 
 </script>
 </section>
