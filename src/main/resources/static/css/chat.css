@@ -605,17 +605,53 @@ a.room-name{
     display:flex;
     align-items:center;
     gap: 10px;
+
     padding: 10px 10px;
     border: 1px solid var(--line);
     border-radius: 14px;
-    cursor: pointer;
     background: #fff;
+
+    cursor: pointer;
+    user-select: none;
+
+    transition: background .15s ease, transform .08s ease, border-color .15s ease, box-shadow .15s ease;
 }
-.invite-item:hover{ background: #f7f7f7; }
-.invite-item input{ width: 16px; height: 16px; }
+.invite-item:hover{
+    background: var(--blue-soft);
+    border-color: rgba(47,107,255,.22);
+    box-shadow: var(--shadow-soft);
+    transform: translateY(-1px);
+}
+/* 체크박스는 깔끔하게 */
+.invite-item input[type="checkbox"]{
+    width: 16px;
+    height: 16px;
+    accent-color: var(--blue);
+}
+/* 체크 상태면 더 “선택됨” 티나게 */
+.invite-item:has(input[type="checkbox"]:checked){
+    background: var(--blue-soft);
+    border-color: rgba(47,107,255,.35);
+}
+/* 초대 목록도 아바타+이름 구조 */
+.invite-avatar{
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #f4f4f4;
+    border: 1px solid #e0e0e0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight: 900;
+    color: var(--blue);
+    flex: 0 0 auto;
+}
 .invite-name{
+    flex: 1;
+    min-width: 0;
     font-size: 13px;
-    font-weight: 700;
+    font-weight: 800;
     color: var(--text);
 }
 .invite-empty{
@@ -643,6 +679,13 @@ a.room-name{
     border: 1px solid var(--line);
     border-radius: 14px;
     background: #fff;
+    transition: background .15s ease, transform .08s ease, border-color .15s ease, box-shadow .15s ease;
+}
+.member-item:hover{
+    background: var(--blue-soft);
+    border-color: rgba(47,107,255,.22);
+    box-shadow: var(--shadow-soft);
+    transform: translateY(-1px);
 }
 .member-avatar{
     width: 34px;
@@ -849,3 +892,97 @@ a.room-name{
     cursor: not-allowed;
     transform: none !important;
 }
+
+/* =======================
+   MODAL (invite / members)
+   ======================= */
+
+/* 화면 전체 덮는 오버레이 */
+.modal-overlay{
+    position: fixed;
+    inset: 0;                     /* top:0 right:0 bottom:0 left:0 */
+    display: none;                /* 기본은 닫힘 */
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0,0,0,.38);
+    backdrop-filter: blur(2px);
+
+    z-index: 9999;                /* room-topbar(50)보다 훨씬 위 */
+    padding: 18px;
+}
+
+/* 모달 카드 */
+.modal-card{
+    width: min(520px, 92vw);
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh;
+}
+
+/* 상단 헤더 */
+.modal-head{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+    background: #fff;
+}
+
+.modal-title{
+    font-weight: 900;
+    font-size: 14px;
+    letter-spacing: -0.2px;
+}
+
+/* X 버튼 */
+.modal-x{
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: #fff;
+    cursor: pointer;
+    font-weight: 900;
+    color: #666;
+}
+.modal-x:hover{
+    background: #f7f7f7;
+}
+
+/* 본문 */
+.modal-body{
+    padding: 14px 16px 16px;
+    overflow: auto;               /* 내용 길면 스크롤 */
+}
+
+.modal-hint{
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 10px;
+}
+
+/* 하단 버튼 영역 */
+.modal-foot{
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+
+    padding: 12px 14px;
+    border-top: 1px solid var(--line);
+    background: #fff;
+}
+
+/* 모달 열렸을 때 배경 스크롤 방지용(선택) */
+body.modal-open{
+    overflow: hidden;
+}
+
