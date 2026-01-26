@@ -92,7 +92,9 @@
                         <td th:text="${webuser.is_active == 'Y' ? '활성':'비활성'}"></td>
                         <td><button type="button" onclick="updateForm(this)" class="btn-edit">수정</button></td>
                         <td><button type="button" class="btn-edit"
-                                    th:onclick="|location.href='/work/calendar?targetUserId=${webuser.webuser_id}'|">근무 기록</button></td>
+                                    th:attr="data-user-id=${webuser.webuser_id}"
+                                    onclick="goCalender(this)">근무 기록</button>
+                        </td>
                 </tr>
                 <tr class="updateTr" style="display: none;">
                     <td colspan="8">
@@ -254,6 +256,12 @@
             input.type= "password";
             icon.textContent= "👁️";
         }
+    }
+    function goCalender(btn){
+        const targetUserId=btn.dataset.userId;
+        const returnUrl=window.location.pathname + window.location.search;
+        location.href = "/work/calendar?targetUserId=" + encodeURIComponent(targetUserId) +
+            "&returnUrl=" + encodeURIComponent(returnUrl);
     }
 
     let debounceTimer;

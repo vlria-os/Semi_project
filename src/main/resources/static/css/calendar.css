@@ -290,3 +290,14 @@
     color: #111;
     font-size: 13px;
 }
+
+button[onclick*="goBack"] {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+}

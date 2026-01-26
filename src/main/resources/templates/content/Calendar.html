@@ -10,6 +10,10 @@
 </head>
 <body>
 <div class="main">
+    <div class="calendar-goBack">
+        <input type="hidden" name="returnUrl" id="returnUrl" th:value="${returnUrl}">
+        <button type="button" onclick="goBack()">뒤로 가기</button>
+    </div>
 
     <div class="calendar-owner">
         <span class="label">근무 기록</span>
@@ -384,6 +388,15 @@
     }
 
     document.getElementById('absentStatus').addEventListener('change', toggleAbsentTimeInputs);
+
+    function goBack(){
+        const returnUrl=document.getElementById("returnUrl").value;
+        if (returnUrl && returnUrl.startsWith("/")){
+            location.href=returnUrl;
+        } else {
+            history.back();
+        }
+    }
 
 </script>
 </body>
