@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.NoticeDto;
 import com.example.demo.service.NoticeService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +22,7 @@ public class NoticeController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate,
+            HttpSession session,
             Model model) {
 
         Map<String, Object> result =
@@ -34,7 +36,14 @@ public class NoticeController {
         model.addAttribute("hasNext", result.get("hasNext"));
         model.addAttribute("prevPage", page > 1 ? page - 1 : 1);
         model.addAttribute("nextPage", page + 1);
-        model.addAttribute("navFragment", "fragment/nav/adminNav");
+        Integer roleId = (Integer) session.getAttribute("role_id");
+        String nav= switch (roleId != null ? roleId : 1){
+            case 2 -> "officeNav";
+            case 3 -> "fieldNav";
+            default -> "adminNav";
+        };
+
+        model.addAttribute("navFragment", "fragment/nav/" + nav);
         model.addAttribute("content", "notice/list");
 
         return "layout";
@@ -61,9 +70,16 @@ public class NoticeController {
 
     // 상세
     @GetMapping("/notice/detail/{id}")
-    public String detail(@PathVariable("id") Long id, Model model) {
+    public String detail(@PathVariable("id") Long id, Model model, HttpSession session) {
         model.addAttribute("notice", noticeService.getNoticeDetail(id));
-        model.addAttribute("navFragment", "fragment/nav/adminNav");
+        Integer roleId = (Integer) session.getAttribute("role_id");
+        String nav= switch (roleId != null ? roleId : 1){
+            case 2 -> "officeNav";
+            case 3 -> "fieldNav";
+            default -> "adminNav";
+        };
+
+        model.addAttribute("navFragment", "fragment/nav/" + nav);
         model.addAttribute("content", "notice/detail");
         return "layout";
     }
