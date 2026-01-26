@@ -279,6 +279,11 @@
             });
         });
     });
+
+    function goMyWorkingLog(){
+        const returnUrl=window.location.pathname + window.location.search;
+        location.href = "/work/calendar?returnUrl=" + encodeURIComponent(returnUrl);
+    }
 </script>
 
 </body>
