@@ -32,6 +32,17 @@ public class ProductListController {
                               @RequestParam(name = "isAjax", defaultValue = "false") boolean isAjax) {
         Map<String, Object> map = productService.productList(pageNum, searchDto);
 
+        //Search Bar 값 없을때 오류 방지
+        if(searchDto==null){
+            searchDto = new SearchDto();
+            searchDto.setField("all");
+            searchDto.setKeyword("");
+        }
+        //페이지로 다시 이동 후 "전체"에 자동 선택
+        if(searchDto.getField() == null || searchDto.getField().isEmpty()){
+            searchDto.setField("all");
+        }
+
         model.addAttribute("list", map.get("productDtos"));
         model.addAttribute("pageInfo", map.get("pageInfo"));
         model.addAttribute("searchDto", searchDto);
@@ -115,11 +126,11 @@ public class ProductListController {
     }
 
     @GetMapping("/content/product_insert")
-    public String product_insertForm(Model model) {
+    public String product_insertForm(Model model, ProductDto productDto) {
         List<CategoryDto> rootCategory = productService.getRootCategories();
 
         model.addAttribute("rootCategory", rootCategory);
-        model.addAttribute("productDto", new ProductDto());
+        model.addAttribute("productDto", productDto);
         model.addAttribute("navFragment", "fragment/nav/adminNav");
         model.addAttribute("content", "content/product_insert");
         return "layout";
