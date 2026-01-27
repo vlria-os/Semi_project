@@ -17,7 +17,7 @@ public class GuestBoardController {
 
     //카테고리 목록 상수화
     private final List<String> categories = List.of(
-            "공지사항", "제품문의", "재고문의", "배송문의", "일반문의", "기타");
+            "제품문의", "재고문의", "배송문의", "일반문의", "기타");
 
     //글쓰기 폼
     @GetMapping("/guest/write")

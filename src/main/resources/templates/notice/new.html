@@ -11,14 +11,19 @@
     <input type="text" name="writer" required
            size="15"
            style="height:40px; font-size:20px;"><br><br>
-    고정공지<br>
-    <input type="checkbox" name="pinYn" value="Y"
-           style="transform: scale(1.5);"
-           th:checked="${notice?.pinYn == 'Y'}"/><br><br>
+
+    <div th:if="${session.role_id == 1}">
+        고정공지<br>
+        <input type="checkbox" name="pinYn" value="Y"
+               style="transform: scale(1.5);"
+               th:checked="${notice?.pinYn == 'Y'}"/><br><br>
+    </div>
+    <input th:if="${session.role_id != 1}" type="hidden" name="pinYn" value="N">
     내용 <br>
     <textarea name="content" rows="10" cols="50"
     style="font-size:16px;">
     </textarea><br><br>
     <button type="submit">등록</button>
+    <a href="/notice/list">목록으로</a>
 </form>
 </section>

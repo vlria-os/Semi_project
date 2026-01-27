@@ -10,13 +10,18 @@
         SELECT
         NOTICE_ID   AS noticeId,
         TITLE,
-        CONTENT,
         WRITER,
         VIEW_COUNT  AS viewCount,
-        CREATED_AT  AS createdAt,
-        PIN_YN      AS pinYn
+        CREATED_AT  AS createdAt
         FROM NOTICE
         WHERE PIN_YN= 'N'
+          <if test="keyword != null and keyword != ''">
+              and (
+                  title like '%' || #{keyword} || '%'
+                  or writer like '%' || #{keyword} || '%'
+                  or cast(notice_id as varchar2(100)) like '%' || #{keyword} || '%'
+              )
+          </if>
         <if test="startDate != null and startDate != ''">
             AND CREATED_AT <![CDATA[>=]]> TO_DATE(#{startDate}, 'YYYY-MM-DD')
         </if>
@@ -31,7 +36,6 @@
         SELECT
         NOTICE_ID   AS noticeId,
         TITLE,
-        CONTENT,
         WRITER,
         VIEW_COUNT  AS viewCount,
         CREATED_AT  AS createdAt,
@@ -39,6 +43,7 @@
         FROM NOTICE
         WHERE PIN_YN= 'Y'
         ORDER BY CREATED_AT DESC
+        fetch first 3 rows only
         </select>
 
     <!-- 등록 -->
@@ -91,4 +96,33 @@
         WHERE NOTICE_ID = #{noticeId}
     </delete>
 
+
+    <select id="selectRepliesbyNoticeId" resultType="NoticeReplyDto">
+        select
+            r.reply_id as replyId,
+            r.notice_id as noticeId,
+            r.webuser_id as webuserId,
+            r.parent_reply_id as parentReplyId,
+            u.webuser_name as webuserName,
+            r.content,
+            r.created_at as createdAt
+        from notice_reply r
+        join webuser u on r.webuser_id = u.webuser_id
+        where r.notice_id = #{noticeId}
+        order by r.created_at asc
+    </select>
+
+    <insert id="insertReply" parameterType="NoticeReplyDto">
+        insert into notice_reply (reply_id, notice_id, webuser_id, content, parent_reply_id)
+        values (notice_reply_seq.nextval, #{noticeId}, #{webuserId}, #{content}, #{parentReplyId, jdbcType=NUMERIC})
+    </insert>
+
+    <update id="updateReply">
+        update notice_reply set content = #{content}
+        where reply_id = #{replyId}
+    </update>
+
+    <delete id="deleteReply">
+        delete from notice_reply where reply_id = #{replyId}
+    </delete>
 </mapper>

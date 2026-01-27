@@ -1,6 +1,7 @@
 package com.example.demo.mapper;
 
 import com.example.demo.dto.NoticeDto;
+import com.example.demo.dto.NoticeReplyDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -12,6 +13,7 @@ public interface NoticeMapper {
                         @Param("offset") int offset,
                         @Param("limit") int limit,
                         @Param("startDate") String startDate,
+                        @Param("keyword") String keyword,
                         @Param("endDate") String endDate);
 
         int insertNotice(NoticeDto notice);
@@ -25,5 +27,12 @@ public interface NoticeMapper {
         int deleteNotice(Long noticeId);
 
         List<NoticeDto> selectPinnedNotices();
+
+        List<NoticeReplyDto> selectRepliesbyNoticeId(Long noticeId);
+
+        int insertReply(NoticeReplyDto dto);
+
+        int updateReply(NoticeReplyDto replyDto);
+        int deleteReply(Long replyId);
 
 }

@@ -16,10 +16,13 @@
            th:value="${notice.writer}"
            size="15" style="height: 40px; font-size: 20px;"><br><br>
 
+    <div th:if="${session.role_id == 1}">
     고정공지<br>
     <input type="checkbox" name="pinYn" value="Y"
            style=" transform: scale(1.5);"
            th:checked="${notice.pinYn == 'Y'}"/><br><br>
+    </div>
+    <input th:if="${session.role_id != 1}" type="hidden" name="pinYn" th:value="${notice.pinYn}">
 
 
     내용<br>

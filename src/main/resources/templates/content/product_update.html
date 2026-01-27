@@ -12,7 +12,7 @@
       </div>
 
       <div class="form-group">
-        <label>카테고리 변경</label>
+        <label>카테고리 변경 (현재 분류: [[${productDto.category}]])</label>
         <select id="parentCategory">
           <option value="">대분류 선택</option>
           <option th:each="c : ${rootCategory}" th:value="${c.category_id}" th:text="${c.category_name}"></option>
@@ -20,9 +20,9 @@
       </div>
 
       <div id="childBox" style="display: block; margin-top: 10px;">
-        <label>하위 카테고리 (현재 분류: [[${productDto.category}]])</label>
         <select id="childCategory" name="category_id">
-          <option th:value="*{category_id}" th:text="*{category}"></option>
+          <option value="">하위 카테고리 선택</option>
+          <option th:value="${productDto.category_id}" th:text="${productDto.category}"></option>
         </select>
       </div>
 

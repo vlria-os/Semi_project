@@ -1,37 +1,121 @@
 <section xmlns:th="http://www.thymeleaf.org" th:fragment="content">
 <h2 th:text="${notice.title}"></h2>
 
-작성자: <span th:text="${notice.writer}"></span><br><br>
-작성일: <span th:text="${#temporals.format(notice.createdAt,'yyyy-MM-dd')}"></span><br><br>
-조회수: <span th:text="${notice.viewCount}"></span>
+    <div class="admin-controls" th:if="${session.role_id == 1}">
+        <a th:href="@{/notice/edit/{id}(id=${notice.noticeId})}" class="btn-update">수정</a>
+        <a th:href="@{/notice/delete/{id}(id=${notice.noticeId})}"
+           onclick="return confirm('정말 삭제하시겠습니까?')" class="btn-delete">
+            삭제
+        </a>
+        <div class="navigation">
+            <a href="/notice/list">목록으로</a>
+        </div>
+    </div>
 
-<hr>
-<div>
-        내용 : <span th:text="${notice.content}"></span>
-</div>
-<br>
-<table width="10%" style="white-space: nowrap;">
-    <tr>
-        <td width="30%"></td>
-        <td align="left">
-            <a th:href="@{/notice/edit/{id}(id=${notice.noticeId})}">수정</a>
-        </td>
-        <td align="right">
-            <a th:href="@{/notice/delete/{id}(id=${notice.noticeId})}"
-               onclick="return confirm('정말 삭제하시겠습니까?')">
-                삭제
-            </a>
-        </td>
-    </tr>
-</table>
 
-<br>
-<table width="9%">
-<tr>
-<td width="10%"></td>
-<td align="right">
-<a href="/notice/list">목록으로</a>
-</td>
-</table>
-</tr>
+
+    <div class="meta-info">
+        작성자: <span th:text="${notice.writer}"></span><br>
+        작성일: <span th:text="${#temporals.format(notice.createdAt,'yyyy-MM-dd')}"></span><br>
+        조회수: <span th:text="${notice.viewCount}"></span>
+    </div>
+
+    <hr>
+    <div style="white-space: pre-wrap;" th:text="${notice.content}"></div>
+    <hr>
+
+    <div id="reply-container" style="margin-top: 30px;">
+        <h3>댓글<span th:text="${#lists.size(replies)}">0</span></h3>
+
+        <div th:each="r : ${replies}" th:if="${r.parentReplyId == null}">
+            <div th:replace="this :: replyBlock(reply=${r}, allReplies=${replies}, level=0)"></div>
+        </div>
+
+        <p th:if="${#lists.isEmpty(replies)}">등록된 댓글리 없습니다</p>
+
+        <div style="margin-top: 40px; background: #eee; padding: 20px">
+            <h4>새 댓글 작성</h4>
+            <form th:action="@{/notice/reply/new}" method="post">
+                <input type="hidden" name="noticeId" th:value="${notice.noticeId}">
+                <input type="hidden" name="webuserId" th:value="${session.webuser_id}">
+
+                <div style="margin-bottom: 10px;">
+                    <input type="text" th:value="${session.webuser_name}" style="border: none; background: transparent; font-weight: bold;" readonly>
+                </div>
+
+                <textarea name="content" rows="3" cols="50" style="width: 100%; box-sizing: border-box;" placeholder="댓글을 입력하세요" required></textarea>
+                <button type="submit" style="margin-top: 10px">댓글 등록</button>
+            </form>
+        </div>
+    </div>
+
+    <div th:fragment="replyBlock(reply, allReplies, level)" th:if="${reply != null}" th:with="currentLevel=${level ?:0}" th:style="'margin-left: ' + (${currentLevel} > 0 ? '40px' : '0px') + '; border-bottom: ' + (${currentLevel} == 0 ? '1px solid #ccc' : 'none') + '; margin-bottom: 10px; padding: 10px;'">
+        <div th:id="'display-reply-' + ${reply.replyId}" class="comment-content" th:style="${currentLevel} > 0 ? 'background-color: #f9f9f9; border-left: 3px solid #ddd; padding-left: 10px' : ''">
+            <p>
+                <span th:if="${currentLevel > 0}" style="color: #666;">↳</span>
+                <b th:text="${reply.webuserName}">작성자</b>
+                <small th:text="${#temporals.format(reply.createdAt, 'yyyy-MM-dd HH:mm')}"></small>
+
+                <span style="margin-left: 15px;">
+                    <button type="button" th:onclick="|toggleReplyForm(${reply.replyId})|" style="font-size: 0.7em;">답글달기</button>
+
+                    <th:block th:if="${session.webuser_id == reply.webuserId or session.role_id == 1}">
+                        <button type="button" th:onclick="|toggleEditForm(${reply.replyId})|" style="font-size: 0.7em; color: blue;">수정</button>
+                        <a th:href="@{/notice/reply/delete/{replyId}/{noticeId}(replyId=${reply.replyId}, noticeId=${notice.noticeId})}" onclick="return confirm('삭제하시겠습니까?')" style="font-size: 0.7em; color: red; text-decoration: none;">삭제</a>
+                    </th:block>
+                </span>
+            </p>
+            <p th:id="'text-reply-' + ${reply.replyId}" th:text="${reply.content}"></p>
+
+            <div th:id="'edit-form-' + ${reply.replyId}" style="display: none;">
+                <form th:action="@{/notice/reply/edit}" method="post">
+                    <input type="hidden" name="replyId" th:value="${reply.replyId}">
+                    <input type="hidden" name="noticeId" th:value="${notice.noticeId}">
+                    <textarea name="content" rows="2" style="width: 80%;" th:text="${reply.content}"></textarea>
+                    <button type="submit">완료</button>
+                    <button type="button" th:onclick="|toggleEditForm(${reply.replyId})|">취소</button>
+                </form>
+            </div>
+        </div>
+
+        <div th:id="'reply-form-' + ${reply.replyId}" style="display: none; margin-left: 20px; margin-top: 10px; margin-bottom: 10px;">
+            <form th:action="@{/notice/reply/new}" method="post">
+                <input type="hidden" name="noticeId" th:value="${notice.noticeId}">
+                <input type="hidden" name="webuserId" th:value="${session.webuser_id}">
+                <input type="hidden" name="parentReplyId" th:value="${reply.replyId}">
+
+                <textarea name="content" rows="2" style="width: 70%;" placeholder="답글 작성" required></textarea>
+                <button type="submit">답글 등록</button>
+            </form>
+        </div>
+
+        <div th:each="child : ${allReplies}" th:if="${child.parentReplyId == reply.replyId}">
+            <div th:replace="this :: replyBlock(reply=${child}, allReplies=${allReplies}, level=${currentLevel +1})"></div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        function toggleReplyForm(id){
+            const form= document.getElementById('reply-form-' + id);
+            if(form.style.display === 'none'){
+                form.style.display = 'block';
+            } else {
+                form.style.display = 'none';
+            }
+        }
+
+        function toggleEditForm(id){
+            const text=document.getElementById('text-reply-' + id);
+            const form= document.getElementById('edit-form-' + id);
+
+            if(form.style.display === 'none'){
+                form.style.display ='block';
+                text.style.display ='none';
+            }else{
+                form.style.display ='none';
+                text.style.display ='block';
+            }
+        }
+    </script>
+
 </section>

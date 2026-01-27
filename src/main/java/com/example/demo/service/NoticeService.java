@@ -1,6 +1,7 @@
 package com.example.demo.service;
 
 import com.example.demo.dto.NoticeDto;
+import com.example.demo.dto.NoticeReplyDto;
 import com.example.demo.mapper.NoticeMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,12 +17,12 @@ public class NoticeService {
     private final NoticeMapper noticeMapper;
 
     public Map<String, Object> getNoticeList(
-            int page, String startDate, String endDate) {
+            int page, String startDate, String endDate, String keyword) {
 
         int limit = 10;
         int offset = (page - 1) * limit;
 
-        List<NoticeDto> list = noticeMapper.selectNoticeList(offset, limit, startDate, endDate);
+        List<NoticeDto> list = noticeMapper.selectNoticeList(offset, limit, startDate, endDate, keyword);
 
         boolean hasNext = list.size() == limit;
 
@@ -56,4 +57,11 @@ public class NoticeService {
     public int deleteNotice(Long noticeId) {
         return noticeMapper.deleteNotice(noticeId);
     }
+
+    public List<NoticeReplyDto> getRepliesByNoticeId(Long noticeId){return noticeMapper.selectRepliesbyNoticeId(noticeId);}
+
+    public int saveReply(NoticeReplyDto dto) {return noticeMapper.insertReply(dto);}
+
+    public int updateReply(NoticeReplyDto replyDto){return noticeMapper.updateReply(replyDto);};
+    public int deleteReply(Long replyId){return noticeMapper.deleteReply(replyId);};
 }
