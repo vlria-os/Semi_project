@@ -181,6 +181,7 @@
                         <span th:text="${l.reason}"></span>
                         <button th:if="${l.is_refund == null && l.reason == null && l.shipped_date != null && session.role_id == 2}"
                                 type="button"
+                                class="btn-return"
                                 th:onclick="'requestReturn(' + ${l.outbound_detail_id} + ')'"
                                 th:disabled="${l.shipped_date == null}">
                             반품요청
