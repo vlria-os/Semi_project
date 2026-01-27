@@ -14,31 +14,28 @@ import java.util.Map;
 @Controller
 @RequiredArgsConstructor
 public class NoticeController {
-
     private final NoticeService noticeService;
 
     // 목록
     @GetMapping("/notice/list")
     public String list(
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "1") int pageNum,
             @RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate,
-            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "") String keyword,
             HttpSession session,
             Model model) {
 
         Map<String, Object> result =
-                noticeService.getNoticeList(page, startDate, endDate, keyword);
+                noticeService.getNoticeList(pageNum, startDate, endDate, keyword);
 
         var pinnedNoticeService = noticeService.getPinnedNotices();
 
         model.addAttribute("noticeList", result.get("list"));    //일반공지
         model.addAttribute("pinnedNotices",pinnedNoticeService); //상단고정 공지
-        model.addAttribute("page", page);
-        model.addAttribute("hasNext", result.get("hasNext"));
-        model.addAttribute("prevPage", page > 1 ? page - 1 : 1);
-        model.addAttribute("nextPage", page + 1);
+        model.addAttribute("pageInfo", result.get("pageInfo"));
         model.addAttribute("keyword", keyword);
+
         Integer roleId = (Integer) session.getAttribute("role_id");
         String nav= switch (roleId != null ? roleId : 1){
             case 2 -> "officeNav";

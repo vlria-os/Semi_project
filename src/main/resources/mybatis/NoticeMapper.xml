@@ -4,9 +4,8 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.example.demo.mapper.NoticeMapper">
-
     <!-- 공지 목록 -->
-    <select id="selectNoticeList" resultType="com.example.demo.dto.NoticeDto">
+    <select id="selectNoticeList" resultType="NoticeDto">
         SELECT
         NOTICE_ID   AS noticeId,
         TITLE,
@@ -29,10 +28,10 @@
             AND CREATED_AT <![CDATA[<=]]> TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
         </if>
         ORDER BY NOTICE_ID DESC
-        OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
+        OFFSET #{pageInfo.startRow} - 1 ROWS FETCH NEXT #{pageInfo.endRow} ROWS ONLY
     </select>
     <!--상단 고정 공지조회-->
-    <select id="selectPinnedNotices" resultType="com.example.demo.dto.NoticeDto">
+    <select id="selectPinnedNotices" resultType="NoticeDto">
         SELECT
         NOTICE_ID   AS noticeId,
         TITLE,
@@ -47,7 +46,7 @@
         </select>
 
     <!-- 등록 -->
-    <insert id="insertNotice" parameterType="com.example.demo.dto.NoticeDto">
+    <insert id="insertNotice" parameterType="NoticeDto">
         INSERT INTO NOTICE (
             NOTICE_ID, TITLE, CONTENT, WRITER,PIN_YN
         ) VALUES (
@@ -60,7 +59,7 @@
     </insert>
 
     <!-- 상세 -->
-    <select id="selectNoticeDetail" resultType="com.example.demo.dto.NoticeDto">
+    <select id="selectNoticeDetail" resultType="NoticeDto">
         SELECT
             NOTICE_ID   AS noticeId,
             TITLE,
@@ -125,4 +124,8 @@
     <delete id="deleteReply">
         delete from notice_reply where reply_id = #{replyId}
     </delete>
+
+    <select id="count" parameterType="String" resultType="int">
+        select count(*) from notice where content like '%'||#{keyword}||'%'
+    </select>
 </mapper>

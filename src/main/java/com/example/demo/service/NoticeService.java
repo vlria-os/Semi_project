@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.dto.NoticeDto;
 import com.example.demo.dto.NoticeReplyDto;
 import com.example.demo.mapper.NoticeMapper;
+import com.example.demo.pagination.PageInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,22 +14,18 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 public class NoticeService {
-
     private final NoticeMapper noticeMapper;
 
     public Map<String, Object> getNoticeList(
-            int page, String startDate, String endDate, String keyword) {
+            int pageNum, String startDate, String endDate, String keyword) {
+        int totalRowCount=noticeMapper.count(keyword);
+        PageInfo pageInfo=new PageInfo(pageNum,10,5,totalRowCount);
 
-        int limit = 10;
-        int offset = (page - 1) * limit;
-
-        List<NoticeDto> list = noticeMapper.selectNoticeList(offset, limit, startDate, endDate, keyword);
-
-        boolean hasNext = list.size() == limit;
+        List<NoticeDto> list = noticeMapper.selectNoticeList(pageInfo, startDate, endDate, keyword);
 
         Map<String, Object> map = new HashMap<>();
         map.put("list", list);
-        map.put("hasNext", hasNext);
+        map.put("pageInfo", pageInfo);
         return map;
     }
 
