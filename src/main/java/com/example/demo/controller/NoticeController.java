@@ -16,6 +16,7 @@ import java.util.Map;
 public class NoticeController {
     private final NoticeService noticeService;
 
+
     // 목록
     @GetMapping("/notice/list")
     public String list(

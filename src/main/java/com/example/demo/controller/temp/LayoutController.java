@@ -1,6 +1,7 @@
 package com.example.demo.controller.temp;
 
 import com.example.demo.dto.WorkingLogDto;
+import com.example.demo.service.NoticeService;
 import com.example.demo.service.WorkingLogService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -9,11 +10,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
 public class LayoutController {
     private final WorkingLogService workingLogService;
+    private final NoticeService noticeService;
 
     @GetMapping("/layout")
     public String home(Model model,
@@ -41,6 +44,15 @@ public class LayoutController {
 
         //미퇴근 기록
         WorkingLogDto openLog=workingLogService.getOpenWorkingLog((int)session.getAttribute("webuser_id"));
+
+        Map<String, Object> result =
+                noticeService.getNoticeList(1, null, null, "");
+        var pinnedNoticeService = noticeService.getPinnedNotices();
+
+        model.addAttribute("noticeList", result.get("list"));    //일반공지
+        model.addAttribute("pinnedNotices",pinnedNoticeService); //상단고정 공지
+        model.addAttribute("pageInfo", result.get("pageInfo"));
+        model.addAttribute("keyword", "");
 
         if((int)session.getAttribute("role_id")==1){
             session.setAttribute("openLog",openLog);

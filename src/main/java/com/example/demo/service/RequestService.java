@@ -371,7 +371,7 @@ public class RequestService {
         Map<String,Object> map=new HashMap<>();
 
         int totalRowCount=mapper.approvalConfIn_count();
-        PageInfo pageInfo=new PageInfo(pageNum,10,5,totalRowCount);
+        PageInfo pageInfo=new PageInfo(pageNum,5,5,totalRowCount);
 
         map.put("startRow",pageInfo.getStartRow());
         map.put("endRow",pageInfo.getEndRow());
@@ -386,7 +386,7 @@ public class RequestService {
         Map<String,Object> map=new HashMap<>();
 
         int totalRowCount=mapper.approvalConfOut_count();
-        PageInfo pageInfo=new PageInfo(pageNum,10,5,totalRowCount);
+        PageInfo pageInfo=new PageInfo(pageNum,5,5,totalRowCount);
 
         map.put("startRow",pageInfo.getStartRow());
         map.put("endRow",pageInfo.getEndRow());

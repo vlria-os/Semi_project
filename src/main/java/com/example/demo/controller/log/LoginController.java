@@ -4,6 +4,7 @@ import com.example.demo.dto.LoginDto;
 import com.example.demo.dto.WebuserDto;
 import com.example.demo.dto.WorkingLogDto;
 import com.example.demo.service.LoginService;
+import com.example.demo.service.NoticeService;
 import com.example.demo.service.WorkingLogService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -13,12 +14,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
 public class LoginController {
     private final LoginService loginService;
     private final WorkingLogService workingLogService;
+    private final NoticeService noticeService;
 
     @GetMapping("/login")
     public String loginForm(){
@@ -52,6 +55,15 @@ public class LoginController {
                         }else {
                             //미퇴근 기록
                             WorkingLogDto openLog=workingLogService.getOpenWorkingLog(userDto.getWebuser_id());
+
+                            Map<String, Object> result =
+                                    noticeService.getNoticeList(1, null, null, "");
+                            var pinnedNoticeService = noticeService.getPinnedNotices();
+
+                            model.addAttribute("noticeList", result.get("list"));    //일반공지
+                            model.addAttribute("pinnedNotices",pinnedNoticeService); //상단고정 공지
+                            model.addAttribute("pageInfo", result.get("pageInfo"));
+                            model.addAttribute("keyword", "");
 
                             if (userDto.getRole_id() == 1) {
                                 session.setAttribute("webuser_id", userDto.getWebuser_id());

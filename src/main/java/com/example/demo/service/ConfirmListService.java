@@ -19,9 +19,7 @@ public class ConfirmListService {
         Map<String,Object> map=new HashMap<>();
 
         int totalRowCount=confirmMapper.count_in();
-        PageInfo pageInfo=new PageInfo(pageNum,10,5,totalRowCount);
-
-        System.out.println("============>"+pageInfo);
+        PageInfo pageInfo=new PageInfo(pageNum,5,5,totalRowCount);
 
         map.put("startRow",pageInfo.getStartRow());
         map.put("endRow",pageInfo.getEndRow());
@@ -37,7 +35,7 @@ public class ConfirmListService {
         Map<String,Object> map=new HashMap<>();
 
         int totalRowCount=confirmMapper.count_out();
-        PageInfo pageInfo=new PageInfo(pageNum,10,5,totalRowCount);
+        PageInfo pageInfo=new PageInfo(pageNum,5,5,totalRowCount);
 
         map.put("startRow",pageInfo.getStartRow());
         map.put("endRow",pageInfo.getEndRow());
