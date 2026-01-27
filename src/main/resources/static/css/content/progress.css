@@ -108,6 +108,30 @@
 .btn-group button:hover a {
     color: #3b82f6;
 }
+
+.btn-return {
+    background-color: #ffffff;
+    color: #ef4444;
+    border: 1px solid #fecaca;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+.btn-return:hover:not(:disabled){
+    background-color: #fef2f2;
+    border-color: #ef4444;
+}
+.btn-return:disabled{
+    background-color: #f1f5f9;
+    color: #94a3b8;
+    border-color: #e2e8f0;
+    cursor: not-allowed;
+}
+
+
 .filter-btn {
     background: none;
     border: none;

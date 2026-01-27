@@ -3,7 +3,7 @@
         <li><a th:href="@{/notice/list}"  th:classappend="${currentUri == '/' || currentUri == '/login/ok' || (currentUri.contains('/notice'))} ? 'active' : ''">공지사항</a></li>
         <li><a th:href="@{/office_staff/inbound_req}" th:classappend="${currentUri != null && currentUri.contains('/office_staff/inbound_req')} ? 'active' : ''">입고 요청</a></li>
         <li><a th:href="@{/stockList/req}" th:classappend="${currentUri != null && currentUri.contains('/stockList/req')} ? 'active' : ''">출고 요청</a></li>
-        <li><a th:href="@{/stockList}" th:classappend="${currentUri != null && currentUri.contains('/stockList')} ? 'active' : ''">재고 조회</a></li>
+        <li><a th:href="@{/stockList}" th:classappend="${currentUri == '/stocklist' || (currentUri != null && currentUri.contains('/stockList') && !currentUri.contains('/req'))} ? 'active' : ''">재고 조회</a></li>
         <li><a th:href="@{/progress}" th:classappend="${currentUri != null && currentUri.contains('/progress')} ? 'active' : ''">내역</a></li>
 
     </ul>
