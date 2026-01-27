@@ -6,7 +6,9 @@ import com.example.demo.mapper.NoticeMapper;
 import com.example.demo.pagination.PageInfo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +38,12 @@ public class NoticeService {
 
     // 등록
     public int saveNotice(NoticeDto notice) {
+        if("Y".equals(notice.getPinYn())){
+            int count= noticeMapper.selectPinnedNotices().size();
+            if(count>=3){
+                notice.setPinYn("N");
+            }
+        }
         return noticeMapper.insertNotice(notice);
     }
 
@@ -51,13 +59,34 @@ public class NoticeService {
     }
 
     // 삭제
-    public int deleteNotice(Long noticeId) {
-        return noticeMapper.deleteNotice(noticeId);
+    @Transactional
+    public void deleteNotice(Long noticeId) {
+        noticeMapper.deleteRepliesByNoticeId(noticeId);
+
+        NoticeDto notice= noticeMapper.selectNoticeDetail(noticeId);
+        if(notice != null && notice.getSaveFileName() != null){
+            File file= new File(notice.getFilePath() + notice.getSaveFileName());
+            if(file.exists()){
+                boolean deleted= file.delete();
+                if(deleted){
+                    System.out.println("File Deleted:" + notice.getSaveFileName());
+                }
+            }
+        }
+        noticeMapper.deleteNotice(noticeId);
     }
 
     public List<NoticeReplyDto> getRepliesByNoticeId(Long noticeId){return noticeMapper.selectRepliesbyNoticeId(noticeId);}
 
-    public int saveReply(NoticeReplyDto dto) {return noticeMapper.insertReply(dto);}
+    public void saveReply(NoticeReplyDto dto) {
+        if (dto.getParentReplyId() != null){
+            int currentChildCount= noticeMapper.countChildReplies(dto.getParentReplyId());
+            if(currentChildCount >= 5){
+                return;
+            }
+        }
+        noticeMapper.insertReply(dto);
+    }
 
     public int updateReply(NoticeReplyDto replyDto){return noticeMapper.updateReply(replyDto);};
     public int deleteReply(Long replyId){return noticeMapper.deleteReply(replyId);};

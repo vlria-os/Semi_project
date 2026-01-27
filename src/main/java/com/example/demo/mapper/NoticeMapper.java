@@ -37,4 +37,7 @@ public interface NoticeMapper {
         int deleteReply(Long replyId);
 
         int count(String startDate, String endDate, String keyword);
+        int countChildReplies (Long id);
+
+        void deleteRepliesByNoticeId(Long id);
 }

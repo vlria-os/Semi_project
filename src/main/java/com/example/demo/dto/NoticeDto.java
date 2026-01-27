@@ -18,5 +18,8 @@ public class NoticeDto {
     private String pinYn; // 주요공지
     private LocalDateTime createdAt;  // 가입일
     private LocalDateTime updatedAt;  // 수정일
+    private String orgFileName;
+    private String saveFileName;
+    private String filePath;
 
 }

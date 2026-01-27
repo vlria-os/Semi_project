@@ -50,13 +50,14 @@
     <!-- 등록 -->
     <insert id="insertNotice" parameterType="NoticeDto">
         INSERT INTO NOTICE (
-            NOTICE_ID, TITLE, CONTENT, WRITER,PIN_YN
+            NOTICE_ID, TITLE, CONTENT, WRITER,PIN_YN, ORG_FILE_NAME, SAVE_FILE_NAME, FILE_PATH
         ) VALUES (
                      NOTICE_SEQ.NEXTVAL,
                      #{title},
                      #{content},
                      #{writer},
-                     #{pinYn}
+                     #{pinYn},
+                #{orgFileName, jdbcType=VARCHAR}, #{saveFileName, jdbcType=VARCHAR}, #{filePath, jdbcType=VARCHAR}
                  )
     </insert>
 
@@ -69,7 +70,10 @@
             WRITER,
             VIEW_COUNT  AS viewCount,
             CREATED_AT  AS createdAt,
-            PIN_YN      AS pinYn
+            PIN_YN      AS pinYn,
+            org_file_name as orgFileName,
+            save_file_name as saveFileName,
+            file_path as filePath
         FROM NOTICE
         WHERE NOTICE_ID = #{noticeId}
     </select>
@@ -81,20 +85,27 @@
         WHERE NOTICE_ID = #{noticeId}
     </update>
      <!-- 수정 -->
-    <update id="updateNotice" parameterType="com.example.demo.dto.NoticeDto">
+    <update id="updateNotice" parameterType="NoticeDto">
         UPDATE NOTICE
         SET
             TITLE = #{title},
             CONTENT = #{content},
             WRITER = #{writer},
             PIN_YN = #{pinYn},
-            UPDATED_AT = SYSDATE
+            UPDATED_AT = SYSDATE,
+            ORG_FILE_NAME = #{orgFileName, jdbcType=VARCHAR},
+            SAVE_FILE_NAME = #{saveFileName, jdbcType=VARCHAR},
+            FILE_PATH = #{filePath, jdbcType=VARCHAR}
          WHERE NOTICE_ID = #{noticeId}
     </update>
     <!-- 삭제 -->
     <delete id="deleteNotice" parameterType="long">
         DELETE FROM NOTICE
         WHERE NOTICE_ID = #{noticeId}
+    </delete>
+
+    <delete id="deleteRepliesByNoticeId">
+        delete from notice_reply where notice_id =#{noticeId}
     </delete>
 
 
@@ -106,7 +117,8 @@
             r.parent_reply_id as parentReplyId,
             u.webuser_name as webuserName,
             r.content,
-            r.created_at as createdAt
+            r.created_at as createdAt,
+            ( select count(*) from notice_reply where parent_reply_id = r.reply_id ) as replyCount
         from notice_reply r
         join webuser u on r.webuser_id = u.webuser_id
         where r.notice_id = #{noticeId}
@@ -145,5 +157,11 @@
                 AND CREATED_AT <![CDATA[<=]]> TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
             </if>
         </where>
+    </select>
+
+    <select id="countChildReplies" resultType="int">
+        select count(*)
+        from notice_reply
+        where parent_reply_id= #{parentReplyId}
     </select>
 </mapper>

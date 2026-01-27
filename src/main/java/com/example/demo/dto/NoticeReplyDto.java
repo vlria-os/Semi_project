@@ -17,4 +17,5 @@ public class NoticeReplyDto {
     private LocalDateTime createdAt;
     private String webuserName;
     private Long parentReplyId;
+    private int replyCount;
 }

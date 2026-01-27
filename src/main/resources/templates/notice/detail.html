@@ -9,8 +9,8 @@
                 <a th:href="@{/notice/delete/{id}(id=${notice.noticeId})}"
                    onclick="return confirm('정말 삭제하시겠습니까?')" class="btn-delete">
                     삭제</a>
-                    <a href="/notice/list" class="btn-list">목록으로</a>
             </div>
+            <a href="/notice/list" class="btn-list">목록으로</a>
         </div>
 
 
@@ -20,8 +20,13 @@
                 <span><b>작성일:</b> <span th:text="${#temporals.format(notice.createdAt,'yyyy-MM-dd')}"></span></span>
                 <span><b>조회수:</b> <span th:text="${notice.viewCount}"></span></span>
             </div>
+        <div class="file-section" th:if="${notice.orgFileName != null}" style="margin-top: 20px; padding: 15px; background: #f8fafc; border-radius: 8px;">
+            <b>첨부파일</b>
+            <a th:href="@{/notice/download/{id}(id=${notice.noticeId})}" th:text="${notice.orgFileName}" style="color: #3b82f6; text-decoration: none; font-weight: 600; margin-left: 10px;"></a>
+        </div>
 
             <div class="notice-body" th:text="${notice.content}"></div>
+
 
             <div id="reply-container">
                 <h3 class="reply-title">댓글<span class="count" th:text="${#lists.size(replies)}">0</span></h3>
@@ -56,7 +61,8 @@
                         <small th:text="${#temporals.format(reply.createdAt, 'yyyy-MM-dd HH:mm')}"></small>
 
                         <span style="margin-left: 15px;">
-                            <button type="button" th:onclick="|toggleReplyForm(${reply.replyId})|" style="font-size: 0.7em;">답글달기</button>
+                                <button type="button" th:if="${reply.replyCount < 5}" th:onclick="|toggleReplyForm(${reply.replyId})|" style="font-size: 0.7em;">답글달기</button>
+                                <small th:if="${reply.replyCount >= 5}" style="color: #94a3b8; font-size: 0.7em;">(댓글의 답글 제한 도달)</small>
 
                             <th:block th:if="${session.webuser_id == reply.webuserId or session.role_id == 1}">
                                 <button type="button" th:onclick="|toggleEditForm(${reply.replyId})|" style="font-size: 0.7em; color: blue;">수정</button>

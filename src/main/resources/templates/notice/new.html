@@ -3,7 +3,7 @@
     <div class="main">
         <h2>📌공지 등록</h2>
 
-        <form method="post" action="/notice/new" class="notice-form">
+        <form method="post" th:action="@{/notice/new}" class="notice-form" enctype="multipart/form-data">
             <div class="form-group">
                 <label>제목</label>
                 <input type="text" name="title" required placeholder="제목입력">
@@ -11,7 +11,7 @@
 
             <div class="form-group">
                 <label>작성자</label>
-                <input type="text" name="writer" required placeholder="작성자 이름">
+                <input type="text" name="writer" required placeholder="작성자 이름" th:value="${session.webuserName}" readonly>
             </div>
 
             <div class="form-group checkbox-group" th:if="${session.role_id == 1}">
@@ -23,6 +23,11 @@
             <div class="form-group">
                 <label>내용</label>
                 <textarea name="content" rows="12" placeholder="공지 내용 작성"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>첨부파일</label>
+                <input type="file" name="file" class="file-input">
             </div>
 
             <div class="button-group">

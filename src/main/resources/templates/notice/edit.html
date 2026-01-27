@@ -5,7 +5,7 @@
             <h2>📝공지 수정</h2>
         </div>
 
-        <form th:action="@{/notice/edit}" method="post" class="notice-form">
+        <form th:action="@{/notice/edit}" method="post" class="notice-form" enctype="multipart/form-data">
 
             <input type="hidden" name="noticeId"
                    th:value="${notice.noticeId}">
@@ -17,18 +17,26 @@
 
             <div class="form-group">
                 <label>작성자</label>
-                <input type="text" name="writer" th:value="${notice.writer}" required>
+                <input type="text" name="writer" th:value="${session.webuserName}" readonly>
             </div>
 
             <div class="form-group checkbox-group" th:if="${session.role_id ==1}">
                 <label for="pinYn">상단 고정 공지 설정</label>
-                <input type="checkbox" id="pinYn" name="pinYn" th:checked="${notice.pinYn == 'Y'}">
+                <input type="checkbox" id="pinYn" name="pinYn" value="Y" th:checked="${notice.pinYn == 'Y'}">
             </div>
             <input th:if="${session.role_id != 1}" type="hidden" name="pinYn" th:value="${notice.pinYn}">
 
             <div class="form-group">
                 <label>내용</label>
                 <textarea name="content" rows="12" th:text="${notice.content}"></textarea>
+            </div>
+
+            <div class="file-edit-section">
+                <label>현재 파일:</label>
+                <span th:text="${notice.orgFileName != null ? notice.orgFileName : '없음'}"></span>
+                <br>
+                <label>변경할 파일</label>
+                <input type="file" name="file">
             </div>
 
             <div class="button-group">
@@ -67,4 +75,25 @@
 
         </form>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function(){
+            const pinCheckBox =document.querySelector('input[name="pinYn"]');
+            if(pinCheckBox){
+                pinCheckBox.addEventListener("change", function(){
+                    if(this.checked){
+                        fetch('/notice/pinned-count')
+                            .then(response => response.json())
+                            .then(count => {
+                                if(count >=3){
+                                    alert("고정 공지는 최대 3게까지입니다.");
+                                    this.checked=false;
+                                }
+                            })
+                            .catch(error => console.error("Error fetching pin count:", error));
+                    }
+                })
+            }
+        })
+    </script>
 </section>

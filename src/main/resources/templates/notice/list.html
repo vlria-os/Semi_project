@@ -53,15 +53,36 @@
         <div class="pagination_wrap">
             <ul th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
                 <li th:if="${pageInfo.startPageNum > 1}">
-                    <a th:href="@{/notice/list(pageNum=${pageInfo.startPageNum - 1}, keyword=${keyword})}">[이전]</a>
+                    <a th:href="@{/notice/list(pageNum=${pageInfo.startPageNum - 1}, keyword=${keyword}, startDate=${startDate}, endDate=${endDate})}">[이전]</a>
                 </li>
-                <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum), keyword=${keyword}}">
-                    <a th:href="@{/notice/list(pageNum=${num})}">[[${num}]]</a>
+                <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
+                    <a th:href="@{/notice/list(pageNum=${num}, keyword=${keyword}, startDate=${startDate}, endDate=${endDate})}">[[${num}]]</a>
                 </li>
                 <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
-                    <a th:href="@{/notice/list(pageNum=${pageInfo.endPageNum + 1}), keyword=${keyword}}">[다음]</a>
+                    <a th:href="@{/notice/list(pageNum=${pageInfo.endPageNum + 1}, keyword=${keyword}, startDate=${startDate}, endDate=${endDate})}">[다음]</a>
                 </li>
             </ul>
         </div>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function(){
+            const pinCheckBox =document.querySelector('input[name="pinYn"]');
+            if(pinCheckBox){
+                pinCheckBox.addEventListener("change", function(){
+                    if(this.checked){
+                        fetch('/notice/pinned-count')
+                            .then(response => response.json())
+                            .then(count => {
+                                if(count >=3){
+                                    alert("고정 공지는 최대 3게까지입니다.");
+                                    this.checked=false;
+                                }
+                            })
+                            .catch(error => console.error("Error fetching pin count:", error));
+                    }
+                })
+            }
+        })
+    </script>
 </section>

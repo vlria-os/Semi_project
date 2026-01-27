@@ -5,11 +5,25 @@ import com.example.demo.dto.NoticeReplyDto;
 import com.example.demo.service.NoticeService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriUtils;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
+import java.util.UUID;
 
 @Controller
 @RequiredArgsConstructor
@@ -74,7 +88,22 @@ public class NoticeController {
 
     // 등록 처리
     @PostMapping("/notice/new")
-    public String save(NoticeDto notice, HttpSession session) {
+    public String save(NoticeDto notice, HttpSession session, @RequestParam("file")MultipartFile file) throws IOException {
+        if(!file.isEmpty()){
+            String uploadDir= "D:/";
+            File dir=new File(uploadDir);
+            if(!dir.exists()) dir.mkdirs();
+
+            String orgFileName= file.getOriginalFilename();
+            String saveFileName= UUID.randomUUID() + "_" + orgFileName;
+
+            file.transferTo(new File(uploadDir + saveFileName));
+
+            notice.setOrgFileName(orgFileName);
+            notice.setSaveFileName(saveFileName);
+            notice.setFilePath(uploadDir);
+        }
+
         Integer roleId= (Integer) session.getAttribute("role_id");
         if(roleId == null || roleId != 1){
             notice.setPinYn("N");
@@ -121,7 +150,28 @@ public class NoticeController {
     }
     //수정처리 (POST)
      @PostMapping("/notice/edit")
-    public String edit(NoticeDto notice) {
+    public String edit(NoticeDto notice, @RequestParam("file") MultipartFile file) throws IOException{
+        if(file != null && !file.isEmpty()){
+            NoticeDto oldNotice= noticeService.getNoticeDetail(notice.getNoticeId());
+            if(oldNotice.getSaveFileName() != null){
+                File oldFile= new File(oldNotice.getFilePath() + oldNotice.getSaveFileName());
+                if(oldFile.exists()) oldFile.delete();
+            }
+            String uploadDir= "D:/";
+            String orgFileName= file.getOriginalFilename();
+            String saveFileName= UUID.randomUUID() + "_" + orgFileName;
+            file.transferTo(new File(uploadDir + saveFileName));
+
+            notice.setOrgFileName(orgFileName);
+            notice.setSaveFileName(saveFileName);
+            notice.setFilePath(uploadDir);
+        }else {
+            NoticeDto oldNotice= noticeService.getNoticeDetail(notice.getNoticeId());
+            notice.setOrgFileName(oldNotice.getOrgFileName());
+            notice.setSaveFileName(oldNotice.getSaveFileName());
+            notice.setFilePath(oldNotice.getFilePath());
+        }
+
         if(notice.getPinYn() == null) {
             notice.setPinYn("N");
         }
@@ -143,12 +193,28 @@ public class NoticeController {
     @GetMapping("/notice/reply/delete/{replyId}/{noticeId}")
     public String deleteReply(@PathVariable Long replyId, @PathVariable Long noticeId){
         noticeService.deleteReply(replyId);
-        return "redirect:/notice/detail//" + noticeId;
+        return "redirect:/notice/detail/" + noticeId;
     }
 
     @PostMapping("/notice/reply/edit")
     public String updateReply(NoticeReplyDto replyDto){
         noticeService.updateReply(replyDto);
         return "redirect:/notice/detail/" + replyDto.getNoticeId();
+    }
+    @GetMapping("/notice/pinned-count")
+    @ResponseBody
+    public int getPinnedCount(){
+        return noticeService.getPinnedNotices().size();
+    }
+
+    @GetMapping("/notice/download/{id}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable Long id) throws IOException{
+        NoticeDto notice= noticeService.getNoticeDetail(id);
+        Path path= Paths.get(notice.getFilePath() + notice.getSaveFileName());
+        Resource resource= new InputStreamResource(Files.newInputStream(path));
+
+        String encodedName= UriUtils.encode(notice.getOrgFileName(), StandardCharsets.UTF_8);
+
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM).header(HttpHeaders.CONTENT_DISPOSITION, "attachmentl; filename=\"" + encodedName + "\"").body(resource);
     }
 }
