@@ -1,16 +1,16 @@
 
 <nav th:fragment="nav">
     <ul class="nav-tabs">
-        <li><a th:href="@{/}" th:classappend="${#httpServletRequest !=null && #httpServletRequest.requestURI.contains('/notice')} ? 'active' : ''">공지사항</a></li>
-        <li><a th:href="@{/content/requestList_admin}" th:classappend="${#httpServletRequest !=null && #httpServletRequest.requestURI.contains('/content/requestList')} ? 'active' : ''">입출고 승인</a></li>
-        <li><a th:href="@{/content/productList}" th:classappend="${#httpServletRequest !=null && #httpServletRequest.requestURI.contains('/content/productList')} ? 'active' : ''">상품 조회</a></li>
-        <li><a th:href="@{/stockList}" th:classappend="${#httpServletRequest !=null && #httpServletRequest.requestURI.contains('/stockList')} ? 'active' : ''">재고 조회</a></li>
-        <li><a th:href="@{/progress}" th:classappend="${#httpServletRequest !=null && #httpServletRequest.requestURI.contains('/progress')} ? 'active' : ''">내역</a></li>
+        <li><a th:href="@{/notice/list}" th:classappend="${currentUri == '/' || currentUri == '/login/ok' || (currentUri.contains('/notice'))} ? 'active' : ''">공지사항</a></li>
+        <li><a th:href="@{/content/requestList_admin}" th:classappend="${currentUri != null && currentUri.contains('/content/requestList')} ? 'active' : ''">입출고 승인</a></li>
+        <li><a th:href="@{/content/productList}" th:classappend="${currentUri != null && currentUri.contains('/content/productList')} ? 'active' : ''">상품 조회</a></li>
+        <li><a th:href="@{/stockList}" th:classappend="${currentUri != null && currentUri.contains('/stockList')} ? 'active' : ''">재고 조회</a></li>
+        <li><a th:href="@{/progress}" th:classappend="${currentUri != null && currentUri.contains('/progress')} ? 'active' : ''">내역</a></li>
 <!--        <li><a th:href="@{/approval/list}" th:classappend="${#httpServletRequest !=null && #httpServletRequest.requestURIi.contains('/approval/list')} ? 'active' : ''">승인 내역</a></li>-->
 <!--        <li><a th:href="@{/content/confirmList}" th:classappend="${#httpServletRequest !=null && #httpServletRequest.requestURI.contains('/content/confirmList')} ? 'active' : ''">확인 내역</a></li>-->
-        <li><a th:href="@{/warehouse/list}" th:classappend="${#httpServletRequest !=null && #httpServletRequest.requestURI.contains('/warehouse/list')} ? 'active' : ''">창고 관리</a></li>
-        <li><a th:href="@{/webuser/list}" th:classappend="${#httpServletRequest !=null && #httpServletRequest.requestURI.contains('/webuser/list')} ? 'active' : ''">계정 관리</a></li>
-        <li><a th:href="@{/payment}" th:classappend="${#httpServletRequest !=null && #httpServletRequest.requestURI.contains('/payment')} ? 'active' : ''">월말 정산</a></li>
-        <li><a th:href="@{/stats/statistics}">매출 통계</a></li>
+        <li><a th:href="@{/warehouse/list}" th:classappend="${currentUri != null && currentUri.contains('/warehouse/list')} ? 'active' : ''">창고 관리</a></li>
+        <li><a th:href="@{/webuser/list}" th:classappend="${currentUri != null && currentUri.contains('/webuser/list')} ? 'active' : ''">계정 관리</a></li>
+        <li><a th:href="@{/payment}" th:classappend="${currentUri != null && currentUri.contains('/payment')} ? 'active' : ''">월말 정산</a></li>
+        <li><a th:href="@{/stats/statistics}" th:classappend="${currentUri != null && currentUri.contains('/stats/statistics')} ? 'active' : ''">매출 통계</a></li>
     </ul>
 </nav>

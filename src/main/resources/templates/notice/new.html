@@ -1,0 +1,24 @@
+<section xmlns:th="http://www.thymeleaf.org" th:fragment="content">
+<h2>공지 등록</h2>
+
+<form method="post" action="/notice/new">
+    제목<br>
+    <input type="text" name="title" required
+           size="25"
+           style="height:40px; font-size:20px;"><br><br>
+
+    작성자<br>
+    <input type="text" name="writer" required
+           size="15"
+           style="height:40px; font-size:20px;"><br><br>
+    고정공지<br>
+    <input type="checkbox" name="pinYn" value="Y"
+           style="transform: scale(1.5);"
+           th:checked="${notice?.pinYn == 'Y'}"/><br><br>
+    내용 <br>
+    <textarea name="content" rows="10" cols="50"
+    style="font-size:16px;">
+    </textarea><br><br>
+    <button type="submit">등록</button>
+</form>
+</section>

@@ -218,8 +218,8 @@ public class WebuserChatController {
     @GetMapping("/chat/unread/total")
     @ResponseBody
     public int totalUnread(HttpSession session) {
-        int userId = (int) session.getAttribute("webuser_id");
-
+        Integer userId = (Integer) session.getAttribute("webuser_id");
+        if (userId == null) return 0;
         return service.getTotalUnread(userId);
     }
 

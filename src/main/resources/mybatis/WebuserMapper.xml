@@ -5,30 +5,43 @@
 <mapper namespace="com.example.demo.mapper.WebuserMapper">
     <select id="webuserList" parameterType="map"
             resultType="WebuserDto">
-        select * from
-        (
-        select rownum rn, m.* from
-        (
-        select * from webuser
-        <include refid="search"/>
-        order by webuser_id
-        ) m
-        where m.webuser_id != 0
+        select * from (
+            select w.*, rownum rn from (
+                select
+                    webuser_id,
+                    id,
+                    password,
+                    webuser_name,
+                    role_id,
+                    is_active,
+                    created_at
+                from webuser
+                <include refid="search"/>
+                order by webuser_id desc
+            ) w
         )
         <![CDATA[ where rn >=#{startRow} and rn <=#{endRow} ]]>
     </select>
     <select id="count" resultType="int" parameterType="map">
-        select * from (
-        select NVL(count(*),0) from webuser
-        where webuser_id != 0
-        )
+        select count(*) from webuser
         <include refid="search"/>
     </select>
     <!-- 검색 조건문 -->
     <sql id="search">
-        <if test="field != null and field != ''">
-            where ${field} like '%'||#{keyword}||'%'
-        </if>
+        <where>
+            webuser_id != 0
+            <if test="field != null and field != '' and field != 'all'">
+                and is_active = upper(#{field})
+            </if>
+
+            <if test="keyword != null and keyword != ''">
+                and (
+                    cast (webuser_id as varchar2(100)) like '%' || #{keyword} || '%' or
+                    id like '%' || #{keyword} || '%' or
+                    webuser_name like '%' || #{keyword} || '%'
+                )
+            </if>
+        </where>
     </sql>
     <select id="selectWebuser" parameterType="int" resultType="WebuserDto">
         select * from webuser where webuser_id = #{value}
@@ -38,7 +51,7 @@
         is_active=#{is_active} where webuser_id=#{webuser_id}
     </update>
     <insert id="insertWebuser" parameterType="WebuserDto">
-        insert into webuser values(webuser_seq.nextval,#{id},#{password},#{webuser_name},#{role_id},'y',sysdate)
+        insert into webuser values(webuser_seq.nextval,#{id},#{password},#{webuser_name},#{role_id},'Y',sysdate)
     </insert>
     <delete id="deleteWebuser" parameterType="int">
         delete from webuser where webuser_id=#{value}

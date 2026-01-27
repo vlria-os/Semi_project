@@ -4,10 +4,13 @@ import com.example.demo.ChatPresenceStore;
 import com.example.demo.dto.*;
 import com.example.demo.service.ChattingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 
 import java.util.HashMap;
 import java.util.List;
@@ -170,6 +173,19 @@ public class ChatSocketController {
         );
     }
 
+    @EventListener
+    public void handleDisconnect(SessionDisconnectEvent event) {
+        StompHeaderAccessor sha = StompHeaderAccessor.wrap(event.getMessage());
+        Map<String, Object> attrs = sha.getSessionAttributes();
+        if (attrs == null) return;
 
+        Integer roomId = (Integer) attrs.get("roomId");
+        Integer userId = (Integer) attrs.get("userId");
+        if (roomId == null || userId == null) return;
+
+        store.leaveRoom(roomId, userId);
+
+        template.convertAndSend("/topic/presence/" + roomId, store.getUserCount(roomId));
+    }
 
 }

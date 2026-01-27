@@ -26,6 +26,7 @@ public class CalendarController {
     @GetMapping("/work/calendar")
     public String calendar(Model model,
                            @RequestParam(required = false) Integer targetUserId,
+                           @RequestParam(required = false) String returnUrl,
                            HttpSession session){
         Integer myId=(Integer) session.getAttribute("webuser_id");
         Integer roleId=(Integer) session.getAttribute("role_id");
@@ -53,6 +54,7 @@ public class CalendarController {
         }
 
         model.addAttribute("content", "content/Calendar");
+        model.addAttribute("returnUrl",returnUrl);
         return "layout";
     }
 

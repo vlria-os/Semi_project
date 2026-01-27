@@ -2,6 +2,7 @@ package com.example.demo.controller.sidebar;
 
 import com.example.demo.dto.SearchDto;
 import com.example.demo.service.DueDateService;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +22,7 @@ public class DueDateController {
                           @RequestParam(value = "typeFilter", defaultValue = "all") String typeFilter,
                           @RequestParam(value = "warehouseFilter", required = false) String warehouseFilter,
                           @RequestParam(value = "isAjax", defaultValue = "false") boolean isAjax,
+                          HttpSession session,
                           Model model){
 
         String keyword= searchDto.getKeyword();
@@ -39,7 +41,14 @@ public class DueDateController {
         model.addAttribute("typeFilter", typeFilter);
         model.addAttribute("warehouseFilter", warehouseFilter);
         model.addAttribute("searchDto", searchDto);
-        model.addAttribute("navFragment", "fragment/nav/adminNav");
+        Integer roleId = (Integer) session.getAttribute("role_id");
+        String nav= switch (roleId != null ? roleId : 1){
+            case 2 -> "officeNav";
+            case 3 -> "fieldNav";
+            default -> "adminNav";
+        };
+
+        model.addAttribute("navFragment", "fragment/nav/" + nav);
         model.addAttribute("content", "fragment/sidebar/dueDate");
 
         if(isAjax){return "fragment/sidebar/dueDate :: #dueDateContainer";}

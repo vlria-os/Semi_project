@@ -121,8 +121,10 @@
     <!-- 관리자용 입고 요청 내역 -->
     <select id="inboundAll" parameterType="map" resultType="InboundAllDto">
         select * from
-        (select rownum rn,m.* from
-        (select
+        (
+        select rownum rn,m.* from
+        (
+        select
         i.inbound_id as inbound_id,
         min(p.product_name) ||
         case when count(*)>1 then ' 외 ' || (count(*)-1) || '개'
@@ -141,14 +143,23 @@
         where i.approval_status='REQUEST'
         group by i.inbound_id,w.webuser_name,i.approval_status,
         i.is_refund,i.request_date
-        order by i.inbound_id desc)m)
-        <![CDATA[where rn>=#{startRow} and rn<=#{endRow}]]>
+        order by i.inbound_id desc
+        ) m
+        ) t
+        <![CDATA[where t.rn>=#{startRow} and t.rn<=#{endRow}]]>
     </select>
 
     <!-- 관리자용 입고 요청 페이징용 입고 요청 건수 -->
     <select id="adminInboundCount" resultType="int">
-        select NVL(count(*),0) from inbound
-        where approval_status = 'REQUEST'
+        select count(*)
+        from (
+        select i.inbound_id
+        from inbound i
+        join inbound_detail d on i.inbound_id=d.inbound_id
+        join product p on d.product_id=p.product_id
+        where i.approval_status='REQUEST'
+        group by i.inbound_id
+        )
     </select>
 
     <!-- 직원용 입고 요청 내역 -->
@@ -194,8 +205,15 @@
 
     <!-- 관리자용 출고 요청 페이징용 출고 요청 건수 -->
     <select id="adminOutboundCount" resultType="int">
-        select NVL(count(*),0) from outbound
-        where approval_status = 'REQUEST'
+        select count(*)
+        from (
+        select o.outbound_id
+        from outbound o
+        join outbound_detail d on o.outbound_id=d.outbound_id
+        join product p on d.product_id=p.product_id
+        where o.approval_status='REQUEST'
+        group by o.outbound_id
+        )
     </select>
 
     <!-- 직원용 출고 요청 내역 -->

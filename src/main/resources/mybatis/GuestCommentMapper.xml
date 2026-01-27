@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.example.demo.mapper.GuestCommentMapper">
+<!--  댓글 목록 조회-->
+    <select id="selectByBoardId" parameterType="int" resultType="GuestCommentDto">
+        select id,board_id as boardId,name,password,content,created_at as createAt
+        from guest_comment
+        where board_id=#{boardId}
+        order by id desc
+    </select>
+<!--댓글 등록-->
+    <insert id="insertComment" parameterType="GuestCommentDto">
+        insert into guest_comment(id,board_id, name,password,content,created_at)
+        values(guest_comment_seq.nextval, #{boardId},#{name},#{password},#{content},sysdate)
+    </insert>
+<!--댓글 삭제-->
+
+    <delete id="delete" >
+        delete from guest_comment where id=#{id}  AND password = #{password}
+    </delete>
+
+    <select id="findById" parameterType="map" resultType="GuestCommentDto">
+        select * from guest_comment where id=#{id} and password=#{password}
+    </select>
+</mapper>

@@ -56,17 +56,19 @@
 
     <select id="count" resultType="int" parameterType="map">
         select count(*)
-            from product p
-                join (
-                select
-                category_id,
-                ltrim(sys_connect_by_path(category_name,'>'),'>') as category_path
-                from category
-                start with parent_id is null
-                connect by prior category_id = parent_id
-                ) c on p.category_id = c.category_id
-            left join product_image i on p.image_id = i.image_id
+        from (
+        select distinct p.product_id
+        from product p
+        join (
+        select category_id,
+        LTRIM(SYS_CONNECT_BY_PATH(category_name, '>'), '>') as category_path
+        from category
+        start with parent_id is null
+        connect by prior category_id = parent_id
+        ) c on p.category_id = c.category_id
+        left join product_image i on p.image_id = i.image_id
         <include refid="productSearch"/>
+        )
 <!--        select count(*)-->
 <!--        from product p-->
 <!--        join (-->

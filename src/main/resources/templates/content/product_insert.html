@@ -43,8 +43,10 @@
             </div>
 
             <div class="form-group">
-                <label>이미지 첨부</label>
-                <input type="file" th:field="*{file}">
+                <div class="file-upload-wrapper">
+                    <label for="file" class="custom-file-upload">📁이미지 첨부</label>
+                    <input type="file" id="file" th:field="*{file}">
+                </div>
             </div>
 
             <button type="submit">상품 등록하기</button>
@@ -90,7 +92,7 @@
 
     categoryArea.addEventListener("change", function(e) {
         if(e.target.classList.contains('category-select')){
-            const parentId=e.target.value;
+            const selectedId=e.target.value;
             const currentLevel=parseInt(e.target.getAttribute('data-level'));
             const allSelects=categoryArea.querySelectorAll(".category-select");
 
@@ -99,11 +101,11 @@
                     select.remove();
                 }
             });
-            finalInput.value= parentId;
+            finalInput.value= selectedId;
 
-            if(!parentId) return;
+            if(!selectedId) return;
 
-            fetch(`/content/product_category?parentId=${parentId}`)
+            fetch(`/content/product_category?parentId=${selectedId}`)
                 .then(resp => resp.json())
                 .then(data => {
                     if(data && data.length > 0){
@@ -113,7 +115,7 @@
                         newSelect.className= 'category-select';
                         newSelect.setAttribute('data-level', nextLevel);
                         newSelect.style.marginTop= "10px";
-                        newSelect.innerHTML=`<option value=">하위 카테고리 선택</option>"`;
+                        newSelect.innerHTML=`<option value="">하위 카테고리 선택</option>`;
 
                         data.forEach(c => {
                             const opt= document.createElement("option");
@@ -122,6 +124,7 @@
                             newSelect.appendChild(opt);
                         });
                         categoryArea.appendChild(newSelect);
+                        finalInput.value="";
                     }
                 })
             .catch(error => console.error("Error fetching SubCategories: ", error));

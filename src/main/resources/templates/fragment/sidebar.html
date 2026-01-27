@@ -35,6 +35,7 @@
                 <ul th:if="${not #lists.isEmpty(dueList)}">
                     <li th:each="item : ${dueList}">
                         <span th:text="${item.product_name}"></span>
+                        <span th:text="${item.quantity}+ '개'"></span>
                         <span style="color: #ef4444; font-weight: bold;" th:text="'D-' + ${item.days_left}"></span>
                     </li>
                 </ul>
@@ -48,7 +49,7 @@
         <div class="storage-limit">
             <div class="side-title">
                 <span class="storage-icon">🏗️창고 한계 임박</span>
-                <a th:href="@{/warehouse/insert}" style="font-weight: bold; color: var(--navy); text-decoration: none;">+새창고 등록</a>
+                <a th:href="@{/warehouse/insert}" style="font-weight: bold; color: var(--navy); text-decoration: none;" th:if="${session.role_id==1}">+새창고 등록</a>
             </div>
             <!-- 재고 한계 임박 목록(10게(CSS))-->
             <div class="side-content">

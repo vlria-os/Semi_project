@@ -47,7 +47,7 @@ public class ApiAdsController {
     @ResponseBody
     public List<LocalProductDto> getGwangjuLocalProducts() throws Exception {
         String url = "http://api.nongsaro.go.kr/service/localSpcprd/localSpcprdLst"
-                + "?apiKey=내_키"
+                + "?apiKey="
                 + "&sAreaNm=광주광역시";
 
         //xml을 문자열로 받기
@@ -91,7 +91,7 @@ public class ApiAdsController {
 
     private List<LocalProductDto> fetchListByAreaNm(String areaNm) throws Exception{
         String url = "http://api.nongsaro.go.kr/service/localSpcprd/localSpcprdLst"
-                + "?apiKey=내_키"
+                + "?apiKey="
                 + "&sAreaNm=" + areaNm
                 + "&pageNo=1" + "&numOfRows=300";
 

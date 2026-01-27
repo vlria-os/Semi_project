@@ -87,7 +87,7 @@
                 <h2>출고내역</h2>
                 <button th:if="${session.role_id == 1}"><a th:href="@{/download}">내역 다운로드</a></button>
                 <div class="search-container">
-                    <form th:action="@{/progress_out}" method="get">
+                    <form th:action="@{/progress/out}" method="get">
                         <input type="text" name="keyword" placeholder="입고 번호, 상품명 또는 아이디 검색"
                                th:value="${keyword}">
                         <button type="submit">검색</button>

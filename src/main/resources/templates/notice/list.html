@@ -1,0 +1,57 @@
+<section xmlns:th="http://www.thymeleaf.org" th:fragment="content">
+    <link rel="stylesheet" th:href="@{/css/notice/list.css}">
+    <div class="main">
+
+        <h2>📌공지사항</h2>
+        <a href="/notice/new">공지 등록</a>
+    <!--<form method="get" action="/notice/list"> -->
+        <form class="search-form"  method="get" action="/notice/list">
+<!--            <input type="text" name="searchBar">-->
+            <input type="date" name="startDate">
+            ~
+            <input type="date" name="endDate">
+            <button type="submit">검색</button>
+        </form>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>번호</th>
+                    <th>제목</th>
+                    <th>작성자</th>
+                    <th>작성일</th>
+                    <th>조회수</th>
+                </tr>
+            </thead>
+
+            <tbody id="noticeBody">
+
+            <ul th:if="${pinnedNotices != null}" class="pinnedNotices">
+                <li th:each="notice : ${pinnedNotices}">
+                    <a th:href="@{/notice/detail/{id}(id=${notice.noticeId})}"
+                       th:text="${notice.title}">공지제목</a>
+                </li>
+            </ul>
+                <tr th:each="notice : ${noticeList}" th:onclick="|location.href='@{/notice/detail/{id}(id=${notice.noticeId})}'|" style="cursor: pointer;">
+                    <td th:text="${notice.noticeId}"></td>
+                    <td th:text="${notice.title}">
+                        <!--        <a th:href="@{/notice/detail/{id}(id=${notice.noticeId})}"></a>-->
+                    </td>
+                    <td th:text="${notice.writer}"></td>
+                    <td th:text="${#temporals.format(notice.createdAt, 'yyyy-MM-dd')}"></td>
+                    <td th:text="${notice.viewCount}"></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <br>
+
+        <a th:if="${page > 1}"
+           th:href="@{/notice/list(page=${prevPage})}">이전</a>
+
+        <span th:text="${page}"></span>
+
+        <a th:if="${hasNext}"
+           th:href="@{/notice/list(page=${nextPage})}">다음</a>
+    </div>
+</section>

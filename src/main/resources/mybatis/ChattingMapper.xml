@@ -349,6 +349,7 @@
         SELECT u.webuser_id, u.webuser_name
         FROM webuser u
         WHERE u.webuser_id != #{myId}
+        AND u.webuser_id != 0
         AND NOT EXISTS (
         SELECT 1
         FROM chat_room_user cru

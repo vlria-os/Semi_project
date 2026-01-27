@@ -36,7 +36,7 @@
         <div id="expiredListContainer">
             <table class="expiredListTable">
                 <tr>
-                    <th>상품명</th><th>보관상태</th><th>창고</th><th>재고수량</th><th>만료일</th><th>경과일</th>
+                    <th>상품명</th><th>보관상태</th><th>창고</th><th>재고수량</th><th>만료일</th><th>출고여부</th>
                 </tr>
                 <tr th:each=" list : ${list}">
                     <td th:text="${list.product_name}"></td>
@@ -44,13 +44,13 @@
                     <td th:text="${list.warehouse_name}"></td>
                     <td th:text="${list.quantity}"></td>
                     <td th:text="${#dates.format(list.expiration_date, 'yy-MM-dd HH:MM')}"></td>
-                    <td class="expired-text" th:text="${list.days_left} + '일 경과'"></td>
+                    <td class="expired-text" th:text="${days_left != null} ? 'Yes' : 'No'"></td>
                 </tr>
             </table>
 
             <!-- 페이징 처리-->
             <div class="pagination_wrap">
-                <ul>
+                <ul th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
                     <li th:if="${pageInfo.startPageNum > 1}">
                         <a th:href="@{/sidebar/expiredList(pageNum=${pageInfo.startPageNum -1}, field=${searchDto.field}, keyword=${searchDto.keyword})}">[이전]</a>
                     </li>

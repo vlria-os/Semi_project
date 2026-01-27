@@ -19,7 +19,7 @@
                 <td th:text="${l.product_name}"></td>
                 <td th:text="${l.webuser_name}"></td>
                 <td th:text="${l.is_refund}"></td>
-                <td th:text="${#temporals.format(l.request_date, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                <td th:text="${#temporals.format(l.request_date, 'yy-MM-dd HH:mm')}"></td>
                 <td><button type="button"
                             th:attr="data-inbound-id=${l.inbound_id}"
                             onclick="showInDetail(this)">상세보기</button></td>
