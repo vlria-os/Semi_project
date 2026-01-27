@@ -122,17 +122,19 @@
     <td><input type="number" class="qty" min="1" value="${saved?.qty ?? ''}" ${saved ? '' : 'disabled'} style="width:60px;"></td>
 </tr>
 `;
-
         if(saved){
         const row = tbody.lastElementChild;
         const warehouseSelect = row.querySelector('.warehouse');
         const qtyInput = row.querySelector('.qty');
         qtyInput.disabled = false;
         await loadWarehouses(warehouseSelect, p.status, saved.warehouse);
+        }
     }
+        renderPaging(result.pageInfo);
     }
 
-        renderPaging(result.pageInfo);
+    function renderPaging(pageInfo){
+
     }
 
         // 체크박스, 창고, 수량 이벤트
