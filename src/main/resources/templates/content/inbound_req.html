@@ -193,6 +193,17 @@
         // 데이터만 초기화 (UI는 유지)
         Object.keys(selectedMap).forEach(id => delete selectedMap[id]);
             sessionStorage.removeItem('selectedMap');
+            document.querySelectorAll('#productBody tr').forEach(row => {
+                const checkbox = row.querySelector('.chk');
+                const warehouse = row.querySelector('.warehouse');
+                const qty = row.querySelector('.qty');
+
+                checkbox.checked = false;
+                warehouse.innerHTML = '<option value="">선택</option>';
+                warehouse.disabled = true;
+                qty.value = '';
+                qty.disabled = true;
+            });
     })
         .catch(err => console.error(err));
     }
