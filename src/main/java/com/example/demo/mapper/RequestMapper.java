@@ -80,9 +80,12 @@ public interface RequestMapper {
     List<ApprovalDto> approvalAll(Map<String,Object> map);
 
     //field용
-    List<ApprovalConfDto> approvalConfIn();
+    List<ApprovalConfDto> approvalConfIn(Map<String,Object> map);
 
-    List<ApprovalConfDto> approvalConfOut();
+    List<ApprovalConfDto> approvalConfOut(Map<String,Object> map);
+
+    int approvalConfIn_count();
+    int approvalConfOut_count();
 
     int approvalCount(Map<String,Object> map);
 

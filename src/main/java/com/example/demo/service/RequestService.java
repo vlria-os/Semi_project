@@ -367,11 +367,34 @@ public class RequestService {
 //    }
 
 
-    public List<ApprovalConfDto> getApprovalConfIn(){
-        return mapper.approvalConfIn();
+    public Map<String,Object> getApprovalConfIn(int pageNum){
+        Map<String,Object> map=new HashMap<>();
+
+        int totalRowCount=mapper.approvalConfIn_count();
+        PageInfo pageInfo=new PageInfo(pageNum,10,5,totalRowCount);
+
+        map.put("startRow",pageInfo.getStartRow());
+        map.put("endRow",pageInfo.getEndRow());
+
+        Map<String,Object> result=new HashMap<>();
+        result.put("list",mapper.approvalConfIn(map));
+        result.put("pageInfo",pageInfo);
+        return result;
     }
 
-    public List<ApprovalConfDto> getApprovalConfOut(){
-        return mapper.approvalConfOut();
+    public Map<String,Object> getApprovalConfOut(int pageNum){
+        Map<String,Object> map=new HashMap<>();
+
+        int totalRowCount=mapper.approvalConfOut_count();
+        PageInfo pageInfo=new PageInfo(pageNum,10,5,totalRowCount);
+
+        map.put("startRow",pageInfo.getStartRow());
+        map.put("endRow",pageInfo.getEndRow());
+
+        Map<String,Object> result=new HashMap<>();
+        result.put("list",mapper.approvalConfOut(map));
+        result.put("pageInfo",pageInfo);
+
+        return result;
     }
 }

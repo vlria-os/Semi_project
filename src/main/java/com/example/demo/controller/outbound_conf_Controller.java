@@ -13,8 +13,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequiredArgsConstructor
@@ -24,10 +26,12 @@ public class outbound_conf_Controller {
     private final Ref_ExpService refExpService;
 
     @GetMapping("/field_staff/outbound_conf")
-    public String outbound_confFrom(Model model){
-        List<ApprovalConfDto> list=requestService.getApprovalConfOut();
+    public String outbound_confFrom(Model model,
+                                    @RequestParam(name = "pageNum", defaultValue = "1") int pageNum){
+        Map<String,Object> map=requestService.getApprovalConfOut(pageNum);
 
-        model.addAttribute("list", list);
+        model.addAttribute("list", map.get("list"));
+        model.addAttribute("pageInfo", map.get("pageInfo"));
         model.addAttribute("navFragment", "fragment/nav/fieldNav");
         model.addAttribute("content", "content/approvalList_field_out");
 

@@ -337,7 +337,7 @@
         where bound_type = #{boundType}
     </select>
 
-    <select id="approvalConfIn" resultType="ApprovalConfDto">
+    <select id="approvalConfIn" parameterType="map" resultType="ApprovalConfDto">
         select * from
             (select rownum rn, w.* from
                 (select
@@ -372,11 +372,11 @@
             case when d.inbound_status = 'REQUEST' then 1 else 0 end
             ) > 0
         order by a.created_at desc)w)
+        <![CDATA[where rn >= #{startRow} and rn <= #{endRow}]]>
     </select>
 
     <select id="approvalConfOut" resultType="ApprovalConfDto">
-        select *
-            from (
+        select * from (
                 select rownum rn, w.*
                 from (
                     select
@@ -415,7 +415,82 @@
         ) > 0
                 order by a.created_at desc
             ) w
-        )
+        ) <![CDATA[where rn >= #{startRow} and rn <= #{endRow}]]>
+    </select>
+    <select id="approvalConfIn_count">
+        select count(approval_id) from
+        (select
+        a.approval_id as approval_id,
+        w.webuser_name as approver_name,
+        i.inbound_id as inbound_id,
+        min(p.product_name) ||
+        case when count(*)>1 then ' 외 ' ||
+        (count(*)-1) || '개'
+        else '' end as product_name,
+        a.approval_status as approval_status,
+        CASE
+        WHEN SUM(CASE WHEN i.is_refund = 'Y' THEN 1 ELSE 0 END) > 0
+        THEN 'Y'
+        ELSE 'N'
+        END AS is_refund,
+        a.created_at as created_at
+        from approval a
+        join webuser w
+        on a.approver_id=w.webuser_id
+        join inbound i
+        on a.inbound_id=i.inbound_id
+        join inbound_detail d
+        on i.inbound_id=d.inbound_id
+        join product p
+        on d.product_id=p.product_id
+        where a.bound_type='IN' and a.approval_status='APPROVED'
+        group by a.approval_id, w.webuser_name,
+        i.inbound_id, a.approval_status,
+        a.created_at
+        having sum(
+        case when d.inbound_status = 'REQUEST' then 1 else 0 end
+        ) > 0
+        order by a.created_at desc)w
+    </select>
+    <select id="approvalConfOut_count">
+        select count(approval_id)
+        from (
+        select
+        a.approval_id,
+        w.webuser_name as approver_name,
+        o.outbound_id,
+        min(p.product_name) ||
+        case
+        when count(distinct d.product_id) > 1
+        then ' 외 ' || (count(distinct d.product_id) - 1) || '개'
+        else ''
+        end as product_name,
+        a.approval_status,
+        a.created_at,
+        case
+        when sum(case when l.is_expired = 'Y' then 1 else 0 end) > 0
+        then 'Y'
+        else 'N'
+        end as is_expired
+        from approval a
+        join webuser w on a.approver_id = w.webuser_id
+        join outbound o on a.outbound_id = o.outbound_id
+        join outbound_detail d on o.outbound_id = d.outbound_id
+        join product p on d.product_id = p.product_id
+        join lot_out l on l.outbound_detail_id = d.outbound_detail_id
+        where a.bound_type = 'OUT'
+        and d.approval_status = 'APPROVED'
+        group by
+        a.approval_id,
+        w.webuser_name,
+        o.outbound_id,
+        a.approval_status,
+        a.created_at
+        having sum(
+        case when d.outbound_status = 'REQUEST' then 1 else 0 end
+        ) > 0
+        order by a.created_at desc
+        ) w
     </select>
 
     <!-- ===============================

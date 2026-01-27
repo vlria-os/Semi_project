@@ -20,10 +20,12 @@ public class inbound_conf_Controller {
     private final RequestService requestService;
 
     @GetMapping("/field_staff/inbound_conf")
-    public String inbound_confFrom(Model model){
-        List<ApprovalConfDto> list=requestService.getApprovalConfIn();
+    public String inbound_confFrom(Model model,
+                                   @RequestParam(name = "pageNum", defaultValue = "1") int pageNum){
+        Map<String,Object> map=requestService.getApprovalConfIn(pageNum);
 
-        model.addAttribute("list", list);
+        model.addAttribute("list", map.get("list"));
+        model.addAttribute("pageInfo", map.get("pageInfo"));
         model.addAttribute("navFragment", "fragment/nav/fieldNav");
         model.addAttribute("content", "content/approvalList_field");
 

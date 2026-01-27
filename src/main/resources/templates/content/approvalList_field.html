@@ -18,6 +18,20 @@
       </tr>
     </table>
   </div>
+
+    <div class="pagination_wrap">
+      <ul th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
+        <li th:if="${pageInfo.startPageNum > 1}">
+          <a th:href="@{/field_staff/inbound_conf(pageNum=${pageInfo.startPageNum - 1})}">[이전]</a>
+        </li>
+        <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
+          <a th:href="@{/field_staff/inbound_conf(pageNum=${num})}">[[${num}]]</a>
+        </li>
+        <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
+          <a th:href="@{/field_staff/inbound_conf(pageNum=${pageInfo.endPageNum + 1})}">[다음]</a>
+        </li>
+      </ul>
+    </div>
   <script>
     function goInConf(){
       location.href="/field_staff/inbound_conf";

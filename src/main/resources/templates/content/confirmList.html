@@ -15,6 +15,20 @@
                 <td th:text="${l.request_date}"></td>
             </tr>
         </table>
+
+        <div class="pagination_wrap">
+            <ul th:if="${pageInfo != null and pageInfo.totalPageCount > 1}">
+                <li th:if="${pageInfo.startPageNum > 1}">
+                    <a th:href="@{/content/confirmList(pageNum=${pageInfo.startPageNum - 1})}">[이전]</a>
+                </li>
+                <li th:each="num:${#numbers.sequence(pageInfo.startPageNum,pageInfo.endPageNum)}">
+                    <a th:href="@{/content/confirmList(pageNum=${num})}">[[${num}]]</a>
+                </li>
+                <li th:if="${pageInfo.endPageNum < pageInfo.totalPageCount}">
+                    <a th:href="@{/content/confirmList(pageNum=${pageInfo.endPageNum + 1})}">[다음]</a>
+                </li>
+            </ul>
+        </div>
     </div>
 
     <script>
