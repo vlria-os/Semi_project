@@ -90,7 +90,7 @@ public class NoticeController {
     @PostMapping("/notice/new")
     public String save(NoticeDto notice, HttpSession session, @RequestParam("file")MultipartFile file) throws IOException {
         if(!file.isEmpty()){
-            String uploadDir= "D:/";
+            String uploadDir= "C:/image_Semi/";
             File dir=new File(uploadDir);
             if(!dir.exists()) dir.mkdirs();
 
@@ -157,7 +157,7 @@ public class NoticeController {
                 File oldFile= new File(oldNotice.getFilePath() + oldNotice.getSaveFileName());
                 if(oldFile.exists()) oldFile.delete();
             }
-            String uploadDir= "D:/";
+            String uploadDir= "C:/image_Semi/";
             String orgFileName= file.getOriginalFilename();
             String saveFileName= UUID.randomUUID() + "_" + orgFileName;
             file.transferTo(new File(uploadDir + saveFileName));
