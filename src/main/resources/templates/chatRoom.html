@@ -210,7 +210,7 @@
                     }));
                 }
 
-                notifyUnreadRefreshToOpener();
+                notifyUnreadRefreshToMain();
             });
 
             // ✅ read broadcast (내 메시지 read_count 감소용)
@@ -244,7 +244,7 @@
                     }
                 });
 
-                notifyUnreadRefreshToOpener();
+                notifyUnreadRefreshToMain();
             });
 
             // ✅ enter notify
@@ -529,20 +529,24 @@
         });
     }
 
-    function notifyUnreadRefreshToOpener(){
-        try{
-            if (window.opener && !window.opener.closed) {
-                window.opener.postMessage({ type: "REFRESH_TOTAL_UNREAD" }, window.location.origin);
-            }
-        }catch(e){}
-    }
-
     document.addEventListener("click", function(e){
         const modal = document.getElementById("membersModal");
         if(modal && modal.style.display !== "none" && e.target === modal){
             closeMembersModal();
         }
     });
+
+    function notifyUnreadRefreshToMain() {
+        try {
+            const target = (window.opener && window.opener.opener)
+                ? window.opener.opener
+                : window.opener;
+
+            if (target && !target.closed) {
+                target.postMessage({ type: "REFRESH_TOTAL_UNREAD" }, window.location.origin);
+            }
+        } catch (e) {}
+    }
 
     // 시작
     connect();

@@ -20,5 +20,5 @@ public interface Outbound_detailMapper {
     int update_reason(Outbound_detailDto outbound_detailDto);
     int select_quantity(int outbound_detail);
     List<String> select_detail_status(int outbound_id);
-    LocalDate select_expiration(int lot_out_id);
+    List<LocalDate> select_expiration(int lot_out_id);
 }

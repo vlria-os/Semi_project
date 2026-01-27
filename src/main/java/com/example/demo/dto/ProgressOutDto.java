@@ -14,6 +14,7 @@ public class ProgressOutDto {
     private int outbound_detail_id;
     private String product_name;
     private int quantity;
+    private String approval_status;
     private String is_expired;
     private String warehouse_name;
     private String requester_name;

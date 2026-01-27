@@ -94,8 +94,9 @@
                 d.outbound_detail_id,
                 p.product_name,
                 d.quantity,
-                l.is_expired,
-                w.warehouse_name,
+                a.approval_status,
+                nvl(l.is_expired, 'N') as is_expired,
+                nvl(w.warehouse_name, '미배정') as warehouse_name,
 
                 req.webuser_name        AS requester_name,
                 app.webuser_name        AS approver_name,
@@ -107,20 +108,20 @@
                 d.reason,
                 i.is_refund
 
-                FROM outbound_detail d
-                JOIN outbound o ON o.outbound_id = d.outbound_id
-                JOIN product p ON p.product_id = d.product_id
+        FROM outbound_detail d
+        LEFT JOIN outbound o ON o.outbound_id = d.outbound_id
+        LEFT JOIN product p ON p.product_id = d.product_id
 
-                JOIN webuser req ON req.webuser_id = o.webuser_id
+        LEFT JOIN webuser req ON req.webuser_id = o.webuser_id
 
-                LEFT JOIN approval a ON a.outbound_id = o.outbound_id
-                LEFT JOIN webuser app ON app.webuser_id = a.approver_id
+        LEFT JOIN approval a ON a.outbound_id = o.outbound_id
+        LEFT JOIN webuser app ON app.webuser_id = a.approver_id
 
-                LEFT JOIN lot_out l ON l.outbound_detail_id = d.outbound_detail_id
-                LEFT JOIN webuser conf ON conf.webuser_id = l.confirmer_id
-                left join inbound i on i.lot_out_id=l.lot_out_id
+        LEFT JOIN lot_out l ON l.outbound_detail_id = d.outbound_detail_id
+        LEFT JOIN webuser conf ON conf.webuser_id = l.confirmer_id
+        left join inbound i on i.lot_out_id=l.lot_out_id
 
-                JOIN warehouse w ON w.warehouse_id = l.warehouse_id
+        LEFT JOIN warehouse w ON w.warehouse_id = l.warehouse_id
                 order by o.outbound_id desc, d.outbound_detail_id desc
             )t
         where product_name like '%'||#{keyword}||'%' or

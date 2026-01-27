@@ -92,4 +92,23 @@ public class LoginController {
             }
         }
     }
+
+    //캘린더 뒤로가기 버튼용
+    @GetMapping("/login/ok")
+    public String loginOkGet(HttpSession session, Model model) {
+
+        // 로그인 안 했으면 로그인폼으로
+        Integer roleId = (Integer) session.getAttribute("role_id");
+        if (roleId == null) {
+            return "login/form";
+        }
+
+        // 로그인 돼있으면 지금 방식 그대로 레이아웃 렌더링
+        if (roleId == 1) model.addAttribute("navFragment", "fragment/nav/adminNav");
+        else if (roleId == 2) model.addAttribute("navFragment", "fragment/nav/officeNav");
+        else if (roleId == 3) model.addAttribute("navFragment", "fragment/nav/fieldNav");
+
+        model.addAttribute("content", "notice/list");
+        return "layout";
+    }
 }

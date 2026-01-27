@@ -14,7 +14,7 @@ public interface Lot_outMapper {
     int insert(Lot_outDto lot_outDto);
     int insert_exp(Lot_outDto lot_outDto);
     int insert_date(int lot_out_id);
-    int delete(int lot_out_id);
+    int update_rej(Map<String,Object> map);
     List<Lot_outDto> select_lot(int outbound_detail_id);
     RefundDto select_refund(int lot_out_id);
     int insert_confirmer(Map<String,Object> map);

@@ -108,15 +108,18 @@ public class OutboundService {
                               String status,
                               String reason,
                               int confirmer_id){
+        Map<String,Object>map=new HashMap<>();
+        map.put("confirmer_id", confirmer_id);
 
         List<Lot_outDto> lot_outDtos=lot_outMapper.select_lot(outbound_detail_id);
         int product_id=outbound_detailMapper.select_product(outbound_detail_id);
 
         boolean is_expired=false;
         for(Lot_outDto l:lot_outDtos){
-            LocalDate expiration =
+            List<LocalDate> expirations =
                     outbound_detailMapper.select_expiration(l.getLot_out_id());
-            if (expiration != null || expiration.isBefore(LocalDate.now())) {
+            for(LocalDate e:expirations)
+            if (e != null || e.isBefore(LocalDate.now())) {
                 is_expired = true;
             }
         }
@@ -126,7 +129,8 @@ public class OutboundService {
             for (Lot_outDto l : lot_outDtos) {
                 reason="유통기한 만료";
                 stockMapper.update_in(new StockDto(l.getStock_id(),0,l.getQuantity(), product_id));
-                int q=lot_outMapper.delete(l.getLot_out_id());
+                map.put("lot_out_id",l.getLot_out_id());
+                int q=lot_outMapper.update_rej(map);
                 Outbound_detailDto outbound_detailDto=new Outbound_detailDto();
                 outbound_detailDto.setOutbound_detail_id(outbound_detail_id);
                 outbound_detailDto.setReason(reason);
@@ -139,19 +143,20 @@ public class OutboundService {
             int m=outbound_detailMapper.update_outStatus_rej(outbound_detail_id);
             for (Lot_outDto l : lot_outDtos) {
                 stockMapper.update_in(new StockDto(l.getStock_id(),0,l.getQuantity(), product_id));
-                int q=lot_outMapper.delete(l.getLot_out_id());
+                map.put("lot_out_id",l.getLot_out_id());
+                int q=lot_outMapper.update_rej(map);
                 Outbound_detailDto outbound_detailDto=new Outbound_detailDto();
                 outbound_detailDto.setOutbound_detail_id(outbound_detail_id);
                 outbound_detailDto.setReason(reason);
                 int a=outbound_detailMapper.update_reason(outbound_detailDto);
+
+                return 1;
             }
         } else {
             for (Lot_outDto l : lot_outDtos) {
                 int b=outbound_detailMapper.update_outStatus_conf(outbound_detail_id);
                 int n=lot_outMapper.insert_date(l.getLot_out_id());
-                Map<String,Object> map=new HashMap<>();
                 map.put("lot_out_id",l.getLot_out_id());
-                map.put("confirmer_id",confirmer_id);
                 int a=lot_outMapper.insert_confirmer(map);
             }
 
