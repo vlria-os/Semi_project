@@ -2,16 +2,17 @@ package com.example.demo.mapper;
 
 import com.example.demo.dto.NoticeDto;
 import com.example.demo.dto.NoticeReplyDto;
+import com.example.demo.pagination.PageInfo;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface NoticeMapper {
         List<NoticeDto> selectNoticeList(
-                        @Param("offset") int offset,
-                        @Param("limit") int limit,
+                        @Param("pageInfo") PageInfo pageInfo,
                         @Param("startDate") String startDate,
                         @Param("keyword") String keyword,
                         @Param("endDate") String endDate);
@@ -35,4 +36,5 @@ public interface NoticeMapper {
         int updateReply(NoticeReplyDto replyDto);
         int deleteReply(Long replyId);
 
+        int count(String keyword);
 }

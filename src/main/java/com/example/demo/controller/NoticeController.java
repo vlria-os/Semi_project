@@ -14,16 +14,15 @@ import java.util.Map;
 @Controller
 @RequiredArgsConstructor
 public class NoticeController {
-
     private final NoticeService noticeService;
 
     // 목록
     @GetMapping("/notice/list")
     public String list(
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "1") int pageNum,
             @RequestParam(required = false) String startDate,
             @RequestParam(required = false) String endDate,
-            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "") String keyword,
             HttpSession session,
             Model model) {
 
@@ -32,18 +31,15 @@ public class NoticeController {
         String keyw =(keyword != null && !keyword.isEmpty() ? keyword : null);
 
         Map<String, Object> result =
-                noticeService.getNoticeList(page, sDate, eDate, keyw);
+                noticeService.getNoticeList(pageNum, startDate, endDate, keyword);
 
         var pinnedNoticeService = noticeService.getPinnedNotices();
 
         model.addAttribute("noticeList", result.get("list"));    //일반공지
         model.addAttribute("pinnedNotices",pinnedNoticeService); //상단고정 공지
-        model.addAttribute("page", page);
-        model.addAttribute("hasNext", result.get("hasNext"));
-        model.addAttribute("prevPage", page > 1 ? page - 1 : 1);
-        model.addAttribute("nextPage", page + 1);
-
+        model.addAttribute("pageInfo", result.get("pageInfo"));
         model.addAttribute("keyword", keyword);
+
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
         Integer roleId = (Integer) session.getAttribute("role_id");
