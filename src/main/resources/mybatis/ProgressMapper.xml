@@ -94,6 +94,7 @@
                 d.outbound_detail_id,
                 p.product_name,
                 d.quantity,
+                a.approval_status,
                 nvl(l.is_expired, 'N') as is_expired,
                 nvl(w.warehouse_name, '미배정') as warehouse_name,
 

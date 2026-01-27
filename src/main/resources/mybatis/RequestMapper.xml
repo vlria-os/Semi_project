@@ -401,7 +401,7 @@
                     join outbound o on a.outbound_id = o.outbound_id
                     join outbound_detail d on o.outbound_id = d.outbound_id
                     join product p on d.product_id = p.product_id
-                    join lot_out l on l.outbound_detail_id = d.outbound_detail_id
+                    left join lot_out l on l.outbound_detail_id = d.outbound_detail_id
                     where a.bound_type = 'OUT'
                     and d.approval_status = 'APPROVED'
                 group by

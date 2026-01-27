@@ -78,6 +78,6 @@
         select l.expiration_date from stock s
             join lot_in l on l.lot_in_id=s.lot_in_id
             join lot_out o on l.lot_in_id=o.lot_in_id
-            where o.lot_out_id=#{value}
+            where o.lot_in_id=#{value}
     </select>
 </mapper>

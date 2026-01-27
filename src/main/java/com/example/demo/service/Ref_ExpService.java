@@ -21,9 +21,10 @@ public class Ref_ExpService {
     private final StockMapper stockMapper;
     private final PaymentMapper paymentMapper;
     private final ProductMapper productMapper;
+    private final ApprovalMapper approvalMapper;
 
     @Transactional
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 10 14 * * *")
     public void insert_expiration(){
         List<Select_outboundDto> select_outboundDtos=stockMapper.select_expiration();
 
@@ -33,6 +34,11 @@ public class Ref_ExpService {
         for(Select_outboundDto s:select_outboundDtos){
             Outbound_detailDto outbound_detailDto=new Outbound_detailDto(0,outboundDto.getOutbound_id(), s.getProduct_id(),"APPROVED",null,"REQUEST",s.getQuantity());
             outbound_detailMapper.insert_exp(outbound_detailDto);
+
+            ApprovalDto approvalDto=new ApprovalDto(
+                    0,0,"OUT",0,outboundDto.getOutbound_id(),
+                    "APPROVED",null);
+            int a=approvalMapper.insert_outbound(approvalDto);
 
             lot_outMapper.insert_exp(new Lot_outDto(0,outbound_detailDto.getOutbound_detail_id(),s.getWarehouse_id(),"Y",s.getLot_in_id(),
                                 s.getQuantity(),s.getStock_id(),null));

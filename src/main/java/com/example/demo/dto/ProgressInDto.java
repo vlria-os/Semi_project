@@ -14,6 +14,7 @@ public class ProgressInDto {
     private int inbound_detail_id;
     private String product_name;
     private int quantity;
+    private String approval_status;
     private String is_refund;
     private String warehouse_name;
     private String requester_name;

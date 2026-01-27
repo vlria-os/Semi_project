@@ -52,9 +52,9 @@
         #{stock_id}
         )
     </insert>
-    <delete id="delete" parameterType="int">
-        delete from lot_out where lot_out_id=#{lot_out_id}
-    </delete>
+    <update id="update_rej" parameterType="map">
+        update lot_out set confirmer_id=#{confirmer_id}, quantity=0, shipped_date=sysdate where lot_out_id=#{lot_out_id}
+    </update>
     <select id="select_lot" parameterType="int" resultType="Lot_outDto">
         select stock_id, lot_out_id, quantity from lot_out where outbound_detail_id=#{value}
     </select>
