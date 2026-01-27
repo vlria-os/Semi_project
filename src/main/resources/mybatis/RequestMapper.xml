@@ -369,7 +369,7 @@
             i.inbound_id, a.approval_status,
             a.created_at
             having sum(
-            case when d.inbound_status = 'REQUEST' then 1 else 0 end
+            case when d.approval_status = 'APPROVED' and d.inbound_status = 'REQUEST' then 1 else 0 end
             ) > 0
         order by a.created_at desc)w)
         <![CDATA[where rn >= #{startRow} and rn <= #{endRow}]]>
