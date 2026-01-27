@@ -47,6 +47,35 @@
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
+.form-group input[type="file"] {
+    padding: 10px;
+    background: #f8fafc;
+    border: 2px dashed #cbd5e1;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.form-group input[type="file"]::file-selector-button {
+    background-color: #1e293b;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 15px;
+    transition: background 0.2s;
+}
+
+.form-group input[type="file"]::file-selector-button:hover {
+    background-color: #334155;
+}
+.form-group .file-help-text {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 4px;
+}
+
 .checkbox-group {
     flex-direction: row;
     align-items: center;
@@ -90,4 +119,50 @@
 
 .btn-cancel:hover {
     background-color: #e2e8f0;
+}
+
+.file-edit-section {
+    margin-top: 25px;
+    padding: 20px;
+    background-color: #f8fafc;
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+}
+
+.file-edit-section label {
+    display: block;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 8px;
+}
+
+.file-edit-section span {
+    color: #3b82f6;
+    font-weight: 500;
+    font-size: 14px;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.file-edit-section input[type="file"] {
+    width: 100%;
+    font-size: 14px;
+    color: #64748b;
+}
+
+.file-edit-section input[type="file"]::file-selector-button {
+    background-color: #ffffff;
+    color: #1e293b;
+    padding: 8px 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-right: 15px;
+    transition: all 0.2s ease;
+}
+
+.file-edit-section input[type="file"]::file-selector-button:hover {
+    background-color: #f1f5f9;
+    border-color: #94a3b8;
 }

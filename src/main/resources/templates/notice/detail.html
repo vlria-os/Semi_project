@@ -4,13 +4,15 @@
 
         <div class="detail-header">
         <h2 th:text="${notice.title}"></h2>
-            <div class="admin-controls" th:if="${session.role_id == 1}">
-                <a th:href="@{/notice/edit/{id}(id=${notice.noticeId})}" class="btn-update">수정</a>
-                <a th:href="@{/notice/delete/{id}(id=${notice.noticeId})}"
-                   onclick="return confirm('정말 삭제하시겠습니까?')" class="btn-delete">
-                    삭제</a>
+            <div class="header-buttons">
+                <div class="admin-controls" th:if="${session.role_id == 1}">
+                    <a th:href="@{/notice/edit/{id}(id=${notice.noticeId})}" class="btn-update">수정</a>
+                    <a th:href="@{/notice/delete/{id}(id=${notice.noticeId})}"
+                       onclick="return confirm('정말 삭제하시겠습니까?')" class="btn-delete">
+                        삭제</a>
+                </div>
+                <a href="/notice/list" class="btn-list">목록으로</a>
             </div>
-            <a href="/notice/list" class="btn-list">목록으로</a>
         </div>
 
 

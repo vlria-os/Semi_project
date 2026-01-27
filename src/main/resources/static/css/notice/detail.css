@@ -15,6 +15,11 @@
     padding-bottom: 15px;
     margin-bottom: 20px;
 }
+.header-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
 
 .meta-info {
     display: flex;
@@ -33,7 +38,11 @@
     margin-bottom: 50px;
 }
 
-.admin-controls { display: flex; gap: 8px; }
+
+.admin-controls {
+    display: flex;
+    gap: 8px;
+}
 .admin-controls a {
     padding: 6px 12px;
     border-radius: 6px;
@@ -43,7 +52,19 @@
 }
 .btn-update { background: #3b82f6; color: white; }
 .btn-delete { background: #ef4444; color: white; }
-.btn-list { background: #f1f5f9; color: #475569; }
+.btn-list {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #e2e8f0;
+    padding: 6px 16px;
+    transition: all 0.2s;
+    border-radius: 6px;
+}
+
+.btn-list:hover {
+    background: #e2e8f0;
+    color: #1e293b;
+}
 
 .reply-title {
     font-size: 20px;
