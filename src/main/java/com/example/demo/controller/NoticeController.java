@@ -27,8 +27,12 @@ public class NoticeController {
             HttpSession session,
             Model model) {
 
+        String sDate= (startDate != null && !startDate.isEmpty() ? startDate : null);
+        String eDate= (endDate != null && !endDate.isEmpty() ? endDate : null);
+        String keyw =(keyword != null && !keyword.isEmpty() ? keyword : null);
+
         Map<String, Object> result =
-                noticeService.getNoticeList(page, startDate, endDate, keyword);
+                noticeService.getNoticeList(page, sDate, eDate, keyw);
 
         var pinnedNoticeService = noticeService.getPinnedNotices();
 
@@ -38,7 +42,10 @@ public class NoticeController {
         model.addAttribute("hasNext", result.get("hasNext"));
         model.addAttribute("prevPage", page > 1 ? page - 1 : 1);
         model.addAttribute("nextPage", page + 1);
+
         model.addAttribute("keyword", keyword);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
         Integer roleId = (Integer) session.getAttribute("role_id");
         String nav= switch (roleId != null ? roleId : 1){
             case 2 -> "officeNav";
@@ -54,10 +61,16 @@ public class NoticeController {
 
     // 등록 화면
     @GetMapping("/notice/new")
-    public String newForm(Model model) {
+    public String newForm(Model model, HttpSession session) {
 
+        Integer roleId = (Integer) session.getAttribute("role_id");
+        String nav= switch (roleId != null ? roleId : 1){
+            case 2 -> "officeNav";
+            case 3 -> "fieldNav";
+            default -> "adminNav";
+        };
 
-        model.addAttribute("navFragment", "fragment/nav/adminNav");
+        model.addAttribute("navFragment", "fragment/nav/" + nav);
         model.addAttribute("content", "notice/new");
         return "layout";
     }
@@ -96,9 +109,18 @@ public class NoticeController {
     }
     //수정
     @GetMapping("/notice/edit/{id}")
-    public String editForm(@PathVariable Long id, Model model) {
+    public String editForm(@PathVariable Long id, Model model, HttpSession session) {
+        Integer roleId = (Integer) session.getAttribute("role_id");
+        String nav= switch (roleId != null ? roleId : 1){
+            case 2 -> "officeNav";
+            case 3 -> "fieldNav";
+            default -> "adminNav";
+        };
+
+        model.addAttribute("navFragment", "fragment/nav/" + nav);
+        model.addAttribute("content", "notice/edit");
         model.addAttribute("notice", noticeService.getNoticeDetail(id));
-        return "notice/edit";
+        return "layout";
     }
     //수정처리 (POST)
      @PostMapping("/notice/edit")

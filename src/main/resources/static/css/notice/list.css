@@ -12,57 +12,86 @@ h2 {
     font-weight: 700;
     color: #1e293b;
     margin-bottom: 20px;
+    margin-bottom: 0;
 }
 
-/* Pinned Notices Style */
-.pinnedNotices {
-    list-style: none;
-    padding: 0;
-    margin-bottom: 25px;
+.pinned-row {
+    background-color: #fff7ed !important;
+    cursor: pointer;
 }
 
-.pinnedNotices li {
-    background-color: #fff7ed; /* Light orange for attention */
-    border-left: 4px solid #f97316;
-    padding: 12px 20px;
-    margin-bottom: 8px;
-    border-radius: 4px;
-    font-weight: 600;
-}
-
-.pinnedNotices li a {
-    text-decoration: none;
+.pinned-row td {
     color: #c2410c;
+    border-bottom: 1px solid #ffedd5;
 }
 
-/* Date Search Bar */
+
 .search-form {
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: flex-start;
+    gap: 12px;
     margin-bottom: 25px;
     background: #f8fafc;
-    padding: 15px;
+    padding: 20px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+}
+.search-form input[name="keyword"] {
+    flex: 1;
+    max-width: 300px;
+    padding: 10px 15px;
+    border: 1px solid #cbd5e1;
     border-radius: 8px;
+    font-size: 14px;
 }
 
 .search-form input[type="date"] {
-    padding: 8px;
+    padding: 9px 12px;
     border: 1px solid #cbd5e1;
-    border-radius: 6px;
-    outline: none;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #475569;
 }
 
 .search-form button {
     background-color: #3b82f6;
     color: white;
-    padding: 8px 20px;
+    padding: 10px 24px;
     border: none;
-    border-radius: 6px;
-    cursor: pointer;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background 0.2s;
 }
 
-/* Table styling consistent with your other pages */
+.search-form button:hover {
+    background-color: #2563eb;
+}
+.btn-register {
+    background-color: #10b981;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.2s;
+}
+
+.btn-register:hover {
+    background-color: #059669;
+}
+.main::after {
+    content: "";
+    display: table;
+    clear: both;
+}
+.header-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
 table {
     width: 100%;
     border-collapse: separate;
@@ -88,7 +117,6 @@ table tr:hover {
     background-color: #f8fafc;
 }
 
-/* New Post Button */
 a[href="/notice/new"] {
     display: inline-block;
     background-color: #10b981;

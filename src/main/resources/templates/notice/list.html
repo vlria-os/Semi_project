@@ -2,8 +2,10 @@
     <link rel="stylesheet" th:href="@{/css/notice/list.css}">
     <div class="main">
 
-        <h2>📌공지사항</h2>
-        <a href="/notice/new" th:if="${session.role_id == 1}" class="btn-register">공지 등록</a>
+        <div class="header-group">
+            <h2>📌공지사항</h2>
+            <a href="/notice/new" th:if="${session.role_id == 1}" class="btn-register">공지 등록</a>
+        </div>
     <!--<form method="get" action="/notice/list"> -->
         <form class="search-form"  method="get" action="/notice/list">
 <!--            <input type="text" name="searchBar">-->

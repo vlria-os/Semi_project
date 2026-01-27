@@ -22,7 +22,7 @@ public class NoticeService {
         int limit = 10;
         int offset = (page - 1) * limit;
 
-        List<NoticeDto> list = noticeMapper.selectNoticeList(offset, limit, startDate, endDate, keyword);
+        List<NoticeDto> list = noticeMapper.selectNoticeList(offset, limit, startDate, keyword, endDate);
 
         boolean hasNext = list.size() == limit;
 

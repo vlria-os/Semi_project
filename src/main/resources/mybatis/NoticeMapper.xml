@@ -6,7 +6,7 @@
 <mapper namespace="com.example.demo.mapper.NoticeMapper">
 
     <!-- 공지 목록 -->
-    <select id="selectNoticeList" resultType="com.example.demo.dto.NoticeDto">
+    <select id="selectNoticeList" resultType="NoticeDto">
         SELECT
         NOTICE_ID   AS noticeId,
         TITLE,
@@ -14,20 +14,22 @@
         VIEW_COUNT  AS viewCount,
         CREATED_AT  AS createdAt
         FROM NOTICE
-        WHERE PIN_YN= 'N'
-          <if test="keyword != null and keyword != ''">
-              and (
-                  title like '%' || #{keyword} || '%'
-                  or writer like '%' || #{keyword} || '%'
-                  or cast(notice_id as varchar2(100)) like '%' || #{keyword} || '%'
-              )
-          </if>
-        <if test="startDate != null and startDate != ''">
-            AND CREATED_AT <![CDATA[>=]]> TO_DATE(#{startDate}, 'YYYY-MM-DD')
-        </if>
-        <if test="endDate != null and endDate != ''">
-            AND CREATED_AT <![CDATA[<=]]> TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
-        </if>
+        <where>
+            PIN_YN= 'N'
+            <if test="keyword != null and keyword != ''">
+                and (
+                    title like '%' || #{keyword} || '%'
+                    or writer like '%' || #{keyword} || '%'
+                    or cast(notice_id as varchar2(100)) like '%' || #{keyword} || '%'
+                )
+            </if>
+            <if test="startDate != null and startDate != ''">
+                AND CREATED_AT <![CDATA[>=]]> TO_DATE(#{startDate}, 'YYYY-MM-DD')
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND CREATED_AT <![CDATA[<=]]> TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+            </if>
+        </where>
         ORDER BY NOTICE_ID DESC
         OFFSET #{offset} ROWS FETCH NEXT #{limit} ROWS ONLY
     </select>
