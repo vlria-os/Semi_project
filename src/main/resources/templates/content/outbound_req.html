@@ -220,6 +220,21 @@
                 .then(data => {
                     if(data.result==='success'){
                         alert("출고 요청이 완료되었습니다.");
+                        document.querySelectorAll('#outboundForm table tr').forEach(tr => {
+                            const checkbox = tr.querySelector('.rowCheck');
+                            const qtyInput = tr.querySelector('.reqQty');
+                            const productInput = tr.querySelector('.productId');
+
+                            if(checkbox){
+                                checkbox.checked = false;
+                                qtyInput.value = '';
+                                qtyInput.disabled = true;
+                                productInput.disabled = true;
+                            }
+                        });
+
+                        Object.keys(selectedOutboundMap).forEach(id => delete selectedOutboundMap[id]);
+                        sessionStorage.removeItem('selectedOutboundMap');
                     }
                     else{
                         alert("출고 요청 중 오류가 발생했습니다.");

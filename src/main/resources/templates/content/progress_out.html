@@ -179,7 +179,7 @@
                     </td>
                     <td>
                         <span th:text="${l.reason}"></span>
-                        <button th:if="${l.is_refund == null && l.reason == null && session.get('role_id') == 2}"
+                        <button th:if="${l.is_refund == null && l.reason == null && l.shipped_date != null && session.role_id == 2}"
                                 type="button"
                                 th:onclick="'requestReturn(' + ${l.outbound_detail_id} + ')'"
                                 th:disabled="${l.shipped_date == null}">
