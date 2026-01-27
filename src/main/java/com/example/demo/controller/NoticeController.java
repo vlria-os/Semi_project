@@ -31,7 +31,7 @@ public class NoticeController {
         String keyw =(keyword != null && !keyword.isEmpty() ? keyword : null);
 
         Map<String, Object> result =
-                noticeService.getNoticeList(pageNum, startDate, endDate, keyword);
+                noticeService.getNoticeList(pageNum, sDate, eDate, keyw);
 
         var pinnedNoticeService = noticeService.getPinnedNotices();
 

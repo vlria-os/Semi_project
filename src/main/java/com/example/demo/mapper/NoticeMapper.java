@@ -14,8 +14,8 @@ public interface NoticeMapper {
         List<NoticeDto> selectNoticeList(
                         @Param("pageInfo") PageInfo pageInfo,
                         @Param("startDate") String startDate,
-                        @Param("keyword") String keyword,
-                        @Param("endDate") String endDate);
+                        @Param("endDate") String endDate,
+                        @Param("keyword") String keyword);
 
         int insertNotice(NoticeDto notice);
 
@@ -36,5 +36,5 @@ public interface NoticeMapper {
         int updateReply(NoticeReplyDto replyDto);
         int deleteReply(Long replyId);
 
-        int count(String keyword);
+        int count(String startDate, String endDate, String keyword);
 }

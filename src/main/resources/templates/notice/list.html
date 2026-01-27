@@ -10,9 +10,9 @@
         <form class="search-form"  method="get" action="/notice/list">
 <!--            <input type="text" name="searchBar">-->
             <input type="text" name="keyword" placeholder="검색어를 입력하세요" th:value="${keyword}">
-            <input type="date" name="startDate">
+            <input type="date" name="startDate" th:value="${startDate}">
             ~
-            <input type="date" name="endDate">
+            <input type="date" name="endDate" th:value="${endDate}">
             <button type="submit">검색</button>
         </form>
 

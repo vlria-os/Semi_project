@@ -128,6 +128,22 @@
     </delete>
 
     <select id="count" parameterType="String" resultType="int">
-        select count(*) from notice where content like '%'||#{keyword}||'%'
+        select count(*) from notice
+        <where>
+            PIN_YN= 'N'
+            <if test="keyword != null and keyword != ''">
+                and (
+                title like '%' || #{keyword} || '%'
+                or writer like '%' || #{keyword} || '%'
+                or cast(notice_id as varchar2(100)) like '%' || #{keyword} || '%'
+                )
+            </if>
+            <if test="startDate != null and startDate != ''">
+                AND CREATED_AT <![CDATA[>=]]> TO_DATE(#{startDate}, 'YYYY-MM-DD')
+            </if>
+            <if test="endDate != null and endDate != ''">
+                AND CREATED_AT <![CDATA[<=]]> TO_DATE(#{endDate}, 'YYYY-MM-DD')+1
+            </if>
+        </where>
     </select>
 </mapper>

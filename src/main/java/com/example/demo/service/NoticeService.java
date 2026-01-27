@@ -18,7 +18,7 @@ public class NoticeService {
 
     public Map<String, Object> getNoticeList(
             int pageNum, String startDate, String endDate, String keyword) {
-        int totalRowCount=noticeMapper.count(keyword);
+        int totalRowCount=noticeMapper.count(startDate, endDate, keyword);
         PageInfo pageInfo=new PageInfo(pageNum,10,5,totalRowCount);
 
         List<NoticeDto> list = noticeMapper.selectNoticeList(pageInfo, startDate, endDate, keyword);
