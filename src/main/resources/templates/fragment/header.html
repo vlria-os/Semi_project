@@ -6,19 +6,6 @@
     </div>
 
     <div class="header-right">
-        <!-- 미퇴근 기록 없을 때 -->
-        <button type="button"
-                id="btnCheckIn"
-                th:if="${session.openLog == null}">
-            출근
-        </button>
-        <!-- 미퇴근 기록 있는데 오늘일 때 -->
-        <button type="button"
-                id="btnCheckOut"
-                th:if="${session.openLog != null
-                and session.openLog.workingDate == session.today}">
-            퇴근
-        </button>
 
         <!-- 채팅방 -->
         <a href="#" onclick="openChatWindow()" style="text-decoration: none; font-size: 1.2rem;">
