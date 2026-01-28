@@ -62,6 +62,15 @@ public class InboundService {
             int a=inbound_detailMapper.update_appStatus_rej(inbound_detailDto.getInbound_detail_id());
             int c=inbound_detailMapper.update_reason(inbound_detailDto);
             int d=inboundMapper.update_status(inbound_id);
+            String status=inboundMapper.select_status(inbound_id);
+
+            if(!status.equals("REQUEST")){
+                ApprovalDto approvalDto=new ApprovalDto(
+                        0,approver_id,"IN",inbound_id,0,
+                        status,null);
+                int b=approvalMapper.insert_inbound(approvalDto);
+            }
+
             return 1;
         }
 
@@ -99,6 +108,10 @@ public class InboundService {
 
             if(status.equals("REJECTED")){
                 int m=inbound_detailMapper.update_inbStatus_rej(l.getInbound_detail_id());
+                l.setQuantity(0);
+                l.setConfirmer_id(confirmer_id);
+                l.setInbound_status("REJECTED");
+                int n = lot_inMapper.insert(l);
                 Inbound_detailDto inbound_detailDto=new Inbound_detailDto();
                 inbound_detailDto.setInbound_detail_id(l.getInbound_detail_id());
                 inbound_detailDto.setReason(reason);

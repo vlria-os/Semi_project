@@ -8,10 +8,10 @@
     </div>
     <table>
       <tr>
-        <th>승인 번호</th><th>승인자</th><th>상품명</th><th>반품 여부</th><th>승인일</th><th>상세보기</th>
+        <th>입고 번호</th><th>승인자</th><th>상품명</th><th>반품 여부</th><th>승인일</th><th>상세보기</th>
       </tr>
       <tr th:each="l:${list}" th:attr="data-inbound-id=${l.inbound_id}">
-        <td th:text="${l.approval_id}"></td>
+        <td th:text="${l.inbound_id}"></td>
         <td th:text="${l.approver_name}"></td>
         <td th:text="${l.product_name}"></td>
         <td th:text="${l.is_refund}"></td>

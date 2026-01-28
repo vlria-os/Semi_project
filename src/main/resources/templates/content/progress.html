@@ -135,39 +135,29 @@
                             <div class="row bar">
                                 <div class="bar-inner">
                                     <span class="point"
+                                          th:classappend="' done'"
+                                          th:text="'✔'">
+                                    </span>
+                                    <span class="point"
                                           th:classappend="${
-                                              l.reason != null
-                                                  ? (l.approved_date == null and l.received_date == null ? ' fail' : ' done')
-                                                  : (l.requested_date != null ? ' done' : '')
+                                                  (l.approval_status == 'REJECTED' ? ' fail' :
+                                                  (l.approval_status == 'APPROVED' ? ' done' : ''))
                                           }"
                                           th:text="${
-                                              l.reason != null and l.approved_date == null and l.received_date == null
-                                                  ? '✖'
-                                                  : (l.requested_date != null ? '✔' : '')
+                                              (l.approval_status == 'REJECTED' ? '✖' :
+                                              (l.approval_status == 'APPROVED' ? '✔' : ''))
                                           }">
                                     </span>
                                     <span class="point"
                                           th:classappend="${
-                                              l.reason != null
-                                                  ? (l.approved_date != null and l.received_date == null ? ' fail' : (l.approved_date != null ? ' done' : ''))
-                                                  : (l.approved_date != null ? ' done' : '')
+                                              (l.approval_status != 'APPROVED' ? '' :
+                                              (l.reason != null ? ' fail' :
+                                              (l.received_date == null ? '' : ' done')))
                                           }"
                                           th:text="${
-                                              l.reason != null and l.approved_date != null and l.received_date == null
-                                                  ? '✖'
-                                                  : (l.approved_date != null ? '✔' : '')
-                                          }">
-                                    </span>
-                                    <span class="point"
-                                          th:classappend="${
-                                              l.reason != null
-                                                  ? (l.received_date != null ? ' fail' : '')
-                                                  : (l.received_date != null ? ' done' : '')
-                                          }"
-                                          th:text="${
-                                              l.reason != null and l.received_date != null
-                                                  ? '✖'
-                                                  : (l.received_date != null ? '✔' : '')
+                                              (l.approval_status != 'APPROVED' ? '' :
+                                              (l.reason != null ? '✖' :
+                                              (l.received_date == null ? '' :'✔')))
                                           }">
                                 </span>
 

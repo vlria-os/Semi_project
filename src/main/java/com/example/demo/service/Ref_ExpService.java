@@ -24,7 +24,7 @@ public class Ref_ExpService {
     private final ApprovalMapper approvalMapper;
 
     @Transactional
-    @Scheduled(cron = "0 10 14 * * *")
+    @Scheduled(cron = "0 10 10 * * *")
     public void insert_expiration(){
         List<Select_outboundDto> select_outboundDtos=stockMapper.select_expiration();
 

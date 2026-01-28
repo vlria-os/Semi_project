@@ -15,6 +15,7 @@
                 d.quantity,
                 i.is_refund,
                 w.warehouse_name,
+                d.approval_status,
 
                 req.webuser_name AS requester_name,
                 app.webuser_name AS approver_name,
@@ -55,6 +56,7 @@
                     d.quantity,
                     i.is_refund,
                     w.warehouse_name,
+                    d.approval_status,
 
                     req.webuser_name AS requester_name,
                     app.webuser_name AS approver_name,
@@ -141,6 +143,7 @@
                 d.outbound_detail_id,
                 p.product_name,
                 d.quantity,
+                a.approval_status,
                 l.is_expired,
                 w.warehouse_name,
 
