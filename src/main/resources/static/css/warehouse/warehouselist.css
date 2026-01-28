@@ -202,15 +202,19 @@ body {
     flex-direction: column;
     justify-content: flex-end;
 }
-.bar-fill{
+.bar-fill.normal{
     width: 100%;
     background: linear-gradient(to top, #3b82f6, #60a5fa);
     border-radius: 20px;
     transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.bar-fill.warning {
+.bar-fill.danger {
     background: linear-gradient(to top, #ef4444, #f87171);
+}
+
+.bar-fill.warning {
+    background: linear-gradient(to top, #fbbf24, #f6ce71);
 }
 .storage-list li:hover .bar-fill{
     filter: brightness(1.1);

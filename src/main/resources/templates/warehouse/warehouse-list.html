@@ -36,12 +36,6 @@
                                         <p th:text="${list.warehouse_name}" class="w-name"></p>
                                         <p th:class="'w-type ' + ${list.warehouse_type == 'FROZEN' ? 'type-frozen' : (list.warehouse_type == 'COLD' ? 'type-cold' : 'type-room')}"
                                            th:text="${list.warehouse_type == 'FROZEN' ? '냉동' : (list.warehouse_type == 'COLD' ? '냉장' : '실온')}"></p>
-
-                                            <!--
-                                            th:switch="${list.warehouse_type}"
-                                            <p th:case="'FROZEN'" class="w-type type-frozen">냉동</p>
-<!--                                        <p th:case="'COLD'" class="w-type type-cold">냉장</p>
-<!--                                        <p th:case="'ROOM'" class="w-type type-room">실온</p>-->
                                         <p th:text="${list.warehouse_id}" hidden="hidden"></p>
                                         <div class="meta-data">
                                             <p>위치</p>
@@ -56,7 +50,7 @@
                                             <span th:text="${list.usage_rate} + '%'">0%</span>
                                         </div>
                                         <div class="bar-container">
-                                            <div class="bar-fill" th:style="'height: ' + ${list.usage_rate} + '%'" th:classappend="${list.usage_rate > 90} ? 'warning' : ''"></div>
+                                            <div class="bar-fill" th:style="'height: ' + ${list.usage_rate} + '%'" th:classappend="${list.usage_rate > 90} ? 'danger' : (${list.usage_rate > 70} ? 'warning' : 'normal')"></div>
                                         </div>
                                     </div>
                                 </div>
