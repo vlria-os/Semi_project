@@ -37,7 +37,7 @@
                     <div th:replace="this :: replyBlock(reply=${r}, allReplies=${replies}, level=0)"></div>
                 </div>
 
-                <p class="no-replies" th:if="${#lists.isEmpty(replies)}">등록된 댓글리 없습니다</p>
+                <p class="no-replies" th:if="${#lists.isEmpty(replies)}">등록된 댓글이 없습니다</p>
 
                 <div class="new-reply-box">
                     <h4>새 댓글 작성</h4>
