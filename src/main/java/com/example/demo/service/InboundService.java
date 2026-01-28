@@ -62,6 +62,15 @@ public class InboundService {
             int a=inbound_detailMapper.update_appStatus_rej(inbound_detailDto.getInbound_detail_id());
             int c=inbound_detailMapper.update_reason(inbound_detailDto);
             int d=inboundMapper.update_status(inbound_id);
+            String status=inboundMapper.select_status(inbound_id);
+
+            if(!status.equals("REQUEST")){
+                ApprovalDto approvalDto=new ApprovalDto(
+                        0,approver_id,"IN",inbound_id,0,
+                        status,null);
+                int b=approvalMapper.insert_inbound(approvalDto);
+            }
+
             return 1;
         }
 
