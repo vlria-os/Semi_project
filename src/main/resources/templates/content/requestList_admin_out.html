@@ -96,8 +96,14 @@
                                     <td>${l.quantity}</td>
                                     <td>${l.approval_status}</td>
                                     <td>
-                                        <button type="button" onclick="approveItem(this)">승인</button>
-                                        <button type="button" onclick="rejectItem(this)">반려</button>
+                                        ${
+                            l.approval_status === 'REQUEST'
+                                ? `
+                    <button type="button" onclick="approveItem(this)">승인</button>
+                    <button type="button" onclick="rejectItem(this)">반려</button>
+                  `
+                                : '-'
+                        }
                                     </td>
                                 </tr>`;
 
