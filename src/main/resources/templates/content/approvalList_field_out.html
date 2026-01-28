@@ -8,7 +8,7 @@
     </div>
     <table>
       <tr>
-        <th>출고 번호</th><th>승인자</th><th>상품명</th><th>폐기 여부</th><th>승인일</th><th>/상세보기</th>
+        <th>출고 번호</th><th>승인자</th><th>상품명</th><th>폐기 여부</th><th>승인일</th><th>상세보기</th>
       </tr>
       <tr th:each="l:${list}" th:attr="data-outbound-id=${l.outbound_id}">
         <td th:text="${l.outbound_id}"></td>
