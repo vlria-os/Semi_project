@@ -305,15 +305,17 @@
     }
 
     function updateChatUnreadBadgeFromTotal(total) {
-        const badge = document.getElementById('chatUnreadBadge');
+        const badge = document.getElementById('chatIcon');
+        const defaultIcon= "/css/message-square.svg"
+        const notifIcon= "/css/message-square-dot.svg";
+
         if (!badge) return;
 
         if (Number(total) > 0) {
-            badge.style.display = 'inline-block';
-            badge.textContent = '1';   // 하나라도 있으면 1
+            badge.src = notifIcon;   // 하나라도 있으면 1
+            badge.style.filter= "none";
         } else {
-            badge.style.display = 'none';
-            badge.textContent = '0';
+            badge.src= defaultIcon;
         }
     }
 
