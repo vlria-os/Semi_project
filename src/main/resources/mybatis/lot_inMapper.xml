@@ -21,7 +21,7 @@
             #{inbound_detail_id},
             #{confirmer_id},
             #{warehouse_id},
-            #{expiration_date},
+            #{expiration_date, jdbcType=DATE},
             sysdate,
             #{quantity}
     )

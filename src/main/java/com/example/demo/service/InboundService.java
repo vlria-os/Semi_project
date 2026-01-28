@@ -108,6 +108,10 @@ public class InboundService {
 
             if(status.equals("REJECTED")){
                 int m=inbound_detailMapper.update_inbStatus_rej(l.getInbound_detail_id());
+                l.setQuantity(0);
+                l.setConfirmer_id(confirmer_id);
+                l.setInbound_status("REJECTED");
+                int n = lot_inMapper.insert(l);
                 Inbound_detailDto inbound_detailDto=new Inbound_detailDto();
                 inbound_detailDto.setInbound_detail_id(l.getInbound_detail_id());
                 inbound_detailDto.setReason(reason);
