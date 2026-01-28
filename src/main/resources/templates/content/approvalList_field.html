@@ -206,8 +206,26 @@
       }
     }
 
+    function validateTotalLotQty(detailTr){
+      const originQty = Number(detailTr.querySelector('.originQty').innerText);
+
+      let sum = 0;
+      detailTr.querySelectorAll('.lotQty').forEach(i => {
+        sum += Number(i.value || 0);
+      });
+
+      return sum === originQty;
+    }
+
     function confirmApprove(e, btn){
       e.stopPropagation();
+
+      const detailTr = btn.closest('.detailItem');
+
+      if(!validateTotalLotQty(detailTr)){
+        alert('유통기한별 수량 합계가 전체 수량과 일치하지 않습니다.');
+        return;
+      }
 
       if(!confirm('승인하시겠습니까?')) return;
 
