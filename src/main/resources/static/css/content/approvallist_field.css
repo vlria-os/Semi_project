@@ -34,14 +34,11 @@ td {
     font-size: 14px;
     color: #334155;
 }
-
-tr[onclick] {
-    cursor: pointer;
-    transition: background 0.2s;
+.detailRow button {
+    margin: 2px;
 }
-
-tr[onclick]:hover {
-    background-color: #f1f5f9;
+#Table tr:not(.detailRow) {
+    cursor: default !important;
 }
 
 .detailRow {
@@ -134,6 +131,22 @@ button[onclick*="removeLotRow"] {
 
 button:hover {
     opacity: 0.9;
+    transform: translateY(-1px);
+}
+button[onclick^="showDetail"] {
+    background-color: #3b82f6;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+button[onclick^="showDetail"]:hover {
+    background-color: #2563eb;
     transform: translateY(-1px);
 }
 

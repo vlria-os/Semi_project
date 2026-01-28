@@ -8,14 +8,17 @@
     </div>
     <table>
       <tr>
-        <th>승인 번호</th><th>승인자</th><th>상품명</th><th>반품 여부</th><th>승인일</th>
+        <th>승인 번호</th><th>승인자</th><th>상품명</th><th>반품 여부</th><th>승인일</th><th>상세보기</th>
       </tr>
-      <tr th:each="l:${list}" th:attr="data-inbound-id=${l.inbound_id}" onclick="showDetail(this)">
+      <tr th:each="l:${list}" th:attr="data-inbound-id=${l.inbound_id}">
         <td th:text="${l.approval_id}"></td>
         <td th:text="${l.approver_name}"></td>
         <td th:text="${l.product_name}"></td>
         <td th:text="${l.is_refund}"></td>
         <td th:text="${#temporals.format(l.created_at, 'yyyy-MM-dd HH:mm:ss')}"></td>
+        <td>
+          <button type="button" onclick="showDetail(this)">상세보기</button>
+        </td>
       </tr>
     </table>
 
@@ -106,7 +109,7 @@
 
                 tr.innerHTML=`
                   <td colspan="${colCount}">
-                     <table>
+                     <table class="innerDetailTable" style="width: 100%; border: 1px solid #eee;">
                      <tr>
                         <th>상품명</th><th>수량</th><th>승인 상태</th><th>유통기한 / 수량</th><th>처리</th>
                      </tr>
