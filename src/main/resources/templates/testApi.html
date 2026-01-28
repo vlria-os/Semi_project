@@ -206,53 +206,53 @@
 
 
 
-    // function loadGwangju(){
-    //     const result=document.getElementById("result");
-    //
-    //     fetch('/api/localProducts/gwangju')
-    //         .then(resp => resp.json())
-    //         .then(data => {
-    //             data.forEach(item => {
-    //                 result.innerHTML += `
-    //                                       <img src="${item.imgUrl}"
-    //                                         style="width:200px; height:150px; object-fit:cover;"
-    //                                         onerror="this.src='/images/no-image.png'"><br>
-    //                                       <p><b>${item.cntntsSj}</b></p>
-    //                                       <p>${item.areaNm}</p>
-    //                                       <a href="${item.linkUrl}" target="_blank">자세히 보기</a>
-    //                                       <hr>
-    //                                     `;
-    //             })
-    //         })
-    //         .catch(err => {
-    //             console.error(err);
-    //             result.innerHTML = "<p>특산물 정보를 불러오지 못했습니다.</p>";
-    //         });
-    // }
+    function loadGwangju(){
+        const result=document.getElementById("result");
+
+        fetch('/api/localProducts/gwangju')
+            .then(resp => resp.json())
+            .then(data => {
+                data.forEach(item => {
+                    result.innerHTML += `
+                                          <img src="${item.imgUrl}"
+                                            style="width:200px; height:150px; object-fit:cover;"
+                                            onerror="this.src='/images/no-image.png'"><br>
+                                          <p><b>${item.cntntsSj}</b></p>
+                                          <p>${item.areaNm}</p>
+                                          <a href="${item.linkUrl}" target="_blank">자세히 보기</a>
+                                          <hr>
+                                        `;
+                })
+            })
+            .catch(err => {
+                console.error(err);
+                result.innerHTML = "<p>특산물 정보를 불러오지 못했습니다.</p>";
+            });
+    }
 
 
 
-    // function loadJeonbuk(){
-    //     fetch('/jeonbuk')
-    //         .then(resp => resp.json())
-    //         .then(json => {
-    //             const data=json.items || [];
-    //             let html = "";
-    //
-    //             data.forEach(item => {
-    //                 html +=`
-    //                         <p><b>${item["식재료"]}</b></p>
-    //                         <p>${item["특성"]}</p>
-    //                         <p>${item["문의"]}</p>
-    //                       `;
-    //             })
-    //
-    //             document.getElementById("result").innerHTML = html;
-    //         })
-    //         .catch(console.error);
-    // }
-    //
-    // loadJeonbuk();
+    function loadJeonbuk(){
+        fetch('/jeonbuk')
+            .then(resp => resp.json())
+            .then(json => {
+                const data=json.items || [];
+                let html = "";
+
+                data.forEach(item => {
+                    html +=`
+                            <p><b>${item["식재료"]}</b></p>
+                            <p>${item["특성"]}</p>
+                            <p>${item["문의"]}</p>
+                          `;
+                })
+
+                document.getElementById("result").innerHTML = html;
+            })
+            .catch(console.error);
+    }
+
+    loadJeonbuk();
 </script>
 
 </body>
