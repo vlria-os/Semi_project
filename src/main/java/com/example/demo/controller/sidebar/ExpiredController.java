@@ -17,7 +17,8 @@ public class ExpiredController {
     private final ExpiredService eService;
 
     @GetMapping("/fragment/sidebar/expiredList")
-    public String expiredList(SearchDto searchDto, @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
+    public String expiredList(SearchDto searchDto,
+                              @RequestParam(value = "pageNum", defaultValue = "1") int pageNum,
                               @RequestParam(value = "typeFilter", defaultValue = "all") String typeFilter,
                               @RequestParam(value = "warehouseFilter", required = false) String warehouseFilter,
                               @RequestParam(value = "isAjax", defaultValue = "false") boolean isAjax,

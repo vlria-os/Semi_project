@@ -20,4 +20,7 @@ public class DueDateDto {
     private Date expiration_date;
     private int quantity;
     private int days_left;
+    private String is_expired;
+    private Date shipped_date;
+    private String is_shipped_status;
 }

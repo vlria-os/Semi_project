@@ -6,7 +6,7 @@
 <mapper namespace="com.example.demo.mapper.ExpiredMapper">
     <sql id="expiredSearch">
         <where>
-          and lo.is_expired = 'Y'
+            and lo.is_expired = 'Y'
             <if test="keyword != null and keyword != '' ">
                 and (
                     upper(p.product_name) like upper('%' || #{keyword} || '%')
@@ -22,6 +22,34 @@
         </where>
     </sql>
 
+<!--    <select id="getExpiredList" parameterType="map" resultType="DueDateDto">-->
+<!--        select * from (-->
+<!--            select a.*, rownum rnum from (-->
+<!--                select-->
+<!--                    lo.lot_out_id as stock_id,-->
+<!--                    lo.lot_in_id,-->
+<!--                    p.product_name,-->
+<!--                    p.status as product_type,-->
+<!--                    w.warehouse_name,-->
+<!--                    w.warehouse_id,-->
+<!--                    li.expiration_date,-->
+<!--                    lo.quantity,-->
+<!--                    lo.is_expired,-->
+<!--                    trunc(sysdate) - trunc(lo.shipped_date) as days_left-->
+<!--                from lot_out lo-->
+<!--                join lot_in li on lo.lot_in_id = li.lot_in_id-->
+<!--                join inbound_detail id on li.inbound_detail_id = id.inbound_detail_id-->
+<!--                join product p on id.product_id = p.product_id-->
+<!--                join warehouse w on lo.warehouse_id = w.warehouse_id-->
+<!--                <include refid="expiredSearch"/>-->
+<!--                order by lo.shipped_date desc-->
+<!--            ) a-->
+<!--        )-->
+<!--        <![CDATA[-->
+<!--        where rnum >= #{startRow} and rnum <= #{endRow}-->
+<!--        ]]>-->
+<!--    </select>-->
+
     <select id="getExpiredList" parameterType="map" resultType="DueDateDto">
         select * from (
             select a.*, rownum rnum from (
@@ -34,14 +62,20 @@
                     w.warehouse_id,
                     li.expiration_date,
                     lo.quantity,
-                    lo.shipped_date as days_left
+                    lo.is_expired,
+                    lo.shipped_date,
+                    case
+                        when lo.shipped_date is not null then 'YES'
+                        else 'NO'
+                    end as is_shipped_status,
+                    trunc(sysdate) - trunc(lo.shipped_date) as days_left
                 from lot_out lo
                 join lot_in li on lo.lot_in_id = li.lot_in_id
                 join inbound_detail id on li.inbound_detail_id = id.inbound_detail_id
                 join product p on id.product_id = p.product_id
                 join warehouse w on lo.warehouse_id = w.warehouse_id
                 <include refid="expiredSearch"/>
-                order by lo.shipped_date desc
+                order by days_left asc
             ) a
         )
         <![CDATA[
